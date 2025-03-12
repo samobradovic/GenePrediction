@@ -3,12 +3,17 @@ import os
 import time
 from typing import List
 
-import dill
 from Bio import Entrez, SeqIO
 from Bio.Entrez.Parser import DictionaryElement
 from Bio.SeqRecord import SeqRecord
 
-from src.config import ENTREZ_EMAIL, FILE_FORMAT, GENES_RAW_DATA_FILE_PATH, MAX_GENES
+from src.config import (
+    ENTREZ_EMAIL,
+    FILE_FORMAT,
+    GENES_RAW_DATA_FILE_PATH,
+    MAX_GENES,
+    MAX_GENES_SIZE_GB,
+)
 from src.helpers.filesystem_helper import get_folder_size
 
 RETRY_COUNT = 15
@@ -30,7 +35,7 @@ def get_gene_ids(max_results: int = MAX_GENES) -> List[str]:
         logging.info(f"Found {len(id_list)} bacterial genes")
         if id_list:
             return record["IdList"]
-    logging.error(f"No bacterial genes found")
+    logging.error("No bacterial genes found")
     return []
 
 
@@ -39,8 +44,10 @@ def download_genes() -> None:
     gene_ids = get_gene_ids()
     for i in range(0, len(gene_ids), BATCH_SIZE):
         folder_size = get_folder_size(GENES_RAW_DATA_FILE_PATH)
-        if folder_size > 50:
-            logging.warning(f"Folder size exceeds 50GB. Stopping download.")
+        if folder_size > MAX_GENES_SIZE_GB:
+            logging.warning(
+                f"Folder size exceeds {MAX_GENES_SIZE_GB}GB. Stopping download."
+            )
             break
 
         batch_ids = gene_ids[i : i + BATCH_SIZE]
@@ -53,6 +60,7 @@ def download_genes() -> None:
 
         for attempt in range(RETRY_COUNT):
             try:
+                logging.info(f"Downloading genes batch {i // BATCH_SIZE + 1}...")
                 handle = Entrez.efetch(
                     db="nucleotide",
                     id=",".join(batch_ids),
@@ -80,14 +88,6 @@ def load_genes(
     load_from_pickle: bool = True, load_from_files: bool = False
 ) -> List[SeqRecord]:
 
-    if load_from_pickle:
-        try:
-            with open(f"{GENES_RAW_DATA_FILE_PATH}/genes.pkl", "rb") as f:
-                genes = dill.load(f)
-            return genes
-        except Exception as e:
-            logging.error(f"Failed to load genes from pickle: {e}")
-
     if not load_from_files:
         download_genes()
 
@@ -97,5 +97,8 @@ def load_genes(
             logging.info(f"Loading genes from {file}")
             genes.extend(SeqIO.parse(f"{GENES_RAW_DATA_FILE_PATH}/{file}", FILE_FORMAT))
 
-    dill.dump(genes, open(f"{GENES_RAW_DATA_FILE_PATH}/genes.pkl", "wb"))
     return genes
+
+
+# if __name__ == "__main__":
+# download_genes()

@@ -1,68 +1,23 @@
-# NOT VALID
-
 stages:
-  load_data:
+  download_genomes:
+    cmd: python src/data_loading/genome_fetcher.py
+    deps:
+      - src/data_loading/genome_fetcher.py
+    outs:
+      - data/raw/genomes
+
+  download_genes:
     cmd: python src/data_loading/gene_fetcher.py
     deps:
-      - src/load_data.py
+      - src/data_loading/gene_fetcher.py
     outs:
-      - data/raw
+      - data/raw/genes
 
-  process_data:
-    cmd: python src/process_data.py
+  preprocess:
+    cmd: python src/data_preprocessing/csv_converter.py
     deps:
-      - src/process_data.py
-      - data/raw
+      - src/data_preprocessing/csv_converter.py
+      - data/raw/genomes
+      - data/raw/genes
     outs:
-      - data/processed
-
-  extract_features:
-    cmd: python src/extract_features.py
-    deps:
-      - src/extract_features.py
-      - data/processed
-    outs:
-      - data/features
-
-  train_model:
-    cmd: python src/train_model.py
-    deps:
-      - src/train_model.py
-      - data/features
-    outs:
-      - models/model.pkl
-    metrics:
-      - metrics.json
-stages:
-  load_data:
-    cmd: python src/load_data.py
-    deps:
-      - src/load_data.py
-    outs:
-      - data/raw
-
-  process_data:
-    cmd: python src/process_data.py
-    deps:
-      - src/process_data.py
-      - data/raw
-    outs:
-      - data/processed
-
-  extract_features:
-    cmd: python src/extract_features.py
-    deps:
-      - src/extract_features.py
-      - data/processed
-    outs:
-      - data/features
-
-  train_model:
-    cmd: python src/train_model.py
-    deps:
-      - src/train_model.py
-      - data/features
-    outs:
-      - models/model.pkl
-    metrics:
-      - metrics.json
+      - data/processed/training.csv

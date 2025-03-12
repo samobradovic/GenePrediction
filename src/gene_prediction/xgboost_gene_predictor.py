@@ -1,25 +1,11 @@
-import pandas as pd
-from pandas import DataFrame
-from sklearn.metrics import accuracy_score
-from sklearn.model_selection import train_test_split
-from xgboost import XGBClassifier
-from src.data_preprocessing.feature_extractor import extract_features
 import logging
 
+from sklearn.metrics import accuracy_score
+from xgboost import XGBClassifier
 
-def train():
-    genes_data_frame: DataFrame = pd.read_csv("data/processed/training.csv")
-    sequences = genes_data_frame["Sequence"].values
-    labels = genes_data_frame["IsGene"].values
 
-    X = extract_features(sequences)
+def train(X_train, y_train):
 
-    # Split the data into training and testing sets
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, labels, test_size=0.15, random_state=42
-    )
-
-    # Define the best parameters
     best_params = {
         "n_estimators": 300,
         "max_depth": 10,
@@ -29,13 +15,13 @@ def train():
         "random_state": 42,
     }
 
-    # Define the XGBoost classifier with the best parameters
     xgb_classifier = XGBClassifier(**best_params)
 
-    # Train the classifier
+    logging.info("Training XGBoost model...")
     xgb_classifier.fit(X_train, y_train)
+    logging.info("Training complete")
 
-    return xgb_classifier, X_test, y_test
+    return xgb_classifier
 
 
 def predict(xgb_classifier, X_test, y_test):

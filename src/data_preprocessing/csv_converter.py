@@ -4,17 +4,17 @@ from typing import List
 
 from Bio.SeqRecord import SeqRecord
 
-from src.config import CSV_TRAINING_FILE_PATH
+from src.config import CSV_PROCESSED_FILE_PATH
 
 
 def write_sequences_to_csv(is_gene: bool, sequences: List[str]) -> None:
-    if not os.path.exists(CSV_TRAINING_FILE_PATH):
-        with open(CSV_TRAINING_FILE_PATH, "w") as f:
+    if not os.path.exists(CSV_PROCESSED_FILE_PATH):
+        with open(CSV_PROCESSED_FILE_PATH, "w") as f:
             f.write("IsGene,Sequence\n")
             for sequence in sequences:
                 f.write(f"{int(is_gene)},{sequence}\n")
     else:
-        with open(CSV_TRAINING_FILE_PATH, "a") as f:
+        with open(CSV_PROCESSED_FILE_PATH, "a") as f:
             for sequence in sequences:
                 f.write(f"{int(is_gene)},{sequence}\n")
 

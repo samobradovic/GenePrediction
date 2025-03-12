@@ -3,7 +3,6 @@ import os
 import time
 from typing import List
 
-import dill
 from Bio import Entrez, SeqIO
 from Bio.Entrez.Parser import DictionaryElement
 from Bio.SeqRecord import SeqRecord
@@ -13,6 +12,7 @@ from src.config import (
     FILE_FORMAT,
     GENOMES_RAW_DATA_FILE_PATH,
     MAX_GENOMES,
+    MAX_GENOMES_SIZE_GB,
 )
 from src.helpers.filesystem_helper import get_folder_size
 
@@ -43,9 +43,12 @@ def download_genomes() -> None:
     genome_ids = get_genome_ids()
     for genome_id in genome_ids:
         folder_size = get_folder_size(GENOMES_RAW_DATA_FILE_PATH)
-        if folder_size > 150:
-            logging.warning("Folder size exceeds 150GB. Stopping download.")
+        if folder_size > MAX_GENOMES_SIZE_GB:
+            logging.warning(
+                f"Folder size exceeds {MAX_GENOMES_SIZE_GB}GB. Stopping download."
+            )
             break
+
         filename = f"{GENOMES_RAW_DATA_FILE_PATH}/genome_{genome_id}.{FILE_FORMAT}"
         if os.path.exists(filename):
             logging.info(f"Genome {genome_id} already exists, skipping download.")
@@ -53,6 +56,7 @@ def download_genomes() -> None:
 
         for attempt in range(RETRY_COUNT):
             try:
+                logging.info(f"Downloading genome {genome_id}...")
                 handle = Entrez.efetch(
                     db="nucleotide", id=genome_id, rettype=FILE_FORMAT, retmode="text"
                 )
@@ -75,27 +79,18 @@ def load_genomes(
     load_from_pickle: bool = True, load_from_files: bool = False
 ) -> List[SeqRecord]:
 
-    if load_from_pickle:
-        try:
-            with open(f"{GENOMES_RAW_DATA_FILE_PATH}/genomes.pkl", "rb") as f:
-                genomes = dill.load(f)
-            return genomes
-        except Exception as e:
-            logging.error(f"Failed to load genomes from pickle: {e}")
-
     if not load_from_files:
         download_genomes()
 
     genomes = []
-    i = 0  # TEMPORARY
     for file in os.listdir(GENOMES_RAW_DATA_FILE_PATH):
-        i += 1
-        if i > 200:
-            break
         if file.endswith(FILE_FORMAT):
             logging.info(f"Loading genome from {file}")
             genomes.append(
                 next(SeqIO.parse(f"{GENOMES_RAW_DATA_FILE_PATH}/{file}", FILE_FORMAT))
             )
-            dill.dump(genomes, open(f"{GENOMES_RAW_DATA_FILE_PATH}/genomes.pkl", "wb"))
     return genomes
+
+
+# if __name__ == "__main__":
+#     download_genomes()
