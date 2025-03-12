@@ -23,7 +23,7 @@ Entrez.email = ENTREZ_EMAIL
 
 
 def get_genome_ids(max_results: int = MAX_GENOMES) -> List[str]:
-    search_query = f'Bacteria[Organism] AND "complete genome"[Title]'
+    search_query = 'Bacteria[Organism] AND "complete genome"[Title]'
     handle = Entrez.esearch(
         db="nucleotide", term=search_query, retmax=max_results, sorted="relevance"
     )
@@ -34,7 +34,7 @@ def get_genome_ids(max_results: int = MAX_GENOMES) -> List[str]:
         logging.info(f"Found {len(id_list)} bacterial genomes")
         if id_list:
             return record["IdList"]
-    logging.error(f"No bacterial genomes found")
+    logging.error("No bacterial genomes found")
     return []
 
 
@@ -44,7 +44,7 @@ def download_genomes() -> None:
     for genome_id in genome_ids:
         folder_size = get_folder_size(GENOMES_RAW_DATA_FILE_PATH)
         if folder_size > 150:
-            logging.warning(f"Folder size exceeds 150GB. Stopping download.")
+            logging.warning("Folder size exceeds 150GB. Stopping download.")
             break
         filename = f"{GENOMES_RAW_DATA_FILE_PATH}/genome_{genome_id}.{FILE_FORMAT}"
         if os.path.exists(filename):
