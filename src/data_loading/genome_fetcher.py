@@ -3,6 +3,7 @@ import os
 import time
 from typing import List
 
+import dill
 from Bio import Entrez, SeqIO
 from Bio.Entrez.Parser import DictionaryElement
 from Bio.SeqRecord import SeqRecord
@@ -13,6 +14,7 @@ from src.config import (
     GENOMES_RAW_DATA_FILE_PATH,
     MAX_GENOMES,
 )
+from src.helpers.filesystem_helper import get_folder_size
 
 RETRY_COUNT = 15
 RETRY_DELAY_SECONDS = 3
@@ -69,25 +71,31 @@ def download_genomes() -> None:
                     logging.error(f"Exceeded maximum retries for genome {genome_id}")
 
 
-def get_folder_size(folder_path: str) -> float:
-    total_size = 0
-    for dirpath, dirnames, filenames in os.walk(folder_path):
-        for f in filenames:
-            fp = os.path.join(dirpath, f)
-            total_size += os.path.getsize(fp)
-    return total_size / (1024**3)
+def load_genomes(
+    load_from_pickle: bool = True, load_from_files: bool = False
+) -> List[SeqRecord]:
 
+    if load_from_pickle:
+        try:
+            with open(f"{GENOMES_RAW_DATA_FILE_PATH}/genomes.pkl", "rb") as f:
+                genomes = dill.load(f)
+            return genomes
+        except Exception as e:
+            logging.error(f"Failed to load genomes from pickle: {e}")
 
-def load_genomes(load_from_disk: bool = False) -> List[SeqRecord]:
-    if not load_from_disk:
+    if not load_from_files:
         download_genomes()
 
     genomes = []
+    i = 0  # TEMPORARY
     for file in os.listdir(GENOMES_RAW_DATA_FILE_PATH):
+        i += 1
+        if i > 200:
+            break
         if file.endswith(FILE_FORMAT):
             logging.info(f"Loading genome from {file}")
             genomes.append(
                 next(SeqIO.parse(f"{GENOMES_RAW_DATA_FILE_PATH}/{file}", FILE_FORMAT))
             )
-
+            dill.dump(genomes, open(f"{GENOMES_RAW_DATA_FILE_PATH}/genomes.pkl", "wb"))
     return genomes

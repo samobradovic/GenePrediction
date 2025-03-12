@@ -1,20 +1,15 @@
-# NOT WORKING
-
 import logging
 import os
 import time
 from typing import List
 
+import dill
 from Bio import Entrez, SeqIO
 from Bio.Entrez.Parser import DictionaryElement
 from Bio.SeqRecord import SeqRecord
 
-from src.config import (
-    ENTREZ_EMAIL,
-    FILE_FORMAT,
-    GENES_RAW_DATA_FILE_PATH,
-    MAX_GENES,
-)
+from src.config import ENTREZ_EMAIL, FILE_FORMAT, GENES_RAW_DATA_FILE_PATH, MAX_GENES
+from src.helpers.filesystem_helper import get_folder_size
 
 RETRY_COUNT = 15
 RETRY_DELAY_SECONDS = 3
@@ -81,25 +76,26 @@ def download_genes() -> None:
                     )
 
 
-def get_folder_size(folder_path: str) -> float:
-    total_size = 0
-    for dirpath, dirnames, filenames in os.walk(folder_path):
-        for f in filenames:
-            fp = os.path.join(dirpath, f)
-            total_size += os.path.getsize(fp)
-    return total_size / (1024**3)  # Convert bytes to gigabytes
+def load_genes(
+    load_from_pickle: bool = True, load_from_files: bool = False
+) -> List[SeqRecord]:
 
+    if load_from_pickle:
+        try:
+            with open(f"{GENES_RAW_DATA_FILE_PATH}/genes.pkl", "rb") as f:
+                genes = dill.load(f)
+            return genes
+        except Exception as e:
+            logging.error(f"Failed to load genes from pickle: {e}")
 
-def load_genes(load_from_disk: bool = False) -> List[SeqRecord]:
-    if not load_from_disk:
+    if not load_from_files:
         download_genes()
 
     genes = []
     for file in os.listdir(GENES_RAW_DATA_FILE_PATH):
         if file.endswith(FILE_FORMAT):
-            logging.info(f"Loading gene from {file}")
-            genes.append(
-                next(SeqIO.parse(f"{GENES_RAW_DATA_FILE_PATH}/{file}", FILE_FORMAT))
-            )
+            logging.info(f"Loading genes from {file}")
+            genes.extend(SeqIO.parse(f"{GENES_RAW_DATA_FILE_PATH}/{file}", FILE_FORMAT))
 
+    dill.dump(genes, open(f"{GENES_RAW_DATA_FILE_PATH}/genes.pkl", "wb"))
     return genes

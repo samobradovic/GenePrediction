@@ -55,3 +55,4 @@ docker-compose.override.yml
 # FASTA files
 *.fasta
 *.zip
+data/
