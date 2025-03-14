@@ -84,9 +84,7 @@ def download_genes() -> None:
                     )
 
 
-def load_genes(
-    load_from_pickle: bool = True, load_from_files: bool = False
-) -> List[SeqRecord]:
+def load_genes(load_from_files: bool = False) -> List[SeqRecord]:
 
     if not load_from_files:
         download_genes()
