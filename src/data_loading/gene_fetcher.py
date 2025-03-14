@@ -84,13 +84,15 @@ def download_genes() -> None:
                     )
 
 
-def load_genes(load_from_files: bool = False) -> List[SeqRecord]:
-
+def load_genes(load_from_files: bool = False, subset_size: int = -1) -> List[SeqRecord]:
     if not load_from_files:
         download_genes()
 
     genes = []
-    for file in os.listdir(GENES_RAW_DATA_FILE_PATH):
+    for i, file in enumerate(os.listdir(GENES_RAW_DATA_FILE_PATH)):
+        if subset_size > 0 and i >= subset_size:
+            logging.info(f"Loaded subset of: {subset_size} genes")
+            break
         if file.endswith(FILE_FORMAT):
             logging.info(f"Loading genes from {file}")
             genes.extend(SeqIO.parse(f"{GENES_RAW_DATA_FILE_PATH}/{file}", FILE_FORMAT))

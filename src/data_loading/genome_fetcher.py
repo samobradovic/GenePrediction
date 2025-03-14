@@ -75,13 +75,18 @@ def download_genomes() -> None:
                     logging.error(f"Exceeded maximum retries for genome {genome_id}")
 
 
-def load_genomes(load_from_files: bool = False) -> List[SeqRecord]:
+def load_genomes(
+    load_from_files: bool = False, subset_size: int = -1
+) -> List[SeqRecord]:
 
     if not load_from_files:
         download_genomes()
 
     genomes = []
-    for file in os.listdir(GENOMES_RAW_DATA_FILE_PATH):
+    for i, file in enumerate(os.listdir(GENOMES_RAW_DATA_FILE_PATH)):
+        if subset_size > 0 and i >= subset_size:
+            logging.info(f"Loaded subset of: {subset_size} genes")
+            break
         if file.endswith(FILE_FORMAT):
             logging.info(f"Loading genome from {file}")
             genomes.append(

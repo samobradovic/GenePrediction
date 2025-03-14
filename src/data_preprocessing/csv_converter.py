@@ -4,6 +4,7 @@ import random
 from typing import List
 
 from Bio.SeqRecord import SeqRecord
+from tqdm import tqdm
 
 from src.config import CSV_PROCESSED_FILE_PATH
 
@@ -25,7 +26,9 @@ def generate_non_genes(
 ) -> List[str]:
     non_genes = []
 
-    for _ in range(len(gene_sequences)):
+    for _ in tqdm(
+        range(len(gene_sequences)), desc="Generating non-genomes", unit="genome"
+    ):  # seems to be about 130 genome/s
 
         genome = get_random_genome(genomes)
 
@@ -37,21 +40,22 @@ def generate_non_genes(
     return non_genes
 
 
-def get_gene_length_distribution(gene_sequences: List[str]) -> List[int]:
-    gene_lengths = [len(gene) for gene in gene_sequences if len(gene) > 2]
+def get_gene_length_distribution(
+    gene_sequences: List[str], genome_length: int
+) -> List[int]:
+    gene_lengths = [
+        len(gene)
+        for gene in gene_sequences
+        if len(gene) > 2 and len(gene) < genome_length
+    ]
     return gene_lengths
 
 
 def get_random_length_from_gene_distribution(
     gene_sequences: List[str], genome_length: int
 ) -> int:
-    gene_lengths = get_gene_length_distribution(gene_sequences)
-    valid_lengths = [length for length in gene_lengths if length < genome_length]
-    if not valid_lengths:
-        raise ValueError(
-            "No valid gene lengths found that are less than the genome length."
-        )
-    return random.choice(valid_lengths)
+    gene_lengths = get_gene_length_distribution(gene_sequences, genome_length)
+    return random.choice(gene_lengths)
 
 
 def get_random_gene_frame(gene_sequences: List[str], genome: str) -> str:

@@ -10,8 +10,8 @@ from src.data_preprocessing.csv_converter import generate_train_csv
 
 def run():
 
-    genomes = load_genomes(load_from_files=True)
-    genes = load_genes(load_from_files=True)
+    genomes = load_genomes(load_from_files=True, subset_size=-1)
+    genes = load_genes(load_from_files=True, subset_size=-1)
 
     generate_train_csv(genes, genomes)
 
