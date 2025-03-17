@@ -26,42 +26,38 @@ def generate_non_genes(
 ) -> List[str]:
     non_genes = []
 
+    random_length = get_random_length_from_gene_distribution(gene_sequences)
+
     for _ in tqdm(
         range(len(gene_sequences)), desc="Generating non-genomes", unit="genome"
     ):  # seems to be about 130 genome/s
 
         genome = get_random_genome(genomes)
 
-        non_gene_candidate = get_random_gene_frame(gene_sequences, str(genome.seq))
+        non_gene_candidate = get_random_gene_frame(
+            gene_sequences, str(genome.seq), random_length
+        )
 
-        if non_gene_candidate not in gene_sequences:
-            non_genes.append(non_gene_candidate)
+        # if non_gene_candidate not in gene_sequences:
+        non_genes.append(non_gene_candidate)
 
     return non_genes
 
 
-def get_gene_length_distribution(
-    gene_sequences: List[str], genome_length: int
-) -> List[int]:
-    gene_lengths = [
-        len(gene)
-        for gene in gene_sequences
-        if len(gene) > 2 and len(gene) < genome_length
-    ]
+def get_gene_length_distribution(gene_sequences: List[str]) -> List[int]:
+    gene_lengths = [len(gene) for gene in gene_sequences if len(gene) > 2]
     return gene_lengths
 
 
-def get_random_length_from_gene_distribution(
-    gene_sequences: List[str], genome_length: int
-) -> int:
-    gene_lengths = get_gene_length_distribution(gene_sequences, genome_length)
+def get_random_length_from_gene_distribution(gene_sequences: List[str]) -> int:
+    gene_lengths = get_gene_length_distribution(gene_sequences)
     return random.choice(gene_lengths)
 
 
-def get_random_gene_frame(gene_sequences: List[str], genome: str) -> str:
-    random_length = get_random_length_from_gene_distribution(
-        gene_sequences, len(genome)
-    )
+def get_random_gene_frame(
+    gene_sequences: List[str], genome: str, random_length: int
+) -> str:
+
     genome_length = len(genome)
     random_start_index = random.randint(0, genome_length - random_length)
     random_end_index = random_start_index + random_length
@@ -101,6 +97,12 @@ def generate_train_csv(genes: List[SeqRecord], genomes: List[SeqRecord]) -> None
     if not genes:
         logging.error("The genes list is empty.")
         raise ValueError("The genes list is empty.")
+
+    # Filter out genomes that are too short
+    genomes = [genome for genome in genomes if len(genome) > 100000]
+
+    # Filter out genes that are too long
+    genes = [gene for gene in genes if len(gene) < 80000]
 
     gene_sequences = save_genes_to_csv(genes)
     save_non_genes_to_csv(gene_sequences, genomes)

@@ -3,7 +3,9 @@ import pandas as pd
 
 
 def get_details_from_csv():
-    df = pd.read_csv("data/generated_data/genes_training_set.csv")
+    print("Getting details from the processed CSV file...")
+    df = pd.read_csv("data/processed/processed.csv")
+    print(df.describe())
 
     # Calculate the length of each sequence
     df["Sequence_Length"] = df["Sequence"].apply(len)
@@ -27,3 +29,7 @@ def get_details_from_csv():
 
     # Display basic statistics about the sequences
     print(df.describe())
+
+
+if __name__ == "__main__":
+    get_details_from_csv()
