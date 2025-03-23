@@ -38,9 +38,10 @@ def get_genome_ids(max_results: int = MAX_GENOMES) -> List[str]:
     return []
 
 
-def download_genomes() -> None:
-    logging.info("Downloading genes from Entrez...")
-    genome_ids = get_genome_ids()
+def download_genomes(subset_size: int) -> None:
+    logging.info("Downloading genomes from Entrez...")
+    genome_ids = get_genome_ids(subset_size if subset_size > 0 else MAX_GENOMES)
+
     for genome_id in genome_ids:
         folder_size = get_folder_size(GENOMES_RAW_DATA_FILE_PATH)
         if folder_size > MAX_GENOMES_SIZE_GB:
@@ -67,7 +68,8 @@ def download_genomes() -> None:
                 break
             except Exception as e:
                 logging.error(
-                    f"Failed to download genome {genome_id} on attempt {attempt + 1}: {e}"
+                    f"Failed to download genome {genome_id}"
+                    + f"on attempt {attempt + 1}: {e}"
                 )
                 if attempt < RETRY_COUNT - 1:
                     time.sleep(RETRY_DELAY_SECONDS)
@@ -78,9 +80,8 @@ def download_genomes() -> None:
 def load_genomes(
     load_from_files: bool = False, subset_size: int = -1
 ) -> List[SeqRecord]:
-
     if not load_from_files:
-        download_genomes()
+        download_genomes(subset_size)
 
     genomes = []
     for i, file in enumerate(os.listdir(GENOMES_RAW_DATA_FILE_PATH)):

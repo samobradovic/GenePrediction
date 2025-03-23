@@ -39,9 +39,10 @@ def get_gene_ids(max_results: int = MAX_GENES) -> List[str]:
     return []
 
 
-def download_genes() -> None:
+def download_genes(subset_size: int) -> None:
     logging.info("Downloading genes from Entrez...")
-    gene_ids = get_gene_ids()
+    gene_ids = get_gene_ids(subset_size if subset_size > 0 else MAX_GENES)
+
     for i in range(0, len(gene_ids), BATCH_SIZE):
         folder_size = get_folder_size(GENES_RAW_DATA_FILE_PATH)
         if folder_size > MAX_GENES_SIZE_GB:
@@ -51,7 +52,10 @@ def download_genes() -> None:
             break
 
         batch_ids = gene_ids[i : i + BATCH_SIZE]
-        filename = f"{GENES_RAW_DATA_FILE_PATH}/genes_batch_{i // BATCH_SIZE + 1}.{FILE_FORMAT}"
+        filename = (
+            f"{GENES_RAW_DATA_FILE_PATH}/genes_batch_"
+            + f"{i // BATCH_SIZE + 1}.{FILE_FORMAT}"
+        )
         if os.path.exists(filename):
             logging.info(
                 f"Batch {i // BATCH_SIZE + 1} already exists, skipping download."
@@ -74,28 +78,33 @@ def download_genes() -> None:
                 break
             except Exception as e:
                 logging.error(
-                    f"Failed to download genes batch {i // BATCH_SIZE + 1} on attempt {attempt + 1}: {e}"
+                    f"Failed to download genes batch {i // BATCH_SIZE + 1} "
+                    + f"on attempt {attempt + 1}: {e}"
                 )
                 if attempt < RETRY_COUNT - 1:
                     time.sleep(RETRY_DELAY_SECONDS)
                 else:
                     logging.error(
-                        f"Exceeded maximum retries for genes batch {i // BATCH_SIZE + 1}"
+                        "Exceeded maximum retries for genes batch"
+                        + f"{i // BATCH_SIZE + 1}"
                     )
 
 
 def load_genes(load_from_files: bool = False, subset_size: int = -1) -> List[SeqRecord]:
     if not load_from_files:
-        download_genes()
+        download_genes(subset_size)
 
     genes = []
-    for i, file in enumerate(os.listdir(GENES_RAW_DATA_FILE_PATH)):
-        if subset_size > 0 and i >= subset_size:
-            logging.info(f"Loaded subset of: {subset_size} genes")
-            break
+    total_genes_loaded = 0
+    for file in os.listdir(GENES_RAW_DATA_FILE_PATH):
         if file.endswith(FILE_FORMAT):
             logging.info(f"Loading genes from {file}")
-            genes.extend(SeqIO.parse(f"{GENES_RAW_DATA_FILE_PATH}/{file}", FILE_FORMAT))
+            for gene in SeqIO.parse(f"{GENES_RAW_DATA_FILE_PATH}/{file}", FILE_FORMAT):
+                genes.append(gene)
+                total_genes_loaded += 1
+                if subset_size > 0 and total_genes_loaded >= subset_size:
+                    logging.info(f"Loaded subset of: {subset_size} genes")
+                    return genes
 
     return genes
 

@@ -5,19 +5,27 @@ description = "A BioPython-based project for genome and protein sequence analysi
 authors = []
 readme = "README.md"
 requires-python = ">=3.13"
+
 dependencies = [
-    "biopython>=1.81",  # BioPython for sequence parsing
-    "argparse",  # CLI argument handling (built-in but sometimes needed explicitly)
-    "torch (>=2.6.0,<3.0.0)",
-    "transformers (>=4.49.0,<5.0.0)",
-    "einops (>=0.8.1,<0.9.0)",
-    "pandas (>=2.2.3,<3.0.0)",
-    "matplotlib (>=3.10.1,<4.0.0)",
-    "scikit-learn (>=1.6.1,<2.0.0)",
-    "xgboost (>=2.1.4,<3.0.0)",
-    "dill (>=0.3.9,<0.4.0)",
-    "dvc (>=3.59.1,<4.0.0)",
-    "tqdm (>=4.67.1,<5.0.0)",
+    # Core functionality
+    "biopython>=1.81",
+    "argparse",
+
+    # Machine learning and transformations
+    "torch>=2.6.0,<3.0.0",
+    "transformers>=4.49.0,<5.0.0",
+    "einops>=0.8.1,<0.9.0",
+
+    # Data processing and visualization
+    "pandas>=2.2.3,<3.0.0",
+    "matplotlib>=3.10.1,<4.0.0",
+    "scikit-learn>=1.6.1,<2.0.0",
+    "xgboost>=2.1.4,<3.0.0",
+
+    # Utilities and workflow
+    "dill>=0.3.9,<0.4.0",
+    "dvc>=3.59.1,<4.0.0",
+    "tqdm>=4.67.1,<5.0.0",
 ]
 
 [build-system]
@@ -31,8 +39,19 @@ package-mode = false
 pytest = "^8.3.4"
 ruff = "^0.9.10"
 
+# Ruff configuration
 [tool.ruff]
-line-length = 88 
+line-length = 88
 target-version = "py313"
-extend-select = ["I"]
 fix = true
+
+[tool.ruff.lint]
+select = [
+    "I",  # Import sorting
+    "E",  # Error checks
+    "F",  # Pyflakes checks
+    "W"   # Warnings
+]
+
+[tool.ruff.format]
+quote-style = "double"
