@@ -38,8 +38,8 @@ package-mode = false
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.4"
 ruff = "^0.9.10"
+pre-commit = "^4.2.0"
 
-# Ruff configuration
 [tool.ruff]
 line-length = 88
 target-version = "py313"
