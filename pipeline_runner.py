@@ -2,7 +2,8 @@ from src.data_loading.gene_fetcher import load_genes
 from src.data_loading.genome_fetcher import load_genomes
 from src.data_preprocessing.csv_converter import generate_train_csv
 from src.data_preprocessing.data_preprocessing import train_test_validation_split
-from src.gene_prediction.xgboost_gene_predictor import predict, train
+from src.evaluation.evaluation import evaluate_xgb_model
+from src.gene_prediction.xgboost_gene_predictor import train
 
 
 def run():
@@ -19,4 +20,10 @@ def run():
 
     # save_pkl(trained_model, "data/models/xgb_model.pkl")
 
-    predict(trained_model, X_test, y_test)
+    # predict(trained_model, X_test, y_test)
+
+    # Get model from pickle file
+    # with open("data/models/xgb_model.pkl", "rb") as f:
+    #     trained_model = dill.load(f)
+
+    evaluate_xgb_model(trained_model, X_test, y_test)

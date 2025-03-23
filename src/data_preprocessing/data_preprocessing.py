@@ -18,9 +18,12 @@ def train_test_validation_split(
     Splits the data from a CSV file into training, validation, and test sets.
 
     Args:
-        csv_file_path (str): The path to the CSV file containing the sequences and labels.
-        test_size (float): The proportion of the dataset to include in the test split. Default is 0.20.
-        validation_size (float): The proportion of the dataset to include in the validation split. Default is 0.20.
+        csv_file_path (str): The path to the CSV file containing the sequences and
+            labels.
+        test_size (float): The proportion of the dataset to include in the test split.
+            Default is 0.20.
+        validation_size (float): The proportion of the dataset to include in the
+            validation split. Default is 0.20.
 
     Returns:
         Tuple[DataFrame, DataFrame, DataFrame, DataFrame, DataFrame, DataFrame]:
@@ -77,7 +80,8 @@ def extract_kmer_features(
 
     Args:
         sequences (List[str]): A list of sequences to extract k-mers from.
-        save_vectorizer (bool): Whether to save the vectorizer to a file. Default is True.
+        save_vectorizer (bool): Whether to save the vectorizer to a file.
+            Default is True.
 
     Returns:
         X: The k-mer feature matrix for the sequences.
@@ -89,6 +93,8 @@ def extract_kmer_features(
     ]
 
     logging.info("Converting k-mers to a numerical feature matrix...")
+    # with open("data/models/count_vectorizer.pkl", "rb") as f:
+    # vectorizer = dill.load(f)
     vectorizer = CountVectorizer()
     X = vectorizer.fit_transform(kmers_list)
 

@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import pandas as pd
+import seaborn as sns
 
 
 def get_details_from_csv():
@@ -93,7 +94,22 @@ def get_all_stop_codons():
     pd.reset_option("display.expand_frame_repr")
 
 
+def correlation_heatmap():
+    """Generates a heatmap of the correlation matrix of the processed CSV file."""
+    df = pd.read_csv("data/processed/processed.csv")
+
+    # Calculate the correlation matrix
+    corr = df.corr()
+
+    # Plot the heatmap
+    plt.figure(figsize=(12, 10))
+    sns.heatmap(corr, annot=True, cmap="coolwarm", fmt=".2f")
+    plt.title("Correlation Heatmap")
+    plt.show()
+
+
 if __name__ == "__main__":
     # get_details_from_csv()
     # get_all_start_codons()
-    get_all_stop_codons()
+    # get_all_stop_codons()
+    correlation_heatmap()
