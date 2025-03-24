@@ -47,11 +47,21 @@ fix = true
 
 [tool.ruff.lint]
 select = [
-    "I",  # Import sorting
-    "E",  # Error checks
-    "F",  # Pyflakes checks
-    "W"   # Warnings
+    "B",    # flake8-bugbear
+    "E",    # pycodestyle E
+    "F",    # Pyflakes
+    "I",    # isort
+    "Q",    # quotes
+    "W",    # pycodestyle Warning
+    "N",    # pep8-naming
+    "C4",   # flake8-comprehensions
+    "PL",   # pylint
+    "ARG",  # flake8-unused-arguments
+    "RET",  # flake8-return
+    "ISC",  # flake8-implicit-str-concat
+    "FAST", # FastAPI.
 ]
+ignore = ["N806", "N803"]
 
 [tool.ruff.format]
 quote-style = "double"

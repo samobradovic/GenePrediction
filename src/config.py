@@ -13,12 +13,12 @@ GENES_RAW_DATA_FILE_PATH = os.path.join(RAW_DATA_FOLDER_PATH, "genes")
 PROTEINS_RAW_DATA_FILE_PATH = os.path.join(RAW_DATA_FOLDER_PATH, "proteins")
 
 CSV_FILE_PATH = "data/processed"
-CSV_PROCESSED_FILE_PATH = os.path.join(CSV_FILE_PATH, "processed.csv")
+CSV_PROCESSED_FILE_PATH = os.path.join(CSV_FILE_PATH, "processedSMALL2.csv")
 
 ENTREZ_EMAIL = "Your.Name.Here@example.org"
 
 KMER_SIZE = 3
 
 MODEL_FOLDER_PATH = "data/models"
-MODEL_FILE_PATH = os.path.join(MODEL_FOLDER_PATH, "xgb_model.pkl")
-VECTORIZER_FILE_PATH = os.path.join(MODEL_FOLDER_PATH, "count_vectorizer.pkl")
+MODEL_FILE_PATH = os.path.join(MODEL_FOLDER_PATH, "xgb_model_small.pkl")
+VECTORIZER_FILE_PATH = os.path.join(MODEL_FOLDER_PATH, "count_vectorizer_umm.pkl")

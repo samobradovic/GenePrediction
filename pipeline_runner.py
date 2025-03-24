@@ -7,13 +7,13 @@ from src.gene_prediction.xgboost_gene_predictor import train
 
 
 def run():
-    genomes = load_genomes(load_from_files=True, subset_size=-1)
-    genes = load_genes(load_from_files=True, subset_size=-1)
+    genomes = load_genomes(load_from_files=True, subset_size=100)
+    genes = load_genes(load_from_files=True, subset_size=10000)
 
     generate_train_csv(genes, genomes)
 
     X_train, X_val, X_test, y_train, y_val, y_test = train_test_validation_split(
-        "data/processed/processed.csv"
+        "data/processed/processedSMALL2.csv"
     )
 
     trained_model = train(X_train, y_train, X_val, y_val)
