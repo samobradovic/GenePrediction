@@ -1,13 +1,13 @@
 import logging
 import os
 import random
-import time
 from typing import List
 
 from Bio.SeqRecord import SeqRecord
 from tqdm import tqdm
 
 from src.config import CSV_FILE_PATH
+from src.helpers.filesystem_helper import get_versioned_file_path
 
 
 def write_sequences_to_csv(
@@ -15,10 +15,8 @@ def write_sequences_to_csv(
 ) -> str:
     logging.info("Writing sequences to CSV...")
 
-    current_time = str(time.time())  # TODO Change this to v1.0 or other versioning
-    csv_file_path = os.path.join(CSV_FILE_PATH, current_time)
-    os.makedirs(csv_file_path, exist_ok=True)
-    file_path = os.path.join(csv_file_path, "raw_data.csv")
+    versioned_file_path = get_versioned_file_path(CSV_FILE_PATH)
+    file_path = os.path.join(versioned_file_path, "raw_data.csv")
 
     with open(file_path, "w") as f:
         f.write("IsGene,Sequence\n")

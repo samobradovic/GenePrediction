@@ -8,7 +8,7 @@ from src.data_preprocessing.data_preprocessing import (
 )
 from src.evaluation.evaluation import evaluate_xgb_model
 from src.gene_prediction.xgboost_gene_predictor import train
-from src.helpers.filesystem_helper import save_binaries
+from src.helpers.filesystem_helper import load_binaries, save_binaries
 
 
 def run(
@@ -45,8 +45,8 @@ def run(
 
         save_binaries(trained_model, vectorizer, dataset_size)
 
-    # else:
-    # trained_model, vectorizer = load_binaries(dataset_size, create_new_version)
+    else:
+        trained_model, vectorizer = load_binaries(dataset_size)
     # vectorize the test set using a new method
 
     evaluate_xgb_model(trained_model, X_test_vectorized, y_test)  # TODO eval only

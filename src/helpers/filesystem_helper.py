@@ -4,7 +4,7 @@ import time
 
 import dill
 
-from config import MODEL_FOLDER_PATH, VECTORIZER_FILE_PATH
+from config import MODEL_FOLDER_PATH
 
 
 def get_folder_size(folder_path: str) -> float:
@@ -17,21 +17,50 @@ def get_folder_size(folder_path: str) -> float:
 
 
 def save_pkl(pickle_object, file_path: str) -> None:
-    directory = os.path.dirname(file_path)
-    os.makedirs(directory, exist_ok=True)
+    os.makedirs(os.path.dirname(file_path), exist_ok=True)
     with open(file_path, "wb") as f:
         dill.dump(pickle_object, f)
     logging.info(f"Object saved as pkl to {file_path}")
 
 
 def save_binaries(model, vectorizer, dataset_size: str) -> None:
-    current_time = str(time.time())
+    versioned_file_path = get_versioned_file_path(MODEL_FOLDER_PATH)
 
-    model_folder = os.path.join(MODEL_FOLDER_PATH, current_time)
-    model_path = os.path.join(model_folder, f"xgb_model_{dataset_size.upper()}.pkl")
-    vectorizer_path = os.path.join(VECTORIZER_FILE_PATH, f"{dataset_size.upper()}.pkl")
-    # if create_new_version:
-    #     model_path = model_path.split(".")[0] + str(time.time()) + ".pkl"
-    #     vectorizer_path = vectorizer_path.split(".")[0] + str(time.time()) + ".pkl"
+    model_path = os.path.join(
+        versioned_file_path, f"xgb_model_{dataset_size.upper()}.pkl"
+    )
+    vectorizer_path = os.path.join(
+        versioned_file_path, f"count_vectorizer_{dataset_size.upper()}.pkl"
+    )
+
     save_pkl(model, model_path)
     save_pkl(vectorizer, vectorizer_path)
+
+
+def load_binaries(dataset_size: str, folder_path: str | None = None) -> tuple:
+    if folder_path is None:
+        folders = [
+            f
+            for f in os.listdir(MODEL_FOLDER_PATH)
+            if os.path.isdir(os.path.join(MODEL_FOLDER_PATH, f))
+        ]
+        folder_path = os.path.join(MODEL_FOLDER_PATH, sorted(folders)[-1])
+
+    model_path = os.path.join(folder_path, f"xgb_model_{dataset_size.upper()}.pkl")
+    vectorizer_path = os.path.join(
+        folder_path, f"count_vectorizer_{dataset_size.upper()}.pkl"
+    )
+
+    with open(model_path, "rb") as f:
+        model = dill.load(f)
+    with open(vectorizer_path, "rb") as f:
+        vectorizer = dill.load(f)
+
+    return model, vectorizer
+
+
+def get_versioned_file_path(file_path: str) -> str:
+    current_time = str(time.time())
+    new_file_path = os.path.join(file_path, current_time)
+    os.makedirs(new_file_path, exist_ok=True)
+    return new_file_path

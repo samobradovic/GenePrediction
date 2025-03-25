@@ -11,6 +11,7 @@ from sklearn.model_selection import train_test_split
 from tqdm import tqdm
 
 from src.config import CSV_FILE_PATH, KMER_SIZE
+from src.helpers.filesystem_helper import get_versioned_file_path
 
 
 def save_train_test_validation_csvs(
@@ -18,14 +19,11 @@ def save_train_test_validation_csvs(
 ) -> Tuple[str, str, str]:
     logging.info("Saving training, validation, and testing CSVs...")
 
-    train_csv_path = os.path.join(CSV_FILE_PATH, "train.csv")
-    val_csv_path = os.path.join(CSV_FILE_PATH, "validation.csv")
-    test_csv_path = os.path.join(CSV_FILE_PATH, "test.csv")
+    csv_file_path = get_versioned_file_path(CSV_FILE_PATH)
 
-    # if create_new_version:
-    #     train_csv_path = train_csv_path.split(".")[0] + str(time.time()) + ".csv"
-    #     val_csv_path = val_csv_path.split(".")[0] + str(time.time()) + ".csv"
-    #     test_csv_path = test_csv_path.split(".")[0] + str(time.time()) + ".csv"
+    train_csv_path = os.path.join(csv_file_path, "train.csv")
+    val_csv_path = os.path.join(csv_file_path, "validation.csv")
+    test_csv_path = os.path.join(csv_file_path, "test.csv")
 
     pd.DataFrame(
         {"Sequence": data_splits["X_train"], "IsGene": data_splits["y_train"]}
@@ -116,3 +114,37 @@ def extract_kmer_features(
     X_test = csr_matrix(vectorizer.transform(test_kmers)).toarray()
 
     return X_train, X_val, X_test, vectorizer
+
+
+# def extract_kmer_features2(
+#     sequence_lists: List[List[str]],
+#     fit_flags: List[bool],
+# ) -> Tuple[List[np.ndarray], CountVectorizer]:
+#     if len(sequence_lists) != len(fit_flags):
+#         raise ValueError(
+#             "The number of sequence lists must match the number of fit flags."
+#         )
+
+#     kmer_lists = []
+#     for i, sequences in enumerate(sequence_lists):
+#         logging.info(f"Generating k-mers for dataset {i + 1}...")
+#         kmers = [
+#             " ".join(get_kmers(seq, KMER_SIZE))
+#             for seq in tqdm(sequences, desc=f"Generating k-mers for dataset {i + 1}")
+#         ]
+#         kmer_lists.append(kmers)
+
+#     logging.info("Initializing vectorizer...")
+#     vectorizer = CountVectorizer()
+#     feature_arrays = []
+
+#     for i, (kmers, fit_flag) in enumerate(zip(kmer_lists, fit_flags), start=1):
+#         if fit_flag:
+#             logging.info(f"Fitting and transforming dataset {i}...")
+#             feature_arrays.append(csr_matrix(vectorizer.fit_transform(kmers))
+# .toarray())
+#         else:
+#             logging.info(f"Transforming dataset {i} using the fitted vectorizer...")
+#             feature_arrays.append(csr_matrix(vectorizer.transform(kmers)).toarray())
+
+#     return feature_arrays, vectorizer
