@@ -5,6 +5,14 @@ MAX_GENOMES_SIZE_GB = 150
 MAX_GENES = 50000000
 MAX_GENES_SIZE_GB = 150
 
+DATASET_SIZE_OPTIONS = ["small", "big", "max"]
+
+NUMBER_OF_GENOMES_SMALL_DATASET = 1000
+NUMBER_OF_GENOMES_BIG_DATASET = 50000
+
+NUMBER_OF_GENES_SMALL_DATASET = 1000
+NUMBER_OF_GENES_BIG_DATASET = 1000
+
 FILE_FORMAT = "fasta"
 
 RAW_DATA_FOLDER_PATH = "data/raw"
@@ -20,5 +28,5 @@ ENTREZ_EMAIL = "Your.Name.Here@example.org"
 KMER_SIZE = 3
 
 MODEL_FOLDER_PATH = "data/models"
-MODEL_FILE_PATH = os.path.join(MODEL_FOLDER_PATH, "xgb_model_small.pkl")
-VECTORIZER_FILE_PATH = os.path.join(MODEL_FOLDER_PATH, "count_vectorizer_umm.pkl")
+MODEL_FILE_PATH = os.path.join(MODEL_FOLDER_PATH, "xgb_model")
+VECTORIZER_FILE_PATH = os.path.join(MODEL_FOLDER_PATH, "count_vectorizer")

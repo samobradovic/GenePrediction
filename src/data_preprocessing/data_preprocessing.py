@@ -9,8 +9,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.model_selection import train_test_split
 from tqdm import tqdm
 
-from src.config import KMER_SIZE, VECTORIZER_FILE_PATH
-from src.helpers.filesystem_helper import save_pkl
+from src.config import KMER_SIZE
 
 
 def train_test_validation_split(
@@ -32,16 +31,10 @@ def train_test_validation_split(
     )
     logging.info("Data split complete.")
 
-    logging.info("Extracting features...")
-    X_train_vectorized, X_val_vectorized, X_test_vectorized = extract_kmer_features(
-        X_train, X_val, X_test
-    )
-    logging.info("Features extracted.")
-
     return (
-        X_train_vectorized,
-        X_val_vectorized,
-        X_test_vectorized,
+        X_train,
+        X_val,
+        X_test,
         y_train,
         y_val,
         y_test,
@@ -67,24 +60,7 @@ def extract_kmer_features(
     train_sequences: List[str],
     val_sequences: List[str],
     test_sequences: List[str],
-    save_vectorizer: bool = True,
-) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
-    """
-    Extract k-mer features from sequences and save the vectorizer if required.
-
-    Args:
-        train_sequences (List[str]): A list of training sequences to extract k-mers
-          from.
-        val_sequences (List[str]): A list of validation sequences to extract k-mers
-        from.
-        test_sequences (List[str]): A list of test sequences to extract k-mers from.
-        save_vectorizer (bool): Whether to save the vectorizer to a file. Default is
-          True.
-
-    Returns:
-        Tuple[np.ndarray, np.ndarray, np.ndarray]: The k-mer feature matrices for the
-        training, validation, and test sequences as dense arrays.
-    """
+) -> Tuple[np.ndarray, np.ndarray, np.ndarray, CountVectorizer]:
     logging.info("Generating k-mers for training data...")
     train_kmers = [
         " ".join(get_kmers(seq, KMER_SIZE))
@@ -105,15 +81,10 @@ def extract_kmer_features(
 
     logging.info("Fitting vectorizer on training data...")
     vectorizer = CountVectorizer()
-    X_train = csr_matrix(vectorizer.fit_transform(train_kmers)).toarray()
+    X_train = csr_matrix(
+        vectorizer.fit_transform(train_kmers)
+    ).toarray()  # Not sure if this is correct
     X_val = csr_matrix(vectorizer.transform(val_kmers)).toarray()
     X_test = csr_matrix(vectorizer.transform(test_kmers)).toarray()
 
-    if save_vectorizer:
-        try:
-            save_pkl(vectorizer, VECTORIZER_FILE_PATH)
-            logging.info(f"Vectorizer saved to {VECTORIZER_FILE_PATH}")
-        except Exception as e:
-            logging.error(f"Failed to save vectorizer: {e}")
-
-    return X_train, X_val, X_test
+    return X_train, X_val, X_test, vectorizer
