@@ -7,27 +7,25 @@ from typing import List
 from Bio.SeqRecord import SeqRecord
 from tqdm import tqdm
 
-from src.config import CSV_PROCESSED_FILE_PATH
+from src.config import CSV_FILE_PATH
 
 
 def write_sequences_to_csv(
-    gene_sequences: List[str],
-    non_gene_sequences: List[str],
-    create_new_version: bool = False,
+    gene_sequences: List[str], non_gene_sequences: List[str]
 ) -> str:
     logging.info("Writing sequences to CSV...")
 
-    file_path = CSV_PROCESSED_FILE_PATH
-    if create_new_version:
-        file_path = CSV_PROCESSED_FILE_PATH.split(".")[0] + str(time.time()) + ".csv"
+    current_time = str(time.time())  # TODO Change this to v1.0 or other versioning
+    csv_file_path = os.path.join(CSV_FILE_PATH, current_time)
+    os.makedirs(csv_file_path, exist_ok=True)
+    file_path = os.path.join(csv_file_path, "raw_data.csv")
 
-    if not os.path.exists(file_path):
-        with open(file_path, "w") as f:
-            f.write("IsGene,Sequence\n")
-            for sequence in gene_sequences:
-                f.write(f"1,{sequence}\n")
-            for sequence in non_gene_sequences:
-                f.write(f"0,{sequence}\n")
+    with open(file_path, "w") as f:
+        f.write("IsGene,Sequence\n")
+        for sequence in gene_sequences:
+            f.write(f"1,{sequence}\n")
+        for sequence in non_gene_sequences:
+            f.write(f"0,{sequence}\n")
 
     logging.info("Sequences written to CSV.")
     return file_path
@@ -76,9 +74,7 @@ def get_random_genome(genomes: List[SeqRecord]) -> SeqRecord:
     return random.choice(genomes)
 
 
-def generate_train_csv(
-    genes: List[SeqRecord], genomes: List[SeqRecord], create_new_version: bool = False
-) -> str:
+def generate_raw_csv(genes: List[SeqRecord], genomes: List[SeqRecord]) -> str:
     if not genomes:
         logging.error("The genomes list is empty.")
         raise ValueError("The genomes list is empty.")
@@ -95,6 +91,4 @@ def generate_train_csv(
     gene_sequences = [str(gene.seq) for gene in genes if gene.seq]
     non_gene_sequences = generate_non_genes(gene_sequences, genomes)
 
-    return write_sequences_to_csv(
-        gene_sequences, non_gene_sequences, create_new_version
-    )
+    return write_sequences_to_csv(gene_sequences, non_gene_sequences)

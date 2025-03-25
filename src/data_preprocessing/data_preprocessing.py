@@ -1,4 +1,5 @@
 import logging
+import os
 from typing import List, Tuple
 
 import numpy as np
@@ -9,7 +10,34 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.model_selection import train_test_split
 from tqdm import tqdm
 
-from src.config import KMER_SIZE
+from src.config import CSV_FILE_PATH, KMER_SIZE
+
+
+def save_train_test_validation_csvs(
+    data_splits: dict,
+) -> Tuple[str, str, str]:
+    logging.info("Saving training, validation, and testing CSVs...")
+
+    train_csv_path = os.path.join(CSV_FILE_PATH, "train.csv")
+    val_csv_path = os.path.join(CSV_FILE_PATH, "validation.csv")
+    test_csv_path = os.path.join(CSV_FILE_PATH, "test.csv")
+
+    # if create_new_version:
+    #     train_csv_path = train_csv_path.split(".")[0] + str(time.time()) + ".csv"
+    #     val_csv_path = val_csv_path.split(".")[0] + str(time.time()) + ".csv"
+    #     test_csv_path = test_csv_path.split(".")[0] + str(time.time()) + ".csv"
+
+    pd.DataFrame(
+        {"Sequence": data_splits["X_train"], "IsGene": data_splits["y_train"]}
+    ).to_csv(train_csv_path, index=False)
+    pd.DataFrame(
+        {"Sequence": data_splits["X_val"], "IsGene": data_splits["y_val"]}
+    ).to_csv(val_csv_path, index=False)
+    pd.DataFrame(
+        {"Sequence": data_splits["X_test"], "IsGene": data_splits["y_test"]}
+    ).to_csv(test_csv_path, index=False)
+
+    return train_csv_path, val_csv_path, test_csv_path
 
 
 def train_test_validation_split(

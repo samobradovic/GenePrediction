@@ -31,6 +31,12 @@ def main():
         help="Regenerate the data for the pipeline.",
     )
 
+    parser.add_argument(
+        "--evaluate_only",
+        action="store_true",
+        help="Only evaluate the model without training.",
+    )
+
     args = parser.parse_args()
 
     logging.basicConfig(
@@ -38,7 +44,11 @@ def main():
         format="%(asctime)s - %(levelname)s - %(message)s",
     )
 
-    run(args.dataset_size, args.regenerate_data, args.create_new_version)
+    run(
+        args.dataset_size,
+        args.regenerate_data,
+        args.evaluate_only,
+    )
 
 
 if __name__ == "__main__":
