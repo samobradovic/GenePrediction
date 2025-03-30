@@ -82,69 +82,26 @@ def get_kmers(sequence: str, k: int) -> List[str]:
     return [sequence[i : i + k] for i in range(len(sequence) - k + 1)]
 
 
-def extract_kmer_features(
-    train_sequences: List[str],
-    val_sequences: List[str],
-    test_sequences: List[str],
-) -> Tuple[np.ndarray, np.ndarray, np.ndarray, CountVectorizer]:
+def fit_vectorizer(train_sequences: List[str]) -> Tuple[np.ndarray, CountVectorizer]:
     logging.info("Generating k-mers for training data...")
     train_kmers = [
         " ".join(get_kmers(seq, KMER_SIZE))
         for seq in tqdm(train_sequences, desc="Generating training k-mers")
     ]
-
-    logging.info("Generating k-mers for validation data...")
-    val_kmers = [
-        " ".join(get_kmers(seq, KMER_SIZE))
-        for seq in tqdm(val_sequences, desc="Generating validation k-mers")
-    ]
-
-    logging.info("Generating k-mers for test data...")
-    test_kmers = [
-        " ".join(get_kmers(seq, KMER_SIZE))
-        for seq in tqdm(test_sequences, desc="Generating test k-mers")
-    ]
-
-    logging.info("Fitting vectorizer on training data...")
+    logging.info("Fitting vectorizer on kmer training data...")
     vectorizer = CountVectorizer()
-    X_train = csr_matrix(
-        vectorizer.fit_transform(train_kmers)
-    ).toarray()  # Not sure if this is correct
-    X_val = csr_matrix(vectorizer.transform(val_kmers)).toarray()
-    X_test = csr_matrix(vectorizer.transform(test_kmers)).toarray()
-
-    return X_train, X_val, X_test, vectorizer
+    X_train = csr_matrix(vectorizer.fit_transform(train_kmers)).toarray()
+    return X_train, vectorizer
 
 
-# def extract_kmer_features2(
-#     sequence_lists: List[List[str]],
-#     fit_flags: List[bool],
-# ) -> Tuple[List[np.ndarray], CountVectorizer]:
-#     if len(sequence_lists) != len(fit_flags):
-#         raise ValueError(
-#             "The number of sequence lists must match the number of fit flags."
-#         )
-
-#     kmer_lists = []
-#     for i, sequences in enumerate(sequence_lists):
-#         logging.info(f"Generating k-mers for dataset {i + 1}...")
-#         kmers = [
-#             " ".join(get_kmers(seq, KMER_SIZE))
-#             for seq in tqdm(sequences, desc=f"Generating k-mers for dataset {i + 1}")
-#         ]
-#         kmer_lists.append(kmers)
-
-#     logging.info("Initializing vectorizer...")
-#     vectorizer = CountVectorizer()
-#     feature_arrays = []
-
-#     for i, (kmers, fit_flag) in enumerate(zip(kmer_lists, fit_flags), start=1):
-#         if fit_flag:
-#             logging.info(f"Fitting and transforming dataset {i}...")
-#             feature_arrays.append(csr_matrix(vectorizer.fit_transform(kmers))
-# .toarray())
-#         else:
-#             logging.info(f"Transforming dataset {i} using the fitted vectorizer...")
-#             feature_arrays.append(csr_matrix(vectorizer.transform(kmers)).toarray())
-
-#     return feature_arrays, vectorizer
+def extract_kmer_features_for_sequence(
+    sequence: List[str], vectorizer: CountVectorizer, sequence_name: str = ""
+) -> np.ndarray:
+    kmers = [
+        " ".join(get_kmers(seq, KMER_SIZE))
+        for seq in tqdm(
+            sequence, desc=f"Generating k-mers for sequence: {sequence_name}"
+        )
+    ]
+    logging.info(f"Transforming sequence: {sequence_name} using the vectorizer...")
+    return csr_matrix(vectorizer.transform(kmers)).toarray()

@@ -3,8 +3,9 @@ import os
 import time
 
 import dill
+import pandas as pd
 
-from config import MODEL_FOLDER_PATH
+from src.config import CSV_FILE_PATH, MODEL_FOLDER_PATH
 
 
 def get_folder_size(folder_path: str) -> float:
@@ -64,3 +65,17 @@ def get_versioned_file_path(file_path: str) -> str:
     new_file_path = os.path.join(file_path, current_time)
     os.makedirs(new_file_path, exist_ok=True)
     return new_file_path
+
+
+def get_test_dfs_from_csv(folder_path: str | None = None):
+    if folder_path is None:
+        folders = [
+            f
+            for f in os.listdir(CSV_FILE_PATH)
+            if os.path.isdir(os.path.join(CSV_FILE_PATH, f))
+        ]
+        folder_path = os.path.join(CSV_FILE_PATH, sorted(folders)[-1])
+
+    data_path = os.path.join(folder_path, "test.csv")
+    data_frame = pd.read_csv(data_path)
+    return data_frame["Sequence"].tolist(), data_frame["IsGene"].values

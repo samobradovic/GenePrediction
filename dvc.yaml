@@ -1,31 +1,34 @@
 stages:
-  # download_genomes:
-  #   cmd: python src/data_loading/genome_fetcher.py
-  #   deps:
-  #     - src/data_loading/genome_fetcher.py
-  #   outs:
-  #     - data/raw/genomes
+  download_genomes:
+    cmd: poetry run python src/data_loading/entrez_downloader.py --dataset_size ${dataset_size}
+    deps:
+      - src/data_loading/entrez_downloader.py
+    params:
+      - dataset_size
+    outs:
+      - data/raw/genomes
+      - data/raw/genes
 
-  # download_genes:
+  # other:
   #   cmd: python src/data_loading/gene_fetcher.py
   #   deps:
   #     - src/data_loading/gene_fetcher.py
   #   outs:
   #     - data/raw/genes
 
-  preprocess:
-    cmd: python src/data_preprocessing/csv_converter.py
-    deps:
-      - src/data_preprocessing/csv_converter.py
-      - data/raw/genomes
-      - data/raw/genes
-    outs:
-      - data/processed/training.csv
+  # preprocess:
+  #   cmd: python src/data_preprocessing/csv_converter.py
+  #   deps:
+  #     - src/data_preprocessing/csv_converter.py
+  #     - data/raw/genomes
+  #     - data/raw/genes
+  #   outs:
+  #     - data/processed/training.csv
 
-  xgb_train:
-    cmd: python src/gene_prediction/xgboost_gene_predictor.py
-    deps:
-      - src/model_training/train.py
-      - data/processed/training.csv
-    outs:
-      - data/models/xgb_model.pkl
+  # xgb_train:
+  #   cmd: python src/gene_prediction/xgboost_gene_predictor.py
+  #   deps:
+  #     - src/model_training/train.py
+  #     - data/processed/training.csv
+  #   outs:
+  #     - data/models/xgb_model.pkl

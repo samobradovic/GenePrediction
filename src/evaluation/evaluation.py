@@ -1,3 +1,5 @@
+import logging
+
 import matplotlib.pyplot as plt
 from sklearn.metrics import (
     ConfusionMatrixDisplay,
@@ -8,6 +10,9 @@ from sklearn.metrics import (
     precision_recall_curve,
     roc_curve,
 )
+
+logging.getLogger("matplotlib").setLevel(logging.WARNING)
+logging.getLogger("PIL").setLevel(logging.WARNING)
 
 
 def evaluate_xgb_model(model, X_test, y_test):

@@ -1,6 +1,5 @@
 import logging
 
-import numpy as np
 import torch
 from transformers import AutoModel, AutoTokenizer
 

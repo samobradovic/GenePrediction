@@ -1,0 +1,23 @@
+schema: '2.0'
+stages:
+  download_genomes:
+    cmd: poetry run python src/data_loading/entrez_downloader.py --dataset_size small
+    deps:
+    - path: src/data_loading/entrez_downloader.py
+      hash: md5
+      md5: dac870a82f0cde9efd6cf30df814be73
+      size: 4787
+    params:
+      params.yaml:
+        dataset_size: small
+    outs:
+    - path: data/raw/genes
+      hash: md5
+      md5: ea1cf85ca74355de00e5ab935df69889.dir
+      size: 12048433
+      nfiles: 2
+    - path: data/raw/genomes
+      hash: md5
+      md5: 06c5747e148c3d8f852748e99c0c0c9a.dir
+      size: 37385319
+      nfiles: 2

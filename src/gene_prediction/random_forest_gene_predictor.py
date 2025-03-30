@@ -65,16 +65,21 @@
 # # Evaluate accuracy
 # print("Accuracy:", accuracy_score(y_test, y_pred))
 
-# # Best Parameters: {'bootstrap': True, 'max_depth': 10, 'min_samples_leaf': 4, 'min_samples_split': 10, 'n_estimators': 300}
+# # Best Parameters:
+# {'bootstrap': True, 'max_depth': 10,
+#  'min_samples_leaf': 4, 'min_samples_split': 10,
+# 'n_estimators': 300}
 
+
+import logging
 
 import pandas as pd
 from pandas import DataFrame
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
+
 from src.data_preprocessing.feature_extractor import extract_features
-import logging
 
 
 def train():
@@ -108,4 +113,4 @@ def train():
 
 def predict(random_forest_classifier, X_test, y_test):
     y_pred = random_forest_classifier.predict(X_test)
-    logging.info("Accuracy:", accuracy_score(y_test, y_pred))
+    logging.info(f"Accuracy: {accuracy_score(y_test, y_pred)}")

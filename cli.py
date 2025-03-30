@@ -1,8 +1,8 @@
 import argparse
 import logging
 
-from config import DATASET_SIZE_OPTIONS
 from pipeline_runner import run
+from src.config import DATASET_SIZE_OPTIONS
 
 
 def main():

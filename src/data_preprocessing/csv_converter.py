@@ -16,7 +16,7 @@ def write_sequences_to_csv(
     logging.info("Writing sequences to CSV...")
 
     versioned_file_path = get_versioned_file_path(CSV_FILE_PATH)
-    file_path = os.path.join(versioned_file_path, "raw_data.csv")
+    file_path = os.path.join(versioned_file_path, "combined_data.csv")
 
     with open(file_path, "w") as f:
         f.write("IsGene,Sequence\n")
@@ -38,9 +38,7 @@ def generate_non_genes(
 
     random_length = get_random_length_from_gene_distribution(gene_sequences)
 
-    for _ in tqdm(
-        range(len(gene_sequences)), desc="Generating non-genes", unit="genome"
-    ):
+    for _ in tqdm(range(len(gene_sequences)), desc="Generating non-genes", unit="gene"):
         genome = get_random_genome(genomes)
 
         non_gene_candidate = get_random_gene_frame(str(genome.seq), random_length)
@@ -72,7 +70,7 @@ def get_random_genome(genomes: List[SeqRecord]) -> SeqRecord:
     return random.choice(genomes)
 
 
-def generate_raw_csv(genes: List[SeqRecord], genomes: List[SeqRecord]) -> str:
+def generate_combined_csv(genes: List[SeqRecord], genomes: List[SeqRecord]) -> str:
     if not genomes:
         logging.error("The genomes list is empty.")
         raise ValueError("The genomes list is empty.")
