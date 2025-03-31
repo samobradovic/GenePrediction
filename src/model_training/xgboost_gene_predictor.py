@@ -1,7 +1,18 @@
 import logging
 
+import numpy as np
+import pandas as pd
 from sklearn.metrics import accuracy_score
 from xgboost import XGBClassifier
+
+from config import (
+    MODEL_FILE_PATH,
+    TRAINING_CSV_FILE_PATH,
+    TRAINING_NPY_FILE_PATH,
+    VALIDATION_CSV_FILE_PATH,
+    VALIDATION_NPY_FILE_PATH,
+)
+from helpers.filesystem_helper import save_pkl
 
 
 def train(X_train, y_train, X_val, y_val):
@@ -23,8 +34,8 @@ def train(X_train, y_train, X_val, y_val):
         "subsample": 1.0,
         "colsample_bytree": 1.0,
         "random_state": 42,
-        "eval_metric": "logloss",  # Specify the evaluation metric here
-        "early_stopping_rounds": 10,  # Stops training if validation metric doesn't improve for 10 rounds
+        "eval_metric": "logloss",
+        "early_stopping_rounds": 10,
     }
 
     xgb_classifier = XGBClassifier(**best_params)
@@ -55,3 +66,21 @@ def predict(xgb_classifier, X_test, y_test):
     y_pred = xgb_classifier.predict(X_test)
     accuracy = accuracy_score(y_test, y_pred)
     logging.info(f"Accuracy: {accuracy}")
+
+
+if __name__ == "__main__":
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format="%(asctime)s - %(levelname)s - %(message)s",
+    )
+
+    # Get X_train from training.npy
+
+    X_train = np.load(TRAINING_NPY_FILE_PATH)
+    y_train = pd.read_csv(TRAINING_CSV_FILE_PATH)["IsGene"].values
+    X_val = np.load(VALIDATION_NPY_FILE_PATH)
+    y_val = pd.read_csv(VALIDATION_CSV_FILE_PATH)["IsGene"].values
+
+    model = train(X_train, y_train, X_val, y_val)
+
+    save_pkl(model, MODEL_FILE_PATH)

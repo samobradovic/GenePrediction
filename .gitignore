@@ -56,3 +56,6 @@ docker-compose.override.yml
 *.fasta
 *.zip
 data/
+
+# Temporary removing results
+results/

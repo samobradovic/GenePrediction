@@ -19,21 +19,48 @@ stages:
       - data/raw/combined.csv
 
   train_test_split:
-    cmd: poetry run python src/data_preprocessing/data_preprocessing.py
+    cmd: poetry run python src/data_preprocessing/train_test_splitter.py
     deps:
-      - src/data_preprocessing/data_preprocessing.py
+      - src/data_preprocessing/train_test_splitter.py
       - data/raw/combined.csv
     outs:
       - data/processed/training.csv
       - data/processed/testing.csv
       - data/processed/validation.csv
 
+  vectorizer:
+    cmd: poetry run python src/data_preprocessing/vectorizer.py
+    deps:
+      - src/data_preprocessing/vectorizer.py
+      - data/processed/training.csv
+      - data/processed/testing.csv
+      - data/processed/validation.csv
+    outs:
+      - data/models/count_vectorizer.pkl
+      - data/processed/training.npy
+      - data/processed/testing.npy
+      - data/processed/validation.npy
 
+  xgb_train:
+    cmd: poetry run python src/model_training/xgboost_gene_predictor.py
+    deps:
+      - src/model_training/xgboost_gene_predictor.py
+      - data/processed/training.npy
+      - data/processed/training.csv
+      - data/processed/validation.npy
+      - data/processed/validation.csv
+    outs:
+      - data/models/xgb_model.pkl
 
-  # xgb_train:
-  #   cmd: python src/gene_prediction/xgboost_gene_predictor.py
-  #   deps:
-  #     - src/model_training/train.py
-  #     - data/processed/training.csv
-  #   outs:
-  #     - data/models/xgb_model.pkl
+  evaluate:
+    cmd: poetry run python src/evaluation/evaluation.py
+    deps:
+      - src/evaluation/evaluation.py
+      - data/models/xgb_model.pkl
+      - data/models/count_vectorizer.pkl
+      - data/processed/testing.npy
+      - data/processed/testing.csv
+    outs:
+      - results/receiver_operating_characteristic.png
+      - results/confusion_matrix.png
+      - results/precision_recall.png

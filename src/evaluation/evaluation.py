@@ -1,6 +1,9 @@
 import logging
 
+import dill
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 from sklearn.metrics import (
     ConfusionMatrixDisplay,
     accuracy_score,
@@ -10,6 +13,8 @@ from sklearn.metrics import (
     precision_recall_curve,
     roc_curve,
 )
+
+from config import MODEL_FILE_PATH, TESTING_CSV_FILE_PATH, TESTING_NPY_FILE_PATH
 
 logging.getLogger("matplotlib").setLevel(logging.WARNING)
 logging.getLogger("PIL").setLevel(logging.WARNING)
@@ -37,7 +42,8 @@ def evaluate_xgb_model(model, X_test, y_test):
     )
     disp.plot(cmap="Blues")
     plt.title("Confusion Matrix")
-    plt.show()
+    # plt.show()
+    plt.savefig("results/confusion_matrix.png")
 
     # ROC curve
     fpr, tpr, _ = roc_curve(y_test, y_probs)
@@ -49,7 +55,8 @@ def evaluate_xgb_model(model, X_test, y_test):
     plt.ylabel("True Positive Rate")
     plt.title("Receiver Operating Characteristic Curve")
     plt.legend(loc="lower right")
-    plt.show()
+    # plt.show()
+    plt.savefig("results/receiver_operating_characteristic.png")
 
     # Precision-Recall curve
     precision, recall, _ = precision_recall_curve(y_test, y_probs)
@@ -58,7 +65,8 @@ def evaluate_xgb_model(model, X_test, y_test):
     plt.xlabel("Recall")
     plt.ylabel("Precision")
     plt.title("Precision-Recall Curve")
-    plt.show()
+    # plt.show()
+    plt.savefig("results/precision_recall.png")
 
     # SHAP values
 
@@ -68,3 +76,17 @@ def evaluate_xgb_model(model, X_test, y_test):
     # explainer = shap.Explainer(model, X_test)
     # shap_values = explainer(X_test)
     # shap.summary_plot(shap_values, X_test)
+
+
+if __name__ == "__main__":
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format="%(asctime)s - %(levelname)s - %(message)s",
+    )
+
+    X_test = np.load(TESTING_NPY_FILE_PATH)
+    y_test = pd.read_csv(TESTING_CSV_FILE_PATH)["IsGene"].values
+
+    model = dill.load(open(MODEL_FILE_PATH, "rb"))
+
+    evaluate_xgb_model(model, X_test, y_test)

@@ -17,16 +17,22 @@ NUMBER_OF_GENES_BIG_DATASET = 100000
 
 FILE_FORMAT = "fasta"
 
-DATASET_SIZE_OPTIONS = ["small", "big", "max"]
-
-RAW_DATA_FOLDER_PATH = "data/raw"
+RAW_DATA_FOLDER_PATH = os.path.join("data", "raw")
 GENOMES_RAW_DATA_FOLDER_PATH = os.path.join(RAW_DATA_FOLDER_PATH, "genomes")
 GENES_RAW_DATA_FOLDER_PATH = os.path.join(RAW_DATA_FOLDER_PATH, "genes")
 
 CSV_FILE_PATH = os.path.join(RAW_DATA_FOLDER_PATH, "combined.csv")
 
 PROCESSED_DATA_FOLDER_PATH = os.path.join("data", "processed")
+TESTING_CSV_FILE_PATH = os.path.join(PROCESSED_DATA_FOLDER_PATH, "testing.csv")
+TRAINING_CSV_FILE_PATH = os.path.join(PROCESSED_DATA_FOLDER_PATH, "training.csv")
+VALIDATION_CSV_FILE_PATH = os.path.join(PROCESSED_DATA_FOLDER_PATH, "validation.csv")
 
-MODEL_FOLDER_PATH = "data/models"
-MODEL_FILE_PATH = os.path.join(MODEL_FOLDER_PATH, "xgb_model")
-VECTORIZER_FILE_PATH = os.path.join(MODEL_FOLDER_PATH, "count_vectorizer")
+TESTING_NPY_FILE_PATH = os.path.join(PROCESSED_DATA_FOLDER_PATH, "testing.npy")
+TRAINING_NPY_FILE_PATH = os.path.join(PROCESSED_DATA_FOLDER_PATH, "training.npy")
+VALIDATION_NPY_FILE_PATH = os.path.join(PROCESSED_DATA_FOLDER_PATH, "validation.npy")
+
+
+MODEL_FOLDER_PATH = os.path.join("data", "models")
+MODEL_FILE_PATH = os.path.join(MODEL_FOLDER_PATH, "xgb_model.pkl")
+VECTORIZER_FILE_PATH = os.path.join(MODEL_FOLDER_PATH, "count_vectorizer.pkl")

@@ -1,35 +1,34 @@
 import argparse
 import logging
-import os
-from typing import Tuple
 
 import pandas as pd
 from pandas import DataFrame
 from sklearn.model_selection import train_test_split
 
-from src.config import CSV_FILE_PATH, PROCESSED_DATA_FOLDER_PATH
+from src.config import (
+    CSV_FILE_PATH,
+    TESTING_CSV_FILE_PATH,
+    TRAINING_CSV_FILE_PATH,
+    VALIDATION_CSV_FILE_PATH,
+)
 
 
 def save_train_test_validation_csvs(
     data_splits: dict,
-) -> Tuple[str, str, str]:
+) -> None:
     logging.info("Saving training, validation, and testing CSVs...")
-
-    train_csv_path = os.path.join(PROCESSED_DATA_FOLDER_PATH, "training.csv")
-    val_csv_path = os.path.join(PROCESSED_DATA_FOLDER_PATH, "validation.csv")
-    test_csv_path = os.path.join(PROCESSED_DATA_FOLDER_PATH, "testing.csv")
 
     pd.DataFrame(
         {"Sequence": data_splits["X_train"], "IsGene": data_splits["y_train"]}
-    ).to_csv(train_csv_path, index=False)
+    ).to_csv(TRAINING_CSV_FILE_PATH, index=False)
     pd.DataFrame(
         {"Sequence": data_splits["X_val"], "IsGene": data_splits["y_val"]}
-    ).to_csv(val_csv_path, index=False)
+    ).to_csv(VALIDATION_CSV_FILE_PATH, index=False)
     pd.DataFrame(
         {"Sequence": data_splits["X_test"], "IsGene": data_splits["y_test"]}
-    ).to_csv(test_csv_path, index=False)
+    ).to_csv(TESTING_CSV_FILE_PATH, index=False)
 
-    return train_csv_path, val_csv_path, test_csv_path
+    logging.info("CSV files saved successfully.")
 
 
 def train_test_validation_split(
