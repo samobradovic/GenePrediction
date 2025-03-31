@@ -1,16 +1,10 @@
-import argparse
 import logging
+from pathlib import Path
 
+import dvc.api
 import pandas as pd
 from pandas import DataFrame
 from sklearn.model_selection import train_test_split
-
-from src.config import (
-    CSV_FILE_PATH,
-    TESTING_CSV_FILE_PATH,
-    TRAINING_CSV_FILE_PATH,
-    VALIDATION_CSV_FILE_PATH,
-)
 
 
 def save_train_test_validation_csvs(
@@ -20,19 +14,19 @@ def save_train_test_validation_csvs(
 
     pd.DataFrame(
         {"Sequence": data_splits["X_train"], "IsGene": data_splits["y_train"]}
-    ).to_csv(TRAINING_CSV_FILE_PATH, index=False)
+    ).to_csv(Path(params["paths"]["training_csv_file"]), index=False)
     pd.DataFrame(
         {"Sequence": data_splits["X_val"], "IsGene": data_splits["y_val"]}
-    ).to_csv(VALIDATION_CSV_FILE_PATH, index=False)
+    ).to_csv(Path(params["paths"]["validation_csv_file"]), index=False)
     pd.DataFrame(
         {"Sequence": data_splits["X_test"], "IsGene": data_splits["y_test"]}
-    ).to_csv(TESTING_CSV_FILE_PATH, index=False)
+    ).to_csv(Path(params["paths"]["testing_csv_file"]), index=False)
 
     logging.info("CSV files saved successfully.")
 
 
 def train_test_validation_split(
-    csv_file_path: str, test_size: float = 0.20, validation_size: float = 0.20
+    csv_file_path: Path, test_size: float = 0.20, validation_size: float = 0.20
 ):
     genes_data_frame: DataFrame = pd.read_csv(csv_file_path)
     sequences = genes_data_frame["Sequence"].tolist()
@@ -50,36 +44,6 @@ def train_test_validation_split(
     )
     logging.info("Data split complete.")
 
-    return (
-        X_train,
-        X_val,
-        X_test,
-        y_train,
-        y_val,
-        y_test,
-    )
-
-
-if __name__ == "__main__":
-    logging.basicConfig(
-        level=logging.DEBUG,
-        format="%(asctime)s - %(levelname)s - %(message)s",
-    )
-
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--csv_file_path",
-        type=str,
-        required=False,
-        default=f"{CSV_FILE_PATH}",
-        help="Path to the CSV file containing sequences",
-    )
-    args = parser.parse_args()
-
-    X_train, X_val, X_test, y_train, y_val, y_test = train_test_validation_split(
-        args.csv_file_path
-    )
-
     save_train_test_validation_csvs(
         {
             "X_train": X_train,
@@ -90,3 +54,12 @@ if __name__ == "__main__":
             "y_test": y_test,
         }
     )
+
+
+params = dvc.api.params_show(stages="train_test_split")
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+)
+if __name__ == "__main__":
+    train_test_validation_split(Path(params["paths"]["csv_file"]))

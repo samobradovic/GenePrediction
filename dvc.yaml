@@ -1,10 +1,20 @@
 stages:
   download_genomes:
-    cmd: poetry run python src/data_loading/entrez_downloader.py --dataset_size ${dataset_size}
+    # Download raw genome and gene data with Entrez
+    cmd: poetry run python src/data_loading/entrez_downloader.py
     deps:
       - src/data_loading/entrez_downloader.py
+      - src/helpers/filesystem_helper.py
     params:
       - dataset_size
+      - constants.yaml:
+        - retry_entrez_request
+        - file_format
+        - max_sizes_gb
+        - batch_sizes
+        - paths
+        - dataset_sizes
+        - entrez_email
     outs:
       - data/raw/genomes
       - data/raw/genes
@@ -13,8 +23,11 @@ stages:
     cmd: poetry run python src/data_preprocessing/fasta_to_csv_converter.py
     deps:
       - src/data_preprocessing/fasta_to_csv_converter.py
+      - src/data_preprocessing/non_gene_generator.py
       - data/raw/genomes
       - data/raw/genes
+    params:
+      - constants.yaml:
     outs:
       - data/raw/combined.csv
 
@@ -23,6 +36,8 @@ stages:
     deps:
       - src/data_preprocessing/train_test_splitter.py
       - data/raw/combined.csv
+    params:
+      - constants.yaml:
     outs:
       - data/processed/training.csv
       - data/processed/testing.csv
@@ -35,6 +50,9 @@ stages:
       - data/processed/training.csv
       - data/processed/testing.csv
       - data/processed/validation.csv
+    params:
+      - kmer_size
+      - constants.yaml:
     outs:
       - data/models/count_vectorizer.pkl
       - data/processed/training.npy
@@ -49,6 +67,8 @@ stages:
       - data/processed/training.csv
       - data/processed/validation.npy
       - data/processed/validation.csv
+    params:
+      - constants.yaml:
     outs:
       - data/models/xgb_model.pkl
 
@@ -60,7 +80,9 @@ stages:
       - data/models/count_vectorizer.pkl
       - data/processed/testing.npy
       - data/processed/testing.csv
-    outs:
+    params:
+      - constants.yaml:
+    plots:
       - results/receiver_operating_characteristic.png
       - results/confusion_matrix.png
       - results/precision_recall.png

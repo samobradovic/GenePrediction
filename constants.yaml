@@ -1,0 +1,43 @@
+
+entrez_email: "Your.Name.Here@example.org"
+
+file_format: "fasta"
+
+paths:
+  raw_data_folder: "data/raw"
+  genomes_raw_data_folder: "data/raw/genomes"
+  genes_raw_data_folder: "data/raw/genes"
+  csv_file: "data/raw/combined.csv"
+  processed_data_folder: "data/processed"
+  testing_csv_file: "data/processed/testing.csv"
+  training_csv_file: "data/processed/training.csv"
+  validation_csv_file: "data/processed/validation.csv"
+  testing_npy_file: "data/processed/testing.npy"
+  training_npy_file: "data/processed/training.npy"
+  validation_npy_file: "data/processed/validation.npy"
+  model_folder: "data/models"
+  model_file: "data/models/xgb_model.pkl"
+  vectorizer_file: "data/models/count_vectorizer.pkl"
+
+batch_sizes:
+  genes: 5000
+  genomes: 5
+
+retry_entrez_request:
+  count: 15
+  delay_seconds: 3
+
+dataset_sizes:
+  small:
+    genes: 10000
+    genomes: 10
+  big:
+    genes: 100000
+    genomes: 50000
+  max:
+    genes: 1000000
+    genomes: 1000000
+
+max_sizes_gb:
+  genes: 150
+  genomes: 150

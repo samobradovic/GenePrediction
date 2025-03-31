@@ -1,17 +1,12 @@
 import logging
+from pathlib import Path
 
+import dvc.api
 import numpy as np
 import pandas as pd
 from sklearn.metrics import accuracy_score
 from xgboost import XGBClassifier
 
-from config import (
-    MODEL_FILE_PATH,
-    TRAINING_CSV_FILE_PATH,
-    TRAINING_NPY_FILE_PATH,
-    VALIDATION_CSV_FILE_PATH,
-    VALIDATION_NPY_FILE_PATH,
-)
 from helpers.filesystem_helper import save_pkl
 
 
@@ -68,19 +63,17 @@ def predict(xgb_classifier, X_test, y_test):
     logging.info(f"Accuracy: {accuracy}")
 
 
+params = dvc.api.params_show(stages="xgb_train")
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+)
 if __name__ == "__main__":
-    logging.basicConfig(
-        level=logging.DEBUG,
-        format="%(asctime)s - %(levelname)s - %(message)s",
-    )
-
-    # Get X_train from training.npy
-
-    X_train = np.load(TRAINING_NPY_FILE_PATH)
-    y_train = pd.read_csv(TRAINING_CSV_FILE_PATH)["IsGene"].values
-    X_val = np.load(VALIDATION_NPY_FILE_PATH)
-    y_val = pd.read_csv(VALIDATION_CSV_FILE_PATH)["IsGene"].values
+    X_train = np.load(Path(params["paths"]["training_npy_file"]))
+    y_train = pd.read_csv(Path(params["paths"]["training_csv_file"]))["IsGene"].values
+    X_val = np.load(Path(params["paths"]["validation_npy_file"]))
+    y_val = pd.read_csv(Path(params["paths"]["validation_csv_file"]))["IsGene"].values
 
     model = train(X_train, y_train, X_val, y_val)
 
-    save_pkl(model, MODEL_FILE_PATH)
+    save_pkl(model, Path(params["paths"]["model_file"]))

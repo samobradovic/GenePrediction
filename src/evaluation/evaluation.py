@@ -1,6 +1,8 @@
 import logging
+from pathlib import Path
 
 import dill
+import dvc.api
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -13,11 +15,6 @@ from sklearn.metrics import (
     precision_recall_curve,
     roc_curve,
 )
-
-from config import MODEL_FILE_PATH, TESTING_CSV_FILE_PATH, TESTING_NPY_FILE_PATH
-
-logging.getLogger("matplotlib").setLevel(logging.WARNING)
-logging.getLogger("PIL").setLevel(logging.WARNING)
 
 
 def evaluate_xgb_model(model, X_test, y_test):
@@ -78,15 +75,18 @@ def evaluate_xgb_model(model, X_test, y_test):
     # shap.summary_plot(shap_values, X_test)
 
 
+logging.getLogger("matplotlib").setLevel(logging.WARNING)
+logging.getLogger("PIL").setLevel(logging.WARNING)
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+)
+params = dvc.api.params_show(stages="evaluate")
+
 if __name__ == "__main__":
-    logging.basicConfig(
-        level=logging.DEBUG,
-        format="%(asctime)s - %(levelname)s - %(message)s",
-    )
+    X_test = np.load(Path(params["paths"]["testing_npy_file"]))
+    y_test = pd.read_csv(Path(params["paths"]["testing_csv_file"]))["IsGene"].values
 
-    X_test = np.load(TESTING_NPY_FILE_PATH)
-    y_test = pd.read_csv(TESTING_CSV_FILE_PATH)["IsGene"].values
-
-    model = dill.load(open(MODEL_FILE_PATH, "rb"))
+    model = dill.load(open(Path(params["paths"]["model_file"]), "rb"))
 
     evaluate_xgb_model(model, X_test, y_test)

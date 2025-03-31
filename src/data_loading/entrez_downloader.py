@@ -1,32 +1,14 @@
-import argparse
 import logging
 import os
 import time
+from pathlib import Path
 from typing import List
 
+import dvc.api
 from Bio import Entrez
 from Bio.Entrez.Parser import DictionaryElement
 
-from src.config import (
-    ENTREZ_EMAIL,
-    FILE_FORMAT,
-    GENES_RAW_DATA_FOLDER_PATH,
-    GENOMES_RAW_DATA_FOLDER_PATH,
-    MAX_GENES_SIZE_GB,
-    MAX_GENOMES_SIZE_GB,
-    NUMBER_OF_GENES_BIG_DATASET,
-    NUMBER_OF_GENES_SMALL_DATASET,
-    NUMBER_OF_GENOMES_BIG_DATASET,
-    NUMBER_OF_GENOMES_SMALL_DATASET,
-)
 from src.helpers.filesystem_helper import get_folder_size
-
-RETRY_COUNT = 15
-RETRY_DELAY_SECONDS = 3
-BATCH_SIZE_GENES = 5000
-BATCH_SIZE_GENOMES = 5
-
-Entrez.email = ENTREZ_EMAIL
 
 
 def get_ids(max_results: int, search_query: str) -> List[str]:
@@ -53,13 +35,13 @@ def download_batch(
         logging.info(f"Batch {batch_number} already exists, skipping download.")
         return
 
-    for attempt in range(RETRY_COUNT):
+    for attempt in range(params["retry_entrez_request"]["count"]):
         try:
             logging.info(f"Downloading batch {batch_number} (Attempt {attempt + 1})...")
             handle = Entrez.efetch(
                 db="nucleotide",
                 id=",".join(batch_ids),
-                rettype=FILE_FORMAT,
+                rettype=params["file_format"],
                 retmode="text",
             )
 
@@ -73,12 +55,12 @@ def download_batch(
                 f"Failed to download batch {batch_number} on attempt {attempt + 1}: {e}"
             )
 
-            if attempt < RETRY_COUNT - 1:
-                time.sleep(RETRY_DELAY_SECONDS)
+            if attempt < params["retry_entrez_request"]["count"] - 1:
+                time.sleep(params["retry_entrez_request"]["delay_seconds"])
             else:
                 logging.error(
-                    f"Failed to download batch {batch_number} after {RETRY_COUNT} ",
-                    "attempts.",
+                    f"Failed to download batch {batch_number} after",
+                    f"{params['retry_entrez_request']['count']} attempts.",
                 )
                 raise e
 
@@ -86,7 +68,7 @@ def download_batch(
 def download_data(
     number_of_datapoints: int,
     search_query: str,
-    folder_path: str,
+    folder_path: Path,
     max_size_gb: int,
     batch_size: int,
 ) -> None:
@@ -105,56 +87,39 @@ def download_data(
 
         batch_ids = ids[i : i + batch_size]
         batch_number = i // batch_size + 1
-        file_path = os.path.join(folder_path, f"batch_{batch_number}.{FILE_FORMAT}")
+        file_path = os.path.join(
+            folder_path, f"batch_{batch_number}.{params['file_format']}"
+        )
         download_batch(file_path, batch_ids, batch_number)
 
 
 def download(dataset_size: str = "small") -> None:
     dataset_size = dataset_size.lower()
-    if dataset_size == "small":
-        number_of_genes = NUMBER_OF_GENES_SMALL_DATASET
-        number_of_genomes = NUMBER_OF_GENOMES_SMALL_DATASET
-    elif dataset_size == "big":
-        number_of_genes = NUMBER_OF_GENES_BIG_DATASET
-        number_of_genomes = NUMBER_OF_GENOMES_BIG_DATASET
-    elif dataset_size == "max":
-        number_of_genes = -1
-        number_of_genomes = -1
-    else:
-        raise ValueError(f"Invalid dataset size: {dataset_size}")
+    number_of_genes = params["dataset_sizes"][f"{dataset_size}"]["genes"]
+    number_of_genomes = params["dataset_sizes"][f"{dataset_size}"]["genomes"]
 
     logging.info(f"Downloading data for dataset size: {dataset_size}.")
     download_data(
         number_of_genes,
         "Bacteria[Organism] AND gene[Title]",
-        GENES_RAW_DATA_FOLDER_PATH,
-        MAX_GENES_SIZE_GB,
-        BATCH_SIZE_GENES,
+        Path(params["paths"]["genes_raw_data_folder"]),
+        params["max_sizes_gb"]["genes"],
+        params["batch_sizes"]["genes"],
     )
     download_data(
         number_of_genomes,
         "Bacteria[Organism] AND complete genome[Title]",
-        GENOMES_RAW_DATA_FOLDER_PATH,
-        MAX_GENOMES_SIZE_GB,
-        BATCH_SIZE_GENOMES,
+        Path(params["paths"]["genomes_raw_data_folder"]),
+        params["max_sizes_gb"]["genomes"],
+        params["batch_sizes"]["genomes"],
     )
 
 
+params = dvc.api.params_show(stages="download_genomes")
+Entrez.email = params["entrez_email"]
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+)
 if __name__ == "__main__":
-    logging.basicConfig(
-        level=logging.DEBUG,
-        format="%(asctime)s - %(levelname)s - %(message)s",
-    )
-
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--dataset_size",
-        type=str,
-        required=True,
-        choices=["small", "big", "max"],
-        default="small",
-        help="Dataset size: small, big, or max",
-    )
-    args = parser.parse_args()
-
-    download(args.dataset_size)
+    download(params["dataset_size"])

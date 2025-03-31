@@ -1,6 +1,7 @@
 import logging
 import os
 import time
+from pathlib import Path
 
 import dill
 import pandas as pd
@@ -8,7 +9,7 @@ import pandas as pd
 from src.config import CSV_FILE_PATH, MODEL_FOLDER_PATH
 
 
-def get_folder_size(folder_path: str) -> float:
+def get_folder_size(folder_path: Path) -> float:
     total_size = 0
     for dirpath, _, filenames in os.walk(folder_path):
         for f in filenames:
@@ -17,7 +18,7 @@ def get_folder_size(folder_path: str) -> float:
     return total_size / (1024**3)
 
 
-def save_pkl(pickle_object, file_path: str) -> None:
+def save_pkl(pickle_object, file_path: str | Path) -> None:
     os.makedirs(os.path.dirname(file_path), exist_ok=True)
     with open(file_path, "wb") as f:
         dill.dump(pickle_object, f)
