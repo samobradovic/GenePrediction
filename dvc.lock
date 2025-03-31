@@ -5,19 +5,65 @@ stages:
     deps:
     - path: src/data_loading/entrez_downloader.py
       hash: md5
-      md5: dac870a82f0cde9efd6cf30df814be73
-      size: 4787
+      md5: ab55a98739bb3ab11cd120dff7623670
+      size: 4853
     params:
       params.yaml:
         dataset_size: small
     outs:
     - path: data/raw/genes
       hash: md5
-      md5: ea1cf85ca74355de00e5ab935df69889.dir
-      size: 12048433
+      md5: bfa0f60d963f78295d6814d65b4b7cab.dir
+      size: 11844376
       nfiles: 2
     - path: data/raw/genomes
       hash: md5
-      md5: 06c5747e148c3d8f852748e99c0c0c9a.dir
-      size: 37385319
+      md5: 04cba3a1b896a3b38e1f69e5d02831c2.dir
+      size: 37972926
       nfiles: 2
+  csv_converter:
+    cmd: poetry run python src/data_preprocessing/fasta_to_csv_converter.py
+    deps:
+    - path: data/raw/genes
+      hash: md5
+      md5: bfa0f60d963f78295d6814d65b4b7cab.dir
+      size: 11844376
+      nfiles: 2
+    - path: data/raw/genomes
+      hash: md5
+      md5: 04cba3a1b896a3b38e1f69e5d02831c2.dir
+      size: 37972926
+      nfiles: 2
+    - path: src/data_preprocessing/fasta_to_csv_converter.py
+      hash: md5
+      md5: b7e9e1eaec47f2a65589ebe7bda982e5
+      size: 2498
+    outs:
+    - path: data/raw/combined.csv
+      hash: md5
+      md5: 65c8a0faa4d8e80f7e76352cc6f93be3
+      size: 16365730
+  train_test_split:
+    cmd: poetry run python src/data_preprocessing/data_preprocessing.py
+    deps:
+    - path: data/raw/combined.csv
+      hash: md5
+      md5: 65c8a0faa4d8e80f7e76352cc6f93be3
+      size: 16365730
+    - path: src/data_preprocessing/data_preprocessing.py
+      hash: md5
+      md5: f87bf74a51cc689994379e4745e40dbd
+      size: 4450
+    outs:
+    - path: data/processed/testing.csv
+      hash: md5
+      md5: 5d38c77af1a4a36e0770d63040f3605c
+      size: 3270696
+    - path: data/processed/training.csv
+      hash: md5
+      md5: ad7e7fd1a6c3368d41ad21969a5d37e7
+      size: 9864631
+    - path: data/processed/validation.csv
+      hash: md5
+      md5: dce80d088bc706e739c517c9f43c3751
+      size: 3230437

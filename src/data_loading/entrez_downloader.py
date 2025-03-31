@@ -151,6 +151,8 @@ if __name__ == "__main__":
         "--dataset_size",
         type=str,
         required=True,
+        choices=["small", "big", "max"],
+        default="small",
         help="Dataset size: small, big, or max",
     )
     args = parser.parse_args()

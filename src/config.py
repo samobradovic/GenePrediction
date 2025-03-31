@@ -23,8 +23,9 @@ RAW_DATA_FOLDER_PATH = "data/raw"
 GENOMES_RAW_DATA_FOLDER_PATH = os.path.join(RAW_DATA_FOLDER_PATH, "genomes")
 GENES_RAW_DATA_FOLDER_PATH = os.path.join(RAW_DATA_FOLDER_PATH, "genes")
 
-CSV_FILE_PATH = "data/processed"
-CSV_PROCESSED_FILE_PATH = os.path.join(CSV_FILE_PATH, "processed")
+CSV_FILE_PATH = os.path.join(RAW_DATA_FOLDER_PATH, "combined.csv")
+
+PROCESSED_DATA_FOLDER_PATH = os.path.join("data", "processed")
 
 MODEL_FOLDER_PATH = "data/models"
 MODEL_FILE_PATH = os.path.join(MODEL_FOLDER_PATH, "xgb_model")
