@@ -6,20 +6,14 @@ from typing import List
 import dvc.api
 from Bio import SeqIO
 
-from src.data_preprocessing.non_gene_generator import generate_non_genes
 
-
-def write_sequences_to_csv(
-    gene_sequences: List[str], non_gene_sequences: List[str]
-) -> None:
+def write_sequences_to_csv(gene_sequences: List[str]) -> None:
     logging.info("Writing sequences to CSV...")
 
-    with open(Path(params["paths"]["csv_file"]), "w") as f:
+    with open(Path(params["paths"]["genes_csv_file"]), "w") as f:
         f.write("IsGene,Sequence\n")
         for sequence in gene_sequences:
             f.write(f"1,{sequence}\n")
-        for sequence in non_gene_sequences:
-            f.write(f"0,{sequence}\n")
 
     logging.info("Sequences written to CSV.")
 
@@ -37,24 +31,20 @@ def get_string_sequences_from_directory(directory: Path) -> List[str]:
     return sequences
 
 
-def convert(raw_genomes_path: Path, raw_genes_path: Path) -> None:
+def convert(raw_genes_path: Path) -> None:
     logging.info("Converting FASTA files to CSV...")
 
     genes = get_string_sequences_from_directory(raw_genes_path)
-    genomes = get_string_sequences_from_directory(raw_genomes_path)
 
-    non_gene_seqences = generate_non_genes(genes, genomes)
-
-    write_sequences_to_csv(genes, non_gene_seqences)
+    write_sequences_to_csv(genes)
 
 
-params = dvc.api.params_show(stages="csv_converter")
+params = dvc.api.params_show(stages="csv_conversion")
 logging.basicConfig(
     level=logging.DEBUG,
     format="%(asctime)s - %(levelname)s - %(message)s",
 )
 if __name__ == "__main__":
     convert(
-        Path(params["paths"]["genomes_raw_data_folder"]),
         Path(params["paths"]["genes_raw_data_folder"]),
     )

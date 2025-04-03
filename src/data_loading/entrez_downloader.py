@@ -93,7 +93,7 @@ def download_data(
         download_batch(file_path, batch_ids, batch_number)
 
 
-def download(dataset_size: str = "small") -> None:
+def download(dataset_size: str) -> None:
     dataset_size = dataset_size.lower()
     number_of_genes = params["dataset_sizes"][f"{dataset_size}"]["genes"]
     number_of_genomes = params["dataset_sizes"][f"{dataset_size}"]["genomes"]

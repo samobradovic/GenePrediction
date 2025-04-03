@@ -57,5 +57,8 @@ docker-compose.override.yml
 *.zip
 data/
 
+# Ruff cache
+.ruff_cache/
+
 # Temporary removing results
 results/

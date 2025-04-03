@@ -52,7 +52,7 @@ def extract_kmer_features_for_sequence(
     return csr_matrix(vectorizer.transform(kmers)).toarray()
 
 
-params = dvc.api.params_show(stages="vectorizer")
+params = dvc.api.params_show(stages="vectorization")
 logging.basicConfig(
     level=logging.DEBUG,
     format="%(asctime)s - %(levelname)s - %(message)s",

@@ -7,6 +7,7 @@ paths:
   raw_data_folder: "data/raw"
   genomes_raw_data_folder: "data/raw/genomes"
   genes_raw_data_folder: "data/raw/genes"
+  genes_csv_file: "data/raw/genes.csv"
   csv_file: "data/raw/combined.csv"
   processed_data_folder: "data/processed"
   testing_csv_file: "data/processed/testing.csv"

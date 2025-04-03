@@ -81,7 +81,7 @@ logging.basicConfig(
     level=logging.DEBUG,
     format="%(asctime)s - %(levelname)s - %(message)s",
 )
-params = dvc.api.params_show(stages="evaluate")
+params = dvc.api.params_show(stages="evaluation")
 
 if __name__ == "__main__":
     X_test = np.load(Path(params["paths"]["testing_npy_file"]))

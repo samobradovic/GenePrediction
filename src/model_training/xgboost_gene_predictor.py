@@ -63,7 +63,7 @@ def predict(xgb_classifier, X_test, y_test):
     logging.info(f"Accuracy: {accuracy}")
 
 
-params = dvc.api.params_show(stages="xgb_train")
+params = dvc.api.params_show(stages="xgb_training")
 logging.basicConfig(
     level=logging.DEBUG,
     format="%(asctime)s - %(levelname)s - %(message)s",
