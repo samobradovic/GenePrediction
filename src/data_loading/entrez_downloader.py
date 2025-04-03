@@ -6,24 +6,51 @@ from typing import List
 
 import dvc.api
 from Bio import Entrez
-from Bio.Entrez.Parser import DictionaryElement
 
 from src.helpers.filesystem_helper import get_folder_size
 
 
 def get_ids(max_results: int, search_query: str) -> List[str]:
-    handle = Entrez.esearch(
-        db="nucleotide", term=search_query, retmax=max_results, sorted="relevance"
-    )
-    record = Entrez.read(handle)
-    handle.close()
-    if isinstance(record, DictionaryElement) and "IdList" in record:
+    """Fetches a list of nucleotide IDs from Entrez based on a search query.
+
+    Args:
+        max_results (int): Maximum number of results to fetch.
+        search_query (str): Query string to search in the nucleotide database.
+
+    Returns:
+        List[str]: List of nucleotide IDs.
+
+    Raises:
+        ValueError: If no IDs are found or the response format is invalid.
+    """
+    try:
+        with Entrez.esearch(
+            db="nucleotide", term=search_query, retmax=max_results, sort="relevance"
+        ) as handle:
+            record = Entrez.read(handle)
+
+        if not isinstance(record, dict) or "IdList" not in record:
+            logging.error(f"Unexpected response format: {record}")
+            raise ValueError("Unexpected response format from Entrez API.")
+
         id_list = record["IdList"]
-        logging.info(f"Found {len(id_list)} ids")
-        if id_list:
-            return record["IdList"]
-    logging.error(f"No ids found for the given search query: {search_query}")
-    return []
+
+        if not isinstance(id_list, list) or not all(
+            isinstance(i, str) for i in id_list
+        ):
+            logging.error(f"Invalid IdList format: {id_list}")
+            raise ValueError("Invalid IdList format from Entrez API.")
+
+        if not id_list:
+            logging.warning("No IDs found in the response.")
+            raise ValueError("No IDs found in the response.")
+
+        logging.info(f"Found {len(id_list)} IDs.")
+        return id_list
+
+    except Exception as e:
+        logging.error(f"Error fetching IDs: {e}")
+        raise
 
 
 def download_batch(
