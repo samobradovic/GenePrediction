@@ -101,7 +101,7 @@ def download_batch(
             with open(file_path, "w") as f:
                 f.write(handle.read())
             logging.info(
-                f"Batch {batch_number} downloaded successfully and saved ",
+                f"Batch {batch_number} downloaded successfully and saved "
                 f"to {file_path}.",
             )
             return

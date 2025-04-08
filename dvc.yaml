@@ -54,6 +54,9 @@ stages:
     params:
       - constants.yaml:
         - paths
+      - gene_lengths:
+        - min
+        - max
     outs:
       - data/raw/combined_clean.csv
 

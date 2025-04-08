@@ -13,14 +13,25 @@ from src.helpers.fasta_helper import (
 def convert_fasta_folder_into_csv(
     source_directory: Path, csv_destination_path: Path
 ) -> None:
+    """Converts FASTA files in a directory to a CSV file.
+
+    Args:
+        source_directory (Path): Path to the directory containing FASTA files.
+        csv_destination_path (Path): Path where the CSV file will be saved.
+    """
+
     logging.info("Converting FASTA files to CSV...")
-    sequences: List[str] = get_string_sequences_from_directory(source_directory)
-    write_string_sequences_to_csv(
-        sequences=sequences,
-        csv_destination_path=csv_destination_path,
-        write_header=True,
-        is_real_gene=True,
-    )
+    try:
+        sequences: List[str] = get_string_sequences_from_directory(source_directory)
+        write_string_sequences_to_csv(
+            sequences=sequences,
+            csv_destination_path=csv_destination_path,
+            write_header=True,
+            is_real_gene=True,
+        )
+    except Exception as e:
+        logging.error(f"Error during conversion: {e}")
+        raise e
 
 
 if __name__ == "__main__":
