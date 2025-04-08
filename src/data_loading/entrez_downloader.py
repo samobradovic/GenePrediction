@@ -178,11 +178,12 @@ def download_data(
 
 if __name__ == "__main__":
     params = dvc.api.params_show(stages="download_genomes")
-    Entrez.email = params["entrez_email"]
     logging.basicConfig(
         level=logging.DEBUG,
         format="%(asctime)s - %(levelname)s - %(message)s",
     )
+
+    Entrez.email = params["entrez_email"]
 
     dataset_size = params["dataset_size"].lower()
 
