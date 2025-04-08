@@ -10,7 +10,6 @@ from tqdm import tqdm
 
 
 def get_random_length_from_gene_distribution(gene_sequences: List[str]) -> int:
-    # gene_lengths = [len(gene) for gene in gene_sequences if len(gene) > 2]
     gene_lengths = [len(gene) for gene in gene_sequences]
     return random.choice(gene_lengths)
 
@@ -38,10 +37,7 @@ def generate_non_genes(gene_sequences: List[str], genomes: List[str]) -> List[st
 
     for _ in tqdm(range(len(gene_sequences)), desc="Generating non-genes", unit="gene"):
         genome = get_random_genome(genomes)
-
         non_gene_candidate = get_random_gene_frame(genome, random_length)
-
-        # if non_gene_candidate not in gene_sequences: <- this takes too long
         non_genes.append(non_gene_candidate)
 
     logging.info("Non-genes generated.")

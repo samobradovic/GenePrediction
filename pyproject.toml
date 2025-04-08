@@ -46,6 +46,7 @@ line-length = 88
 target-version = "py313"
 fix = true
 
+
 [tool.ruff.lint]
 select = [
     "B",    # flake8-bugbear
@@ -66,3 +67,6 @@ ignore = ["N806", "N803"]
 
 [tool.ruff.format]
 quote-style = "double"
+
+[tool.ruff.lint.pylint]
+max-args = 8

@@ -62,4 +62,4 @@ logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(message)s",
 )
 if __name__ == "__main__":
-    train_test_validation_split(Path(params["paths"]["csv_file"]))
+    train_test_validation_split(Path(params["paths"]["csv_file_clean"]))

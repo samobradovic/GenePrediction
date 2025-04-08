@@ -45,12 +45,24 @@ stages:
     outs:
       - data/raw/combined.csv
 
+  data_cleanup:
+    # Clean the combined CSV file by removing duplicates and long/short sequences
+    cmd: poetry run python src/data_preprocessing/data_cleanup.py
+    deps:
+      - src/data_preprocessing/data_cleanup.py
+      - data/raw/combined.csv
+    params:
+      - constants.yaml:
+        - paths
+    outs:
+      - data/raw/combined_clean.csv
+
   train_test_split:
     # Split the combined CSV file into training, testing, and validation csvs
     cmd: poetry run python src/data_preprocessing/train_test_splitter.py
     deps:
       - src/data_preprocessing/train_test_splitter.py
-      - data/raw/combined.csv
+      - data/raw/combined_clean.csv
     params:
       - constants.yaml:
         - paths
