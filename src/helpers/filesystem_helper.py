@@ -15,6 +15,7 @@ def get_folder_size(folder_path: Path) -> float:
 
 
 def save_pkl(pickle_object, file_path: str | Path) -> None:
+    logging.info(f"Saving object as pkl to {file_path}")
     os.makedirs(os.path.dirname(file_path), exist_ok=True)
     with open(file_path, "wb") as f:
         dill.dump(pickle_object, f)

@@ -27,59 +27,100 @@ def get_kmers(sequence: str, k: int) -> List[str]:
     return [sequence[i : i + k] for i in range(len(sequence) - k + 1)]
 
 
-def fit_vectorizer(train_sequences: List[str]) -> Tuple[np.ndarray, CountVectorizer]:
-    logging.info("Generating k-mers for training data...")
+def vectorize_sequences(
+    vectorizer: CountVectorizer,
+    X_train: List[str],
+    X_test: List[str],
+    X_val: List[str],
+    kmer_size: int,
+) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """
+    Vectorize k-mer sequences using a CountVectorizer.
+
+    Args:
+        vectorizer (CountVectorizer): The CountVectorizer instance.
+        train_kmers (List[str]): Training k-mers.
+        test_kmers (List[str]): Testing k-mers.
+        val_kmers (List[str]): Validation k-mers.
+
+    Returns:
+        Tuple[np.ndarray, np.ndarray, np.ndarray]: Vectorized training, testing,
+          and validation data.
+    """
     train_kmers = [
-        " ".join(get_kmers(seq, params["kmer_size"]))
-        for seq in tqdm(train_sequences, desc="Generating training k-mers")
+        " ".join(get_kmers(seq, kmer_size))
+        for seq in tqdm(X_train, desc="Generating training k-mers")
     ]
-    logging.info("Fitting vectorizer on kmer training data...")
+    test_kmers = [
+        " ".join(get_kmers(seq, kmer_size))
+        for seq in tqdm(X_test, desc="Generating testing k-mers")
+    ]
+    val_kmers = [
+        " ".join(get_kmers(seq, kmer_size))
+        for seq in tqdm(X_val, desc="Generating validation k-mers")
+    ]
+
+    X_train_vectorized = csr_matrix(vectorizer.fit_transform(train_kmers)).toarray()
+    X_test_vectorized = csr_matrix(vectorizer.transform(test_kmers)).toarray()
+    X_val_vectorized = csr_matrix(vectorizer.transform(val_kmers)).toarray()
+    return X_train_vectorized, X_test_vectorized, X_val_vectorized
+
+
+def vectorize(
+    training_csv_path: Path,
+    testing_csv_path: Path,
+    validation_csv_path: Path,
+    training_npy_path: Path,
+    testing_npy_path: Path,
+    validation_npy_path: Path,
+    vectorizer_path: Path,
+    kmer_size: int,
+) -> None:
+    """
+    Main function to vectorize sequences and save the results.
+
+    Args:
+        training_csv_path (Path): Path to training CSV file.
+        testing_csv_path (Path): Path to testing CSV file.
+        validation_csv_path (Path): Path to validation CSV file.
+        training_npy_path (Path): Path to save training data.
+        testing_npy_path (Path): Path to save testing data.
+        validation_npy_path (Path): Path to save validation data.
+        vectorizer_path (Path): Path to save the vectorizer.
+        kmer_size (int): Size of k-mers.
+    """
+    X_train = pd.read_csv(training_csv_path)["Sequence"].tolist()
+    X_test = pd.read_csv(testing_csv_path)["Sequence"].tolist()
+    X_val = pd.read_csv(validation_csv_path)["Sequence"].tolist()
+
     vectorizer = CountVectorizer()
-    X_train = csr_matrix(vectorizer.fit_transform(train_kmers)).toarray()
-    return X_train, vectorizer
-
-
-def extract_kmer_features_for_sequence(
-    sequence: List[str], vectorizer: CountVectorizer, sequence_name: str = ""
-) -> np.ndarray:
-    kmers = [
-        " ".join(get_kmers(seq, params["kmer_size"]))
-        for seq in tqdm(
-            sequence, desc=f"Generating k-mers for sequence: {sequence_name}"
-        )
-    ]
-    logging.info(f"Transforming sequence: {sequence_name} using the vectorizer...")
-    return csr_matrix(vectorizer.transform(kmers)).toarray()
-
-
-params = dvc.api.params_show(stages="vectorization")
-logging.basicConfig(
-    level=logging.DEBUG,
-    format="%(asctime)s - %(levelname)s - %(message)s",
-)
-if __name__ == "__main__":
-    X_train = pd.read_csv(Path(params["paths"]["training_csv_file"]))[
-        "Sequence"
-    ].tolist()
-    X_test = pd.read_csv(Path(params["paths"]["testing_csv_file"]))["Sequence"].tolist()
-    X_val = pd.read_csv(Path(params["paths"]["validation_csv_file"]))[
-        "Sequence"
-    ].tolist()
-
-    X_train_vectorized, vectorizer = fit_vectorizer(X_train)
-    X_val_vectorized = extract_kmer_features_for_sequence(
-        X_val, vectorizer, "Validation"
-    )
-    X_test_vectorized = extract_kmer_features_for_sequence(
-        X_test, vectorizer, "Testing"
+    X_train_vectorized, X_test_vectorized, X_val_vectorized = vectorize_sequences(
+        vectorizer, X_train, X_test, X_val, kmer_size
     )
 
     logging.info("Saving vectorized data to .npy files...")
-    np.save(Path(params["paths"]["training_npy_file"]), X_train_vectorized)
-    np.save(Path(params["paths"]["validation_npy_file"]), X_val_vectorized)
-    np.save(Path(params["paths"]["testing_npy_file"]), X_test_vectorized)
+    np.save(training_npy_path, X_train_vectorized)
+    np.save(testing_npy_path, X_test_vectorized)
+    np.save(validation_npy_path, X_val_vectorized)
     logging.info("Vectorized data saved successfully.")
 
-    logging.info("Saving vectorizer to .pkl file...")
-    save_pkl(vectorizer, Path(params["paths"]["vectorizer_file"]))
-    logging.info("Vectorizer saved successfully.")
+    save_pkl(vectorizer, vectorizer_path)
+
+
+if __name__ == "__main__":
+    params = dvc.api.params_show(stages="vectorization")
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format="%(asctime)s - %(levelname)s - %(message)s",
+    )
+
+    vectorize(
+        training_csv_path=Path(params["paths"]["training_csv_file"]),
+        testing_csv_path=Path(params["paths"]["testing_csv_file"]),
+        validation_csv_path=Path(params["paths"]["validation_csv_file"]),
+        training_npy_path=Path(params["paths"]["training_npy_file"]),
+        testing_npy_path=Path(params["paths"]["testing_npy_file"]),
+        validation_npy_path=Path(params["paths"]["validation_npy_file"]),
+        vectorizer_path=Path(params["paths"]["vectorizer_file"]),
+        kmer_size=params["kmer_size"],
+    )

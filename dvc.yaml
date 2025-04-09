@@ -1,4 +1,5 @@
 stages:
+  # TODO add validate params stage
   download_genomes:
     # Download raw genome and gene data with Entrez
     cmd: poetry run python src/data_loading/entrez_downloader.py
@@ -69,6 +70,9 @@ stages:
     params:
       - constants.yaml:
         - paths
+      - train_test_split:
+        - test_size
+        - validation_size
     outs:
       - data/processed/training.csv
       - data/processed/testing.csv
