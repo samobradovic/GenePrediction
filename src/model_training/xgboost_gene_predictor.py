@@ -1,8 +1,8 @@
 import logging
 from pathlib import Path
 
+import dill
 import dvc.api
-import numpy as np
 import pandas as pd
 from sklearn.metrics import accuracy_score
 from xgboost import XGBClassifier
@@ -40,7 +40,7 @@ def train(X_train, y_train, X_val, y_val):
         X_train,
         y_train,
         eval_set=[(X_val, y_val)],
-        verbose=True,  # Set to True to see progress during training
+        verbose=True,
     )
     logging.info("Training complete")
 
@@ -69,9 +69,12 @@ logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(message)s",
 )
 if __name__ == "__main__":
-    X_train = np.load(Path(params["paths"]["training_npy_file"]))
+    with open(Path(params["paths"]["training_vectorized_file"]), "rb") as f:
+        X_train = dill.load(f)
     y_train = pd.read_csv(Path(params["paths"]["training_csv_file"]))["IsGene"].values
-    X_val = np.load(Path(params["paths"]["validation_npy_file"]))
+
+    with open(Path(params["paths"]["validation_vectorized_file"]), "rb") as f:
+        X_val = dill.load(f)
     y_val = pd.read_csv(Path(params["paths"]["validation_csv_file"]))["IsGene"].values
 
     model = train(X_train, y_train, X_val, y_val)

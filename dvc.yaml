@@ -55,9 +55,7 @@ stages:
     params:
       - constants.yaml:
         - paths
-      - gene_lengths:
-        - min
-        - max
+      - gene_lengths
     outs:
       - data/raw/combined_clean.csv
 
@@ -70,9 +68,7 @@ stages:
     params:
       - constants.yaml:
         - paths
-      - train_test_split:
-        - test_size
-        - validation_size
+      - train_test_split
     outs:
       - data/processed/training.csv
       - data/processed/testing.csv
@@ -92,18 +88,18 @@ stages:
         - paths
     outs:
       - data/models/count_vectorizer.pkl
-      - data/processed/training.npy
-      - data/processed/testing.npy
-      - data/processed/validation.npy
+      - data/processed/training_vectorized.pkl
+      - data/processed/testing_vectorized.pkl
+      - data/processed/validation_vectorized.pkl
 
   xgb_training:
     # Train the XGBoost model using the training data
     cmd: poetry run python src/model_training/xgboost_gene_predictor.py
     deps:
       - src/model_training/xgboost_gene_predictor.py
-      - data/processed/training.npy
+      - data/processed/training_vectorized.pkl
       - data/processed/training.csv
-      - data/processed/validation.npy
+      - data/processed/validation_vectorized.pkl
       - data/processed/validation.csv
     params:
       - constants.yaml:
@@ -118,7 +114,7 @@ stages:
       - src/evaluation/evaluation.py
       - data/models/xgb_model.pkl
       - data/models/count_vectorizer.pkl
-      - data/processed/testing.npy
+      - data/processed/testing_vectorized.pkl
       - data/processed/testing.csv
     params:
       - constants.yaml:

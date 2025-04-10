@@ -4,7 +4,6 @@ from pathlib import Path
 import dill
 import dvc.api
 import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
 from sklearn.metrics import (
     ConfusionMatrixDisplay,
@@ -84,7 +83,8 @@ logging.basicConfig(
 params = dvc.api.params_show(stages="evaluation")
 
 if __name__ == "__main__":
-    X_test = np.load(Path(params["paths"]["testing_npy_file"]))
+    with open(Path(params["paths"]["testing_vectorized_file"]), "rb") as f:
+        X_test = dill.load(f)
     y_test = pd.read_csv(Path(params["paths"]["testing_csv_file"]))["IsGene"].values
 
     model = dill.load(open(Path(params["paths"]["model_file"]), "rb"))

@@ -9,8 +9,8 @@ stages:
       size: 7601
     - path: src/helpers/filesystem_helper.py
       hash: md5
-      md5: 29d099fca775e0f32d1a022c60d87cfc
-      size: 609
+      md5: 08bd53fa76162c220fc120624049ffdf
+      size: 667
     params:
       params.yaml:
         dataset_size: small
@@ -44,9 +44,9 @@ stages:
           testing_csv_file: data/processed/testing.csv
           training_csv_file: data/processed/training.csv
           validation_csv_file: data/processed/validation.csv
-          testing_npy_file: data/processed/testing.npy
-          training_npy_file: data/processed/training.npy
-          validation_npy_file: data/processed/validation.npy
+          testing_vectorized_file: data/processed/testing_vectorized.pkl
+          training_vectorized_file: data/processed/training_vectorized.pkl
+          validation_vectorized_file: data/processed/validation_vectorized.pkl
           model_folder: data/models
           model_file: data/models/xgb_model.pkl
           vectorizer_file: data/models/count_vectorizer.pkl
@@ -56,13 +56,13 @@ stages:
     outs:
     - path: data/raw/genes
       hash: md5
-      md5: 23cccc1f91d2db55791b860ee96403ab.dir
-      size: 10167358
+      md5: bbae897f7cb293dc49451239d4cc2e61.dir
+      size: 9677372
       nfiles: 2
     - path: data/raw/genomes
       hash: md5
-      md5: efe903764cb0e7a0920e9957d0dac612.dir
-      size: 45707335
+      md5: 219bc7ab654421f962675a0faa440c9a.dir
+      size: 31863975
       nfiles: 2
   csv_converter:
     cmd: poetry run python src/data_preprocessing/fasta_to_csv_converter.py
@@ -112,13 +112,17 @@ stages:
     deps:
     - path: data/raw/combined_clean.csv
       hash: md5
-      md5: 8bf1d442dd462e345c6c807b517066d8
-      size: 14446739
+      md5: a1ec3f923db67c8d47b85e4237b54bf8
+      size: 10949649
     - path: src/data_preprocessing/train_test_splitter.py
       hash: md5
-      md5: be9097c5f1ddbdc15a2dea9d56b744f6
-      size: 2149
+      md5: 78ae7d357af7fbc841957dbe12ceb99f
+      size: 4158
     params:
+      params.yaml:
+        train_test_split:
+          test_size: 0.2
+          validation_size: 0.2
       constants.yaml:
         paths:
           raw_data_folder: data/raw
@@ -131,25 +135,25 @@ stages:
           testing_csv_file: data/processed/testing.csv
           training_csv_file: data/processed/training.csv
           validation_csv_file: data/processed/validation.csv
-          testing_npy_file: data/processed/testing.npy
-          training_npy_file: data/processed/training.npy
-          validation_npy_file: data/processed/validation.npy
+          testing_vectorized_file: data/processed/testing_vectorized.pkl
+          training_vectorized_file: data/processed/training_vectorized.pkl
+          validation_vectorized_file: data/processed/validation_vectorized.pkl
           model_folder: data/models
           model_file: data/models/xgb_model.pkl
           vectorizer_file: data/models/count_vectorizer.pkl
     outs:
     - path: data/processed/testing.csv
       hash: md5
-      md5: ef9b3aaec574594e51e9c451dfdfbe59
-      size: 2900192
+      md5: 35058e98eed6679cdfebd60ba916a3ff
+      size: 2204216
     - path: data/processed/training.csv
       hash: md5
-      md5: c81027247003d93f9c6cc8d019b7ef58
-      size: 8642788
+      md5: fefd0479191dc2c1e38dbe04fd0c0f85
+      size: 6546324
     - path: data/processed/validation.csv
       hash: md5
-      md5: 936f64b0428903a81d2241008048fb3d
-      size: 2903793
+      md5: e0bef5bc610133d1e2494090596f39de
+      size: 2199143
   vectorizer:
     cmd: poetry run python src/data_preprocessing/vectorizer.py
     deps:
@@ -308,13 +312,13 @@ stages:
     deps:
     - path: data/raw/genes
       hash: md5
-      md5: 23cccc1f91d2db55791b860ee96403ab.dir
-      size: 10167358
+      md5: bbae897f7cb293dc49451239d4cc2e61.dir
+      size: 9677372
       nfiles: 2
     - path: src/data_preprocessing/fasta_to_csv_converter.py
       hash: md5
-      md5: 011bb63d12b2aa92158660601c8b40d0
-      size: 1167
+      md5: cf6a96428e48a2b51426f00a0645ea54
+      size: 1407
     params:
       constants.yaml:
         paths:
@@ -328,33 +332,33 @@ stages:
           testing_csv_file: data/processed/testing.csv
           training_csv_file: data/processed/training.csv
           validation_csv_file: data/processed/validation.csv
-          testing_npy_file: data/processed/testing.npy
-          training_npy_file: data/processed/training.npy
-          validation_npy_file: data/processed/validation.npy
+          testing_vectorized_file: data/processed/testing_vectorized.pkl
+          training_vectorized_file: data/processed/training_vectorized.pkl
+          validation_vectorized_file: data/processed/validation_vectorized.pkl
           model_folder: data/models
           model_file: data/models/xgb_model.pkl
           vectorizer_file: data/models/count_vectorizer.pkl
     outs:
     - path: data/raw/genes.csv
       hash: md5
-      md5: c5067c77c1012084d6d5f3f260969f4a
-      size: 8946686
+      md5: 96a4118f3c360f2b2c05f4e7a2b08335
+      size: 8474229
   non_gene_generation:
     cmd: poetry run python src/data_preprocessing/non_gene_generator.py
     deps:
     - path: data/raw/genes
       hash: md5
-      md5: 23cccc1f91d2db55791b860ee96403ab.dir
-      size: 10167358
+      md5: bbae897f7cb293dc49451239d4cc2e61.dir
+      size: 9677372
       nfiles: 2
     - path: data/raw/genes.csv
       hash: md5
-      md5: c5067c77c1012084d6d5f3f260969f4a
-      size: 8946686
+      md5: 96a4118f3c360f2b2c05f4e7a2b08335
+      size: 8474229
     - path: data/raw/genomes
       hash: md5
-      md5: efe903764cb0e7a0920e9957d0dac612.dir
-      size: 45707335
+      md5: 219bc7ab654421f962675a0faa440c9a.dir
+      size: 31863975
       nfiles: 2
     - path: src/data_preprocessing/non_gene_generator.py
       hash: md5
@@ -373,36 +377,36 @@ stages:
           testing_csv_file: data/processed/testing.csv
           training_csv_file: data/processed/training.csv
           validation_csv_file: data/processed/validation.csv
-          testing_npy_file: data/processed/testing.npy
-          training_npy_file: data/processed/training.npy
-          validation_npy_file: data/processed/validation.npy
+          testing_vectorized_file: data/processed/testing_vectorized.pkl
+          training_vectorized_file: data/processed/training_vectorized.pkl
+          validation_vectorized_file: data/processed/validation_vectorized.pkl
           model_folder: data/models
           model_file: data/models/xgb_model.pkl
           vectorizer_file: data/models/count_vectorizer.pkl
     outs:
     - path: data/raw/combined.csv
       hash: md5
-      md5: ff5d068e6f922ebac33275b187d82942
-      size: 14556686
+      md5: eb92131c2c8fde6b048b5b84b3de215d
+      size: 12794229
   vectorization:
     cmd: poetry run python src/data_preprocessing/vectorizer.py
     deps:
     - path: data/processed/testing.csv
       hash: md5
-      md5: ef9b3aaec574594e51e9c451dfdfbe59
-      size: 2900192
+      md5: 35058e98eed6679cdfebd60ba916a3ff
+      size: 2204216
     - path: data/processed/training.csv
       hash: md5
-      md5: c81027247003d93f9c6cc8d019b7ef58
-      size: 8642788
+      md5: fefd0479191dc2c1e38dbe04fd0c0f85
+      size: 6546324
     - path: data/processed/validation.csv
       hash: md5
-      md5: 936f64b0428903a81d2241008048fb3d
-      size: 2903793
+      md5: e0bef5bc610133d1e2494090596f39de
+      size: 2199143
     - path: src/data_preprocessing/vectorizer.py
       hash: md5
-      md5: ea0eb39b970695bf48104033314407f8
-      size: 3051
+      md5: f85152104e533d474f0962889e46cf80
+      size: 4400
     params:
       params.yaml:
         kmer_size: 3
@@ -418,52 +422,52 @@ stages:
           testing_csv_file: data/processed/testing.csv
           training_csv_file: data/processed/training.csv
           validation_csv_file: data/processed/validation.csv
-          testing_npy_file: data/processed/testing.npy
-          training_npy_file: data/processed/training.npy
-          validation_npy_file: data/processed/validation.npy
+          testing_vectorized_file: data/processed/testing_vectorized.pkl
+          training_vectorized_file: data/processed/training_vectorized.pkl
+          validation_vectorized_file: data/processed/validation_vectorized.pkl
           model_folder: data/models
           model_file: data/models/xgb_model.pkl
           vectorizer_file: data/models/count_vectorizer.pkl
     outs:
     - path: data/models/count_vectorizer.pkl
       hash: md5
-      md5: 202a77ba612ad396ef4d96e343aacf81
-      size: 5356
-    - path: data/processed/testing.npy
+      md5: aad4d6531d9ce03d84e397edf2011291
+      size: 6076
+    - path: data/processed/testing_vectorized.pkl
       hash: md5
-      md5: 9efb7b545a8690fa24d2037770c466a0
-      size: 18304128
-    - path: data/processed/training.npy
+      md5: 79da9c7f2f7331c773d5a5dd83ed3677
+      size: 2592611
+    - path: data/processed/training_vectorized.pkl
       hash: md5
-      md5: 9afaf3f2a3fd0c06aa0586e559182cdd
-      size: 54902976
-    - path: data/processed/validation.npy
+      md5: bdfaaeb01602982e4731e07445430432
+      size: 7781911
+    - path: data/processed/validation_vectorized.pkl
       hash: md5
-      md5: 93ea35e114c834343472bfd6eba1cd48
-      size: 18304128
+      md5: 7c08f3f70dc50defdf71dd7cb67b117a
+      size: 2591327
   xgb_training:
     cmd: poetry run python src/model_training/xgboost_gene_predictor.py
     deps:
     - path: data/processed/training.csv
       hash: md5
-      md5: c81027247003d93f9c6cc8d019b7ef58
-      size: 8642788
-    - path: data/processed/training.npy
+      md5: fefd0479191dc2c1e38dbe04fd0c0f85
+      size: 6546324
+    - path: data/processed/training_vectorized.pkl
       hash: md5
-      md5: 9afaf3f2a3fd0c06aa0586e559182cdd
-      size: 54902976
+      md5: bdfaaeb01602982e4731e07445430432
+      size: 7781911
     - path: data/processed/validation.csv
       hash: md5
-      md5: 936f64b0428903a81d2241008048fb3d
-      size: 2903793
-    - path: data/processed/validation.npy
+      md5: e0bef5bc610133d1e2494090596f39de
+      size: 2199143
+    - path: data/processed/validation_vectorized.pkl
       hash: md5
-      md5: 93ea35e114c834343472bfd6eba1cd48
-      size: 18304128
+      md5: 7c08f3f70dc50defdf71dd7cb67b117a
+      size: 2591327
     - path: src/model_training/xgboost_gene_predictor.py
       hash: md5
-      md5: ac7629d1fd390b7f2856d8c2adef95e6
-      size: 2245
+      md5: 8a7b38c3302f2f2db8f486123e498413
+      size: 2299
     params:
       constants.yaml:
         paths:
@@ -477,40 +481,40 @@ stages:
           testing_csv_file: data/processed/testing.csv
           training_csv_file: data/processed/training.csv
           validation_csv_file: data/processed/validation.csv
-          testing_npy_file: data/processed/testing.npy
-          training_npy_file: data/processed/training.npy
-          validation_npy_file: data/processed/validation.npy
+          testing_vectorized_file: data/processed/testing_vectorized.pkl
+          training_vectorized_file: data/processed/training_vectorized.pkl
+          validation_vectorized_file: data/processed/validation_vectorized.pkl
           model_folder: data/models
           model_file: data/models/xgb_model.pkl
           vectorizer_file: data/models/count_vectorizer.pkl
     outs:
     - path: data/models/xgb_model.pkl
       hash: md5
-      md5: 758020580caf5ef8bed0401fb12dd55f
-      size: 584279
+      md5: fe5e2fec3dbe4328165bbd82176e2ce6
+      size: 310392
   evaluation:
     cmd: poetry run python src/evaluation/evaluation.py
     deps:
     - path: data/models/count_vectorizer.pkl
       hash: md5
-      md5: 202a77ba612ad396ef4d96e343aacf81
-      size: 5356
+      md5: aad4d6531d9ce03d84e397edf2011291
+      size: 6076
     - path: data/models/xgb_model.pkl
       hash: md5
-      md5: 758020580caf5ef8bed0401fb12dd55f
-      size: 584279
+      md5: fe5e2fec3dbe4328165bbd82176e2ce6
+      size: 310392
     - path: data/processed/testing.csv
       hash: md5
-      md5: ef9b3aaec574594e51e9c451dfdfbe59
-      size: 2900192
-    - path: data/processed/testing.npy
+      md5: 35058e98eed6679cdfebd60ba916a3ff
+      size: 2204216
+    - path: data/processed/testing_vectorized.pkl
       hash: md5
-      md5: 9efb7b545a8690fa24d2037770c466a0
-      size: 18304128
+      md5: 79da9c7f2f7331c773d5a5dd83ed3677
+      size: 2592611
     - path: src/evaluation/evaluation.py
       hash: md5
-      md5: 7836116258fe3457309632c743ea2b5c
-      size: 2818
+      md5: 62ca4a828e2fd1251ac1a72ae22ace64
+      size: 2861
     params:
       constants.yaml:
         paths:
@@ -524,37 +528,41 @@ stages:
           testing_csv_file: data/processed/testing.csv
           training_csv_file: data/processed/training.csv
           validation_csv_file: data/processed/validation.csv
-          testing_npy_file: data/processed/testing.npy
-          training_npy_file: data/processed/training.npy
-          validation_npy_file: data/processed/validation.npy
+          testing_vectorized_file: data/processed/testing_vectorized.pkl
+          training_vectorized_file: data/processed/training_vectorized.pkl
+          validation_vectorized_file: data/processed/validation_vectorized.pkl
           model_folder: data/models
           model_file: data/models/xgb_model.pkl
           vectorizer_file: data/models/count_vectorizer.pkl
     outs:
     - path: results/confusion_matrix.png
       hash: md5
-      md5: 4fdff37c59c726f9bc3b707c8649b7a3
-      size: 20363
+      md5: e00d21d2bcaccaf410c338a0248538bd
+      size: 20315
     - path: results/precision_recall.png
       hash: md5
-      md5: 1b664d0081b76c472207d213d5a5c50b
-      size: 14515
+      md5: 25b95de3f052b6a04727e793d076f431
+      size: 14965
     - path: results/receiver_operating_characteristic.png
       hash: md5
-      md5: a33fef1dff9e5529b056caaff781ca27
-      size: 29466
+      md5: 8e61c9cf7f0cca93f8dbb40101b976b2
+      size: 29442
   data_cleanup:
     cmd: poetry run python src/data_preprocessing/data_cleanup.py
     deps:
     - path: data/raw/combined.csv
       hash: md5
-      md5: ff5d068e6f922ebac33275b187d82942
-      size: 14556686
+      md5: eb92131c2c8fde6b048b5b84b3de215d
+      size: 12794229
     - path: src/data_preprocessing/data_cleanup.py
       hash: md5
-      md5: f3278e86bc3b747f68de22939e56aecf
-      size: 1217
+      md5: 13128c330a94bd1676020b26c70ca9ef
+      size: 2680
     params:
+      params.yaml:
+        gene_lengths:
+          min: 50
+          max: 10000
       constants.yaml:
         paths:
           raw_data_folder: data/raw
@@ -567,14 +575,14 @@ stages:
           testing_csv_file: data/processed/testing.csv
           training_csv_file: data/processed/training.csv
           validation_csv_file: data/processed/validation.csv
-          testing_npy_file: data/processed/testing.npy
-          training_npy_file: data/processed/training.npy
-          validation_npy_file: data/processed/validation.npy
+          testing_vectorized_file: data/processed/testing_vectorized.pkl
+          training_vectorized_file: data/processed/training_vectorized.pkl
+          validation_vectorized_file: data/processed/validation_vectorized.pkl
           model_folder: data/models
           model_file: data/models/xgb_model.pkl
           vectorizer_file: data/models/count_vectorizer.pkl
     outs:
     - path: data/raw/combined_clean.csv
       hash: md5
-      md5: 8bf1d442dd462e345c6c807b517066d8
-      size: 14446739
+      md5: a1ec3f923db67c8d47b85e4237b54bf8
+      size: 10949649
