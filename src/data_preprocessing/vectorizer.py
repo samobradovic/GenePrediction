@@ -23,12 +23,12 @@ def get_kmers(sequence: str, k: int) -> List[str]:
     Returns:
         List[str]: A list of k-mers extracted from the sequence.
     """
+    if len(sequence) == 0:
+        raise ValueError("The input sequence is empty.")
     if k <= 0 or k > len(sequence):
         raise ValueError(
             "k must be a positive integer less than or equal to the sequence length."
         )
-    if len(sequence) == 0:
-        raise ValueError("The input sequence is empty.")
     return [sequence[i : i + k] for i in range(len(sequence) - k + 1)]
 
 

@@ -296,7 +296,8 @@ class TestGetKmers:
         sequence: str
         kmer_size: int
         expected_output: List[str]
-        raises: type[Exception] | None
+        raises: type[Exception] | None = None
+        exception_message: str | None = None
 
     GET_KMERS_TEST_CASES = [
         GetKmersTestCase(
@@ -304,14 +305,12 @@ class TestGetKmers:
             sequence="ATCG",
             kmer_size=3,
             expected_output=["ATC", "TCG"],
-            raises=None,
         ),
         GetKmersTestCase(
             description="Valid sequence with k=2",
             sequence="GCTA",
             kmer_size=2,
             expected_output=["GC", "CT", "TA"],
-            raises=None,
         ),
         GetKmersTestCase(
             description="Valid sequence with k=4",
@@ -328,7 +327,12 @@ class TestGetKmers:
                 "TACG",
                 "ACGT",
             ],
-            raises=None,
+        ),
+        GetKmersTestCase(
+            description="Valid sequence with special characters",
+            sequence="A@C#G$T",
+            kmer_size=3,
+            expected_output=["A@C", "@C#", "C#G", "#G$", "G$T"],
         ),
         GetKmersTestCase(
             description="Empty sequence",
@@ -336,6 +340,7 @@ class TestGetKmers:
             kmer_size=3,
             expected_output=[],
             raises=ValueError,
+            exception_message="The input sequence is empty.",
         ),
         GetKmersTestCase(
             description="Invalid k (negative value)",
@@ -343,6 +348,8 @@ class TestGetKmers:
             kmer_size=-1,
             expected_output=[],
             raises=ValueError,
+            exception_message="k must be a positive integer less"
+            " than or equal to the sequence length.",
         ),
         GetKmersTestCase(
             description="Invalid k (zero value)",
@@ -350,6 +357,8 @@ class TestGetKmers:
             kmer_size=0,
             expected_output=[],
             raises=ValueError,
+            exception_message="k must be a positive integer less"
+            " than or equal to the sequence length.",
         ),
         GetKmersTestCase(
             description="Invalid k (greater than sequence length)",
@@ -357,6 +366,8 @@ class TestGetKmers:
             kmer_size=5,
             expected_output=[],
             raises=ValueError,
+            exception_message="k must be a positive integer less"
+            " than or equal to the sequence length.",
         ),
     ]
 
@@ -368,7 +379,7 @@ class TestGetKmers:
     def test_get_kmers(self, test_case: GetKmersTestCase):
         # Act & Assert
         if test_case.raises:
-            with pytest.raises(test_case.raises):
+            with pytest.raises(test_case.raises, match=test_case.exception_message):
                 get_kmers(test_case.sequence, test_case.kmer_size)
         else:
             result = get_kmers(test_case.sequence, test_case.kmer_size)
