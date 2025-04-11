@@ -399,9 +399,19 @@ stages:
       size: 2589531
     - path: src/model_training/xgboost_gene_predictor.py
       hash: md5
-      md5: a24f0946d99ab848445bc23812cefb64
-      size: 2279
+      md5: c8f95ed6fe21ab63129dedce748d305f
+      size: 3479
     params:
+      params.yaml:
+        xgb_params:
+          n_estimators: 300
+          max_depth: 10
+          learning_rate: 0.1
+          subsample: 1.0
+          colsample_bytree: 1.0
+          random_state: 42
+          eval_metric: logloss
+          early_stopping_rounds: 10
       constants.yaml:
         paths.model_file: data/models/xgb_model.pkl
         paths.training_csv_file: data/processed/training.csv

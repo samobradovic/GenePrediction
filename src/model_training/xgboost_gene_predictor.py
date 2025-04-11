@@ -1,16 +1,20 @@
 import logging
 from pathlib import Path
+from typing import Tuple
 
 import dill
 import dvc.api
+import numpy as np
 import pandas as pd
-from sklearn.metrics import accuracy_score
+from scipy.sparse import csr_matrix
 from xgboost import XGBClassifier
 
-from helpers.filesystem_helper import save_pkl
+from src.helpers.filesystem_helper import save_pkl
 
 
-def get_training_and_validation_data(paths: dict):
+def get_training_and_validation_data(
+    paths: dict,
+) -> Tuple[csr_matrix, np.ndarray, csr_matrix, np.ndarray]:
     """Loads training and validation data from the specified paths.
 
     Args:
@@ -22,13 +26,20 @@ def get_training_and_validation_data(paths: dict):
         X_val: Validation feature set.
         y_val: Validation labels.
     """
-    with open(paths["training_vectorized_file"], "rb") as f:
-        X_train = dill.load(f)
-    y_train = pd.read_csv(paths["training_csv_file"])["IsGene"].values
-
-    with open(paths["validation_vectorized_file"], "rb") as f:
-        X_val = dill.load(f)
-    y_val = pd.read_csv(paths["validation_csv_file"])["IsGene"].values
+    try:
+        with open(paths["training_vectorized_file"], "rb") as f:
+            X_train: csr_matrix = dill.load(f)
+        with open(paths["validation_vectorized_file"], "rb") as f:
+            X_val: csr_matrix = dill.load(f)
+        y_train: np.ndarray = np.array(
+            pd.read_csv(paths["training_csv_file"])["IsGene"].values
+        )
+        y_val: np.ndarray = np.array(
+            pd.read_csv(paths["validation_csv_file"])["IsGene"].values
+        )
+    except FileNotFoundError as e:
+        logging.error(f"File not found: {e.filename}")
+        raise e
 
     return X_train, y_train, X_val, y_val
 
@@ -60,22 +71,6 @@ def train(paths: dict, xgb_params: dict):
     return xgb_classifier
 
 
-def predict(xgb_classifier, X_test, y_test):
-    """Makes predictions using the trained XGBoost classifier.
-
-    Args:
-        xgb_classifier: Trained XGBoost classifier.
-        X_test: Test feature set.
-        y_test: Test labels.
-
-    Returns:
-        None
-    """
-    y_pred = xgb_classifier.predict(X_test)
-    accuracy = accuracy_score(y_test, y_pred)
-    logging.info(f"Accuracy: {accuracy}")
-
-
 if __name__ == "__main__":
     params = dvc.api.params_show(stages="xgb_training")
     logging.basicConfig(
@@ -85,11 +80,15 @@ if __name__ == "__main__":
 
     train(
         paths={
-            "training_vectorized_file": Path(params["training_vectorized_file"]),
-            "training_csv_file": Path(params["training_csv_file"]),
-            "validation_vectorized_file": Path(params["validation_vectorized_file"]),
-            "validation_csv_file": Path(params["validation_csv_file"]),
-            "model_file": Path(params["model_file"]),
+            "training_vectorized_file": Path(
+                params["paths"]["training_vectorized_file"]
+            ),
+            "training_csv_file": Path(params["paths"]["training_csv_file"]),
+            "validation_vectorized_file": Path(
+                params["paths"]["validation_vectorized_file"]
+            ),
+            "validation_csv_file": Path(params["paths"]["validation_csv_file"]),
+            "model_file": Path(params["paths"]["model_file"]),
         },
         xgb_params={
             "n_estimators": params["xgb_params"]["n_estimators"],

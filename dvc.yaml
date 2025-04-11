@@ -116,6 +116,7 @@ stages:
       - data/processed/validation_vectorized.pkl
       - data/processed/validation.csv
     params:
+      - xgb_params
       - constants.yaml:
         - paths.training_vectorized_file
         - paths.validation_vectorized_file
