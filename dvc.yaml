@@ -13,7 +13,8 @@ stages:
         - file_format
         - max_sizes_gb
         - batch_sizes
-        - paths
+        - paths.genomes_raw_data_folder
+        - paths.genes_raw_data_folder
         - dataset_sizes
         - entrez_email
     outs:
@@ -28,7 +29,8 @@ stages:
       - data/raw/genes
     params:
       - constants.yaml:
-        - paths
+        - paths.genes_raw_data_folder
+        - paths.genes_csv_file
     outs:
       - data/raw/genes.csv
 
@@ -42,7 +44,9 @@ stages:
       - data/raw/genes
     params:
       - constants.yaml:
-        - paths
+        - paths.genes_csv_file
+        - paths.genomes_raw_data_folder
+        - paths.csv_file
     outs:
       - data/raw/combined.csv
 
@@ -54,7 +58,8 @@ stages:
       - data/raw/combined.csv
     params:
       - constants.yaml:
-        - paths
+        - paths.csv_file
+        - paths.csv_file_clean
       - gene_lengths
     outs:
       - data/raw/combined_clean.csv
@@ -67,7 +72,10 @@ stages:
       - data/raw/combined_clean.csv
     params:
       - constants.yaml:
-        - paths
+        - paths.csv_file_clean
+        - paths.training_csv_file
+        - paths.testing_csv_file
+        - paths.validation_csv_file
       - train_test_split
     outs:
       - data/processed/training.csv
@@ -85,7 +93,13 @@ stages:
     params:
       - kmer_size
       - constants.yaml:
-        - paths
+        - paths.training_csv_file
+        - paths.testing_csv_file
+        - paths.validation_csv_file
+        - paths.vectorizer_file
+        - paths.training_vectorized_file
+        - paths.testing_vectorized_file
+        - paths.validation_vectorized_file
     outs:
       - data/models/count_vectorizer.pkl
       - data/processed/training_vectorized.pkl
@@ -103,7 +117,11 @@ stages:
       - data/processed/validation.csv
     params:
       - constants.yaml:
-        - paths
+        - paths.training_vectorized_file
+        - paths.validation_vectorized_file
+        - paths.training_csv_file
+        - paths.validation_csv_file
+        - paths.model_file
     outs:
       - data/models/xgb_model.pkl
 
@@ -118,7 +136,9 @@ stages:
       - data/processed/testing.csv
     params:
       - constants.yaml:
-        - paths
+        - paths.model_file
+        - paths.testing_vectorized_file
+        - paths.testing_csv_file
     plots:
       - results/receiver_operating_characteristic.png
       - results/confusion_matrix.png

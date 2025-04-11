@@ -9,3 +9,13 @@ gene_lengths:
 train_test_split:
   test_size: 0.2
   validation_size: 0.2
+
+xgb_params:
+  n_estimators: 300
+  max_depth: 10
+  learning_rate: 0.1
+  subsample: 1.0
+  colsample_bytree: 1.0
+  random_state: 42
+  eval_metric: logloss
+  early_stopping_rounds: 10
