@@ -291,6 +291,14 @@ stages:
       hash: md5
       md5: cf6a96428e48a2b51426f00a0645ea54
       size: 1407
+    - path: src/helpers/csv_helper.py
+      hash: md5
+      md5: f3d4aa1383c3c5c428ef3e2dd891a6d5
+      size: 699
+    - path: src/helpers/filesystem_helper.py
+      hash: md5
+      md5: 08bd53fa76162c220fc120624049ffdf
+      size: 667
     params:
       constants.yaml:
         paths.genes_csv_file: data/raw/genes.csv
@@ -399,8 +407,8 @@ stages:
       size: 2589531
     - path: src/model_training/xgboost_gene_predictor.py
       hash: md5
-      md5: c8f95ed6fe21ab63129dedce748d305f
-      size: 3479
+      md5: 47d48cdd4fc2d4b98243b878eafbe770
+      size: 3426
     params:
       params.yaml:
         xgb_params:

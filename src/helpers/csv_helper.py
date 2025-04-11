@@ -12,7 +12,7 @@ def write_string_sequences_to_csv(
     logging.info("Writing sequences to CSV...")
 
     try:
-        with open(csv_destination_path, "w") as f:
+        with open(csv_destination_path, "w" if write_header else "a") as f:
             if write_header:
                 f.write("IsGene,Sequence\n")
             for sequence in sequences:

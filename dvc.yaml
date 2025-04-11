@@ -27,6 +27,8 @@ stages:
     deps:
       - src/data_preprocessing/fasta_to_csv_converter.py
       - data/raw/genes
+      - src/helpers/filesystem_helper.py
+      - src/helpers/csv_helper.py
     params:
       - constants.yaml:
         - paths.genes_raw_data_folder
