@@ -74,15 +74,14 @@ def evaluate_xgb_model(model, X_test, y_test):
     # shap.summary_plot(shap_values, X_test)
 
 
-logging.getLogger("matplotlib").setLevel(logging.WARNING)
-logging.getLogger("PIL").setLevel(logging.WARNING)
-logging.basicConfig(
-    level=logging.DEBUG,
-    format="%(asctime)s - %(levelname)s - %(message)s",
-)
-params = dvc.api.params_show(stages="evaluation")
-
 if __name__ == "__main__":
+    logging.getLogger("matplotlib").setLevel(logging.WARNING)
+    logging.getLogger("PIL").setLevel(logging.WARNING)
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format="%(asctime)s - %(levelname)s - %(message)s",
+    )
+    params = dvc.api.params_show(stages="evaluation")
     with open(Path(params["paths"]["testing_vectorized_file"]), "rb") as f:
         X_test = dill.load(f)
     y_test = pd.read_csv(Path(params["paths"]["testing_csv_file"]))["IsGene"].values
