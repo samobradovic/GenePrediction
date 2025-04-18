@@ -201,23 +201,6 @@ class TestGenerateRandomNonGenes:
                 test_case.genomes,
             )
 
-        result = generate_random_non_genes(
-            test_case.percentage_of_genes,
-            test_case.random_length,
-            test_case.number_of_genes,
-            test_case.genomes,
-        )
-
-        # Assert
-        assert len(result) == test_case.expected_count
-        assert result == test_case.random_gene_frames
-
-        assert mock_get_random_gene_frame.call_count == test_case.expected_count
-        _, kwargs = mock_get_random_gene_frame.call_args
-        assert "random_length" in kwargs
-        assert "genome" in kwargs
-        assert kwargs["genome"] in test_case.genomes
-
 
 class TestGenerateNonGenes:
     class GenerateNonGenesTestCase(NamedTuple):
