@@ -16,6 +16,17 @@ from src.helpers.fasta_helper import get_string_sequences_from_directory
 
 
 def get_random_gene_frame(genome: str, random_length: int) -> str:
+    """
+    Get a random gene frame from the given genome.
+
+    Args:
+        genome (str): Genome sequence.
+        random_length (int): Length of the random gene frame.
+
+    Returns:
+        str: Random gene frame.
+    """
+
     genome_length = len(genome)
     random_start_index = random.randint(0, genome_length - random_length)
     random_end_index = min(random_start_index + random_length, genome_length)
@@ -28,6 +39,18 @@ def generate_random_non_genes(
     number_of_genes: int,
     genomes: List[str],
 ) -> List[str]:
+    """
+    Generate random non-genes from the given genomes.
+
+    Args:
+        percentage_of_genes (float): Percentage of genes to generate.
+        random_length (int): Length of the random gene frames.
+        number_of_genes (int): Number of genes to generate.
+        genomes (List[str]): List of genome sequences.
+
+    Returns:
+        List[str]: List of randomly generated non-genes.
+    """
     logging.info("Generating non-genes...")
 
     non_genes = []
@@ -50,6 +73,16 @@ def generate_random_non_genes(
 def generate_non_genes(
     genes_csv_file: Path, genomes_raw_data_folder: Path, combined_csv_file: Path
 ):
+    """
+    Generate non-genes from the given genomes and save them to a CSV file.
+
+    Args:
+        genes_csv_file (Path): Path to the CSV file containing gene sequences.
+        genomes_raw_data_folder (Path): Path to the folder containing genome sequences.
+        combined_csv_file (Path): Path to the CSV file where non-genes will be saved.
+
+    """
+
     gene_lengths: pd.Series[int] = get_iterable_series_sequence_lengths_from_csv(
         genes_csv_file,
     )

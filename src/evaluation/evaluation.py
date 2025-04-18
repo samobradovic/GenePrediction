@@ -4,6 +4,7 @@ from pathlib import Path
 import dill
 import dvc.api
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 from sklearn.metrics import (
     ConfusionMatrixDisplay,
@@ -14,6 +15,49 @@ from sklearn.metrics import (
     precision_recall_curve,
     roc_curve,
 )
+
+
+def generate_roc_curve(y_test: np.ndarray, y_probs: np.ndarray, path: Path) -> None:
+    """
+    Generate and save the ROC curve plot.
+
+    Args:
+        y_test (np.ndarray): True labels for the test set.
+        y_probs (np.ndarray): Predicted probabilities for the positive class.
+        path (Path): Path to save the ROC curve plot.
+
+    """
+    fpr, tpr, _ = roc_curve(y_test, y_probs)
+    roc_auc = auc(fpr, tpr)
+    plt.figure(figsize=(8, 6))
+    plt.plot(fpr, tpr, color="blue", lw=2, label=f"ROC curve (AUC = {roc_auc:.2f})")
+    plt.plot([0, 1], [0, 1], color="gray", lw=2, linestyle="--")
+    plt.xlabel("False Positive Rate")
+    plt.ylabel("True Positive Rate")
+    plt.title("Receiver Operating Characteristic Curve")
+    plt.legend(loc="lower right")
+    plt.savefig(path)
+
+
+def generate_precision_recall_curve(
+    y_test: np.ndarray, y_probs: np.ndarray, path: Path
+) -> None:
+    """
+    Generate and save the Precision-Recall curve plot.
+
+    Args:
+        y_test (np.ndarray): True labels for the test set.
+        y_probs (np.ndarray): Predicted probabilities for the positive class.
+        path (Path): Path to save the Precision-Recall curve plot.
+
+    """
+    precision, recall, _ = precision_recall_curve(y_test, y_probs)
+    plt.figure(figsize=(8, 6))
+    plt.plot(recall, precision, color="blue", lw=2)
+    plt.xlabel("Recall")
+    plt.ylabel("Precision")
+    plt.title("Precision-Recall Curve")
+    plt.savefig(path)
 
 
 def evaluate_xgb_model(model, X_test, y_test):
@@ -41,37 +85,11 @@ def evaluate_xgb_model(model, X_test, y_test):
     # plt.show()
     plt.savefig("results/confusion_matrix.png")
 
-    # ROC curve
-    fpr, tpr, _ = roc_curve(y_test, y_probs)
-    roc_auc = auc(fpr, tpr)
-    plt.figure(figsize=(8, 6))
-    plt.plot(fpr, tpr, color="blue", lw=2, label=f"ROC curve (AUC = {roc_auc:.2f})")
-    plt.plot([0, 1], [0, 1], color="gray", lw=2, linestyle="--")
-    plt.xlabel("False Positive Rate")
-    plt.ylabel("True Positive Rate")
-    plt.title("Receiver Operating Characteristic Curve")
-    plt.legend(loc="lower right")
-    # plt.show()
-    plt.savefig("results/receiver_operating_characteristic.png")
+    generate_roc_curve(y_test, y_probs, Path("results/roc_curve.png"))
 
-    # Precision-Recall curve
-    precision, recall, _ = precision_recall_curve(y_test, y_probs)
-    plt.figure(figsize=(8, 6))
-    plt.plot(recall, precision, color="green", lw=2)
-    plt.xlabel("Recall")
-    plt.ylabel("Precision")
-    plt.title("Precision-Recall Curve")
-    # plt.show()
-    plt.savefig("results/precision_recall.png")
-
-    # SHAP values
-
-    # if hasattr(X_test, "toarray"):
-    #     X_test = X_test.toarray()
-
-    # explainer = shap.Explainer(model, X_test)
-    # shap_values = explainer(X_test)
-    # shap.summary_plot(shap_values, X_test)
+    generate_precision_recall_curve(
+        y_test, y_probs, Path("results/precision_recall_curve.png")
+    )
 
 
 if __name__ == "__main__":
