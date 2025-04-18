@@ -23,17 +23,24 @@ def get_random_gene_frame(genome: str, random_length: int) -> str:
 
 
 def generate_random_non_genes(
-    random_length: int, number_of_genes: int, genomes: List[str]
+    percentage_of_genes: float,
+    random_length: int,
+    number_of_genes: int,
+    genomes: List[str],
 ) -> List[str]:
     logging.info("Generating non-genes...")
 
     non_genes = []
 
     for _ in tqdm(
-        range(number_of_genes // 2), desc="Generating random non-genes", unit="gene"
+        range(int(number_of_genes * percentage_of_genes)),
+        desc="Generating random non-genes",
+        unit="gene",
     ):
         genome = random.choice(genomes)
-        non_gene_candidate = get_random_gene_frame(genome, random_length)
+        non_gene_candidate = get_random_gene_frame(
+            genome=genome, random_length=random_length
+        )
         non_genes.append(non_gene_candidate)
 
     logging.info("Non-genes generated.")
@@ -53,8 +60,13 @@ def generate_non_genes(
         genomes_raw_data_folder,
     )
     random_non_genes: List[str] = generate_random_non_genes(
-        random_length, number_of_genes, genome_sequences
+        percentage_of_genes=0.5,
+        random_length=random_length,
+        number_of_genes=number_of_genes,
+        genomes=genome_sequences,
     )
+
+    # TODO: Add non-random non-genes generation
 
     copy_csv_file(
         source_csv_file=genes_csv_file,
