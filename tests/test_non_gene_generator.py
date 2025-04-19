@@ -211,6 +211,7 @@ class TestGenerateNonGenes:
         gene_lengths: pd.Series
         random_non_genes: List[str]
         genome_sequences: List[str]
+        percentage_of_genes: float
 
     TEST_CASES = [
         GenerateNonGenesTestCase(
@@ -221,6 +222,7 @@ class TestGenerateNonGenes:
             gene_lengths=pd.Series([4, 5, 6]),
             random_non_genes=["ATCG", "GCTA", "TAGC"],
             genome_sequences=["ATCGATCG", "GCTAGCTA"],
+            percentage_of_genes=0.5,
         ),
         GenerateNonGenesTestCase(
             description="Generate non-genes with more lengths then genomes",
@@ -230,6 +232,7 @@ class TestGenerateNonGenes:
             gene_lengths=pd.Series([3, 4, 5, 6, 2, 5, 6, 3, 3, 2]),
             random_non_genes=["ATC", "GCT", "TAG"],
             genome_sequences=["ATCGATCG", "GCTAGCTA"],
+            percentage_of_genes=0.5,
         ),
         GenerateNonGenesTestCase(
             description="Generate non-genes with empty genome sequences",
@@ -239,6 +242,7 @@ class TestGenerateNonGenes:
             gene_lengths=pd.Series([4, 5, 6]),
             random_non_genes=[],
             genome_sequences=[],
+            percentage_of_genes=0.5,
         ),
     ]
 
@@ -277,6 +281,7 @@ class TestGenerateNonGenes:
 
         # Act
         generate_non_genes(
+            test_case.percentage_of_genes,
             test_case.genes_csv_file,
             test_case.genomes_raw_data_folder,
             test_case.combined_csv_file,
@@ -305,6 +310,8 @@ class TestGenerateNonGenes:
         assert "random_length" in kwargs
         assert "number_of_genes" in kwargs
         assert "genomes" in kwargs
+        assert "percentage_of_genes" in kwargs
+        assert kwargs["percentage_of_genes"] == test_case.percentage_of_genes
         assert kwargs["number_of_genes"] == len(test_case.gene_lengths)
         assert kwargs["genomes"] == test_case.genome_sequences
         assert kwargs["random_length"] in test_case.gene_lengths.values

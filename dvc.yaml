@@ -45,6 +45,7 @@ stages:
       - data/raw/genomes
       - data/raw/genes
     params:
+      - percentage_of_random_non_genes
       - constants.yaml:
         - paths.genes_csv_file
         - paths.genomes_raw_data_folder

@@ -71,12 +71,16 @@ def generate_random_non_genes(
 
 
 def generate_non_genes(
-    genes_csv_file: Path, genomes_raw_data_folder: Path, combined_csv_file: Path
+    percentage_of_random_non_genes: float,
+    genes_csv_file: Path,
+    genomes_raw_data_folder: Path,
+    combined_csv_file: Path,
 ):
     """
     Generate non-genes from the given genomes and save them to a CSV file.
 
     Args:
+        percentage_of_random_non_genes (float): Percentage of random non-genes to gen
         genes_csv_file (Path): Path to the CSV file containing gene sequences.
         genomes_raw_data_folder (Path): Path to the folder containing genome sequences.
         combined_csv_file (Path): Path to the CSV file where non-genes will be saved.
@@ -93,7 +97,7 @@ def generate_non_genes(
         genomes_raw_data_folder,
     )
     random_non_genes: List[str] = generate_random_non_genes(
-        percentage_of_genes=0.5,
+        percentage_of_genes=percentage_of_random_non_genes,
         random_length=random_length,
         number_of_genes=number_of_genes,
         genomes=genome_sequences,
@@ -121,6 +125,7 @@ if __name__ == "__main__":
     )
 
     generate_non_genes(
+        percentage_of_random_non_genes=params["percentage_of_random_non_genes"],
         genes_csv_file=Path(params["paths"]["genes_csv_file"]),
         genomes_raw_data_folder=Path(params["paths"]["genomes_raw_data_folder"]),
         combined_csv_file=Path(params["paths"]["csv_file"]),
