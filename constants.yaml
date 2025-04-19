@@ -20,6 +20,12 @@ paths:
   model_folder: "data/models"
   model_file: "data/models/xgb_model.pkl"
   vectorizer_file: "data/models/count_vectorizer.pkl"
+  results:
+    classification_report: "data/results/classification_report.txt"
+    confusion_matrix: "data/results/confusion_matrix.png"
+    roc_curve: "data/results/roc_curve.png"
+    precision_recall_curve: "data/results/precision_recall_curve.png"
+    accuracy: "data/results/accuracy.txt"
 
 batch_sizes:
   genes: 5000

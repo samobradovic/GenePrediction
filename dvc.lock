@@ -97,8 +97,8 @@ stages:
     deps:
     - path: data/raw/combined_clean.csv
       hash: md5
-      md5: 8ade1f15f1e3ea5409c9226adf5521be
-      size: 8426633
+      md5: e1b89e560faa4ae64b6186bf8289dc78
+      size: 11851633
     - path: src/data_preprocessing/train_test_splitter.py
       hash: md5
       md5: 78ae7d357af7fbc841957dbe12ceb99f
@@ -116,16 +116,16 @@ stages:
     outs:
     - path: data/processed/testing.csv
       hash: md5
-      md5: 377a0826b59ca08e8098d42575fce461
-      size: 1693343
+      md5: 20299d263c7164fa6f4d5f81eaef66c4
+      size: 2366698
     - path: data/processed/training.csv
       hash: md5
-      md5: 69a3e175028b6e9f29e63b643f627f53
-      size: 5025988
+      md5: fa7507028e95902db5875e641fe49e74
+      size: 7099483
     - path: data/processed/validation.csv
       hash: md5
-      md5: 9c15a535eabd399e5aaece0171f4a24a
-      size: 1707336
+      md5: 28db9a77feaabfe00d8d9da928dbe1ab
+      size: 2385486
   vectorizer:
     cmd: poetry run python src/data_preprocessing/vectorizer.py
     deps:
@@ -293,8 +293,8 @@ stages:
       size: 1407
     - path: src/helpers/csv_helper.py
       hash: md5
-      md5: b8aec029e607ed19f56d2048aa742b7e
-      size: 1471
+      md5: 7558936d6b279e9e6dbb2538f65fd533
+      size: 1473
     - path: src/helpers/filesystem_helper.py
       hash: md5
       md5: 08bd53fa76162c220fc120624049ffdf
@@ -327,8 +327,8 @@ stages:
       nfiles: 2
     - path: src/data_preprocessing/non_gene_generator.py
       hash: md5
-      md5: 09f75085a695805664131afa50b19a8a
-      size: 2516
+      md5: 849735a502845fb3bf295fdb89d6d718
+      size: 3847
     params:
       constants.yaml:
         paths.csv_file: data/raw/combined.csv
@@ -337,23 +337,23 @@ stages:
     outs:
     - path: data/raw/combined.csv
       hash: md5
-      md5: f0387034e25c17a36590250496c95c2e
-      size: 10373102
+      md5: ddacc9672ced0a824f960c4fb9be3afb
+      size: 13798102
   vectorization:
     cmd: poetry run python src/data_preprocessing/vectorizer.py
     deps:
     - path: data/processed/testing.csv
       hash: md5
-      md5: 377a0826b59ca08e8098d42575fce461
-      size: 1693343
+      md5: 20299d263c7164fa6f4d5f81eaef66c4
+      size: 2366698
     - path: data/processed/training.csv
       hash: md5
-      md5: 69a3e175028b6e9f29e63b643f627f53
-      size: 5025988
+      md5: fa7507028e95902db5875e641fe49e74
+      size: 7099483
     - path: data/processed/validation.csv
       hash: md5
-      md5: 9c15a535eabd399e5aaece0171f4a24a
-      size: 1707336
+      md5: 28db9a77feaabfe00d8d9da928dbe1ab
+      size: 2385486
     - path: src/data_preprocessing/vectorizer.py
       hash: md5
       md5: 00d3206cfecce087b8a46ddaf4cb716e
@@ -372,39 +372,39 @@ stages:
     outs:
     - path: data/models/count_vectorizer.pkl
       hash: md5
-      md5: d4a7f262c3367fa900588a6d3d2d8b66
+      md5: e0fec287a9b2e97a863890052304f894
       size: 5617
     - path: data/processed/testing_vectorized.pkl
       hash: md5
-      md5: 35f3f9481045f6cf8cf3b3604978ac13
-      size: 1810911
+      md5: f6b9db739d7d326f0c28c1787d62b161
+      size: 1826751
     - path: data/processed/training_vectorized.pkl
       hash: md5
-      md5: 23722b37dd094fc58e1f69750eea3bfe
-      size: 5420391
+      md5: 82a4e2cab39193cf7b72e89bbb208aeb
+      size: 5472495
     - path: data/processed/validation_vectorized.pkl
       hash: md5
-      md5: 3eb465cac8eff04c23f256370e0a363e
-      size: 1806995
+      md5: 8ebf372fbd23334fb8a6788548687920
+      size: 1822487
   xgb_training:
     cmd: poetry run python src/model_training/xgboost_gene_predictor.py
     deps:
     - path: data/processed/training.csv
       hash: md5
-      md5: 69a3e175028b6e9f29e63b643f627f53
-      size: 5025988
+      md5: fa7507028e95902db5875e641fe49e74
+      size: 7099483
     - path: data/processed/training_vectorized.pkl
       hash: md5
-      md5: 23722b37dd094fc58e1f69750eea3bfe
-      size: 5420391
+      md5: 82a4e2cab39193cf7b72e89bbb208aeb
+      size: 5472495
     - path: data/processed/validation.csv
       hash: md5
-      md5: 9c15a535eabd399e5aaece0171f4a24a
-      size: 1707336
+      md5: 28db9a77feaabfe00d8d9da928dbe1ab
+      size: 2385486
     - path: data/processed/validation_vectorized.pkl
       hash: md5
-      md5: 3eb465cac8eff04c23f256370e0a363e
-      size: 1806995
+      md5: 8ebf372fbd23334fb8a6788548687920
+      size: 1822487
     - path: src/model_training/xgboost_gene_predictor.py
       hash: md5
       md5: 47d48cdd4fc2d4b98243b878eafbe770
@@ -429,56 +429,69 @@ stages:
     outs:
     - path: data/models/xgb_model.pkl
       hash: md5
-      md5: 695a6ee50d23d7893626a5fa02893bb7
-      size: 377030
+      md5: fbaca139e6b06cf158d90e9e42db8439
+      size: 216172
   evaluation:
     cmd: poetry run python src/evaluation/evaluation.py
     deps:
     - path: data/models/count_vectorizer.pkl
       hash: md5
-      md5: d4a7f262c3367fa900588a6d3d2d8b66
+      md5: e0fec287a9b2e97a863890052304f894
       size: 5617
     - path: data/models/xgb_model.pkl
       hash: md5
-      md5: 695a6ee50d23d7893626a5fa02893bb7
-      size: 377030
+      md5: fbaca139e6b06cf158d90e9e42db8439
+      size: 216172
     - path: data/processed/testing.csv
       hash: md5
-      md5: 377a0826b59ca08e8098d42575fce461
-      size: 1693343
+      md5: 20299d263c7164fa6f4d5f81eaef66c4
+      size: 2366698
     - path: data/processed/testing_vectorized.pkl
       hash: md5
-      md5: 35f3f9481045f6cf8cf3b3604978ac13
-      size: 1810911
+      md5: f6b9db739d7d326f0c28c1787d62b161
+      size: 1826751
     - path: src/evaluation/evaluation.py
       hash: md5
-      md5: 882728e656c65e6493694e159e11a820
-      size: 2841
+      md5: 8560d8f63728c0c18696d2f502888b39
+      size: 6198
     params:
       constants.yaml:
         paths.model_file: data/models/xgb_model.pkl
+        paths.results.accuracy: data/results/accuracy.txt
+        paths.results.classification_report: data/results/classification_report.txt
+        paths.results.confusion_matrix: data/results/confusion_matrix.png
+        paths.results.precision_recall_curve: data/results/precision_recall_curve.png
+        paths.results.roc_curve: data/results/roc_curve.png
         paths.testing_csv_file: data/processed/testing.csv
         paths.testing_vectorized_file: data/processed/testing_vectorized.pkl
     outs:
-    - path: results/confusion_matrix.png
+    - path: data/results/accuracy.txt
       hash: md5
-      md5: faad1fb3c21846f3198b6ab9dcbe89e7
-      size: 19760
-    - path: results/precision_recall.png
+      md5: 03a6502686c64e5444d1199dffd92db2
+      size: 24
+    - path: data/results/classification_report.txt
       hash: md5
-      md5: 61537f43f8cc50c315e11afdced3e5ff
-      size: 14273
-    - path: results/receiver_operating_characteristic.png
+      md5: cc6dac71321054da98a28e0ce71368c3
+      size: 388
+    - path: data/results/confusion_matrix.png
       hash: md5
-      md5: 9fa8b2a3fb1e6fc05038c02b36551246
-      size: 29499
+      md5: 4d711e1e23ff47f51205825adffd40d0
+      size: 19900
+    - path: data/results/precision_recall_curve.png
+      hash: md5
+      md5: e3b0146778c9c281fa594aeeeef8ff82
+      size: 13917
+    - path: data/results/roc_curve.png
+      hash: md5
+      md5: 2c984c23105f05d17a45619e2f1df068
+      size: 29467
   data_cleanup:
     cmd: poetry run python src/data_preprocessing/data_cleanup.py
     deps:
     - path: data/raw/combined.csv
       hash: md5
-      md5: f0387034e25c17a36590250496c95c2e
-      size: 10373102
+      md5: ddacc9672ced0a824f960c4fb9be3afb
+      size: 13798102
     - path: src/data_preprocessing/data_cleanup.py
       hash: md5
       md5: 13128c330a94bd1676020b26c70ca9ef
@@ -494,5 +507,5 @@ stages:
     outs:
     - path: data/raw/combined_clean.csv
       hash: md5
-      md5: 8ade1f15f1e3ea5409c9226adf5521be
-      size: 8426633
+      md5: e1b89e560faa4ae64b6186bf8289dc78
+      size: 11851633

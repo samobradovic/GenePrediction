@@ -142,7 +142,14 @@ stages:
         - paths.model_file
         - paths.testing_vectorized_file
         - paths.testing_csv_file
+        - paths.results.classification_report
+        - paths.results.confusion_matrix
+        - paths.results.roc_curve
+        - paths.results.precision_recall_curve
+        - paths.results.accuracy
     plots:
-      - results/receiver_operating_characteristic.png
-      - results/confusion_matrix.png
-      - results/precision_recall.png
+      - data/results/roc_curve.png
+      - data/results/confusion_matrix.png
+      - data/results/precision_recall_curve.png
+      - data/results/classification_report.txt
+      - data/results/accuracy.txt
