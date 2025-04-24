@@ -20,6 +20,8 @@ paths:
   model_folder: "data/models"
   model_file: "data/models/xgb_model.pkl"
   vectorizer_file: "data/models/count_vectorizer.pkl"
+  c_lang_folder: "src/c_lang"
+  c_lang_build_folder: "src/c_lang/build"
   results:
     classification_report: "data/results/classification_report.txt"
     confusion_matrix: "data/results/confusion_matrix.png"

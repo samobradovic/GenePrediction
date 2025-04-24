@@ -8,6 +8,7 @@ from scipy.sparse import csr_matrix
 from sklearn.feature_extraction.text import CountVectorizer
 from tqdm import tqdm
 
+from src.c_lang.build import kmers
 from src.helpers.filesystem_helper import save_pkl
 
 
@@ -29,7 +30,8 @@ def get_kmers(sequence: str, k: int) -> List[str]:
         raise ValueError(
             "k must be a positive integer less than or equal to the sequence length."
         )
-    return [sequence[i : i + k] for i in range(len(sequence) - k + 1)]
+    return kmers.get_kmers(sequence, k)
+    # return [sequence[i : i + k] for i in range(len(sequence) - k + 1)]
 
 
 def vectorize_sequences(

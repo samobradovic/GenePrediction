@@ -356,10 +356,15 @@ stages:
       hash: md5
       md5: eba12e76ecc76ffc20967430e18dec5b
       size: 2047159
+    - path: src/c_lang/build
+      hash: md5
+      md5: 8371b7f66ab6c873a2ed66c86b64e03c.dir
+      size: 10752
+      nfiles: 1
     - path: src/data_preprocessing/vectorizer.py
       hash: md5
-      md5: 00d3206cfecce087b8a46ddaf4cb716e
-      size: 5566
+      md5: ffdafc7615266fb97aed078f74c0b5cc
+      size: 5651
     params:
       params.yaml:
         kmer_size: 3
@@ -374,7 +379,7 @@ stages:
     outs:
     - path: data/models/count_vectorizer.pkl
       hash: md5
-      md5: 1414bb9af967e657292736ecc27f0e72
+      md5: fbca9670e4df3dfdec3defe70fb72e39
       size: 5581
     - path: data/processed/testing_vectorized.pkl
       hash: md5
@@ -438,7 +443,7 @@ stages:
     deps:
     - path: data/models/count_vectorizer.pkl
       hash: md5
-      md5: 1414bb9af967e657292736ecc27f0e72
+      md5: fbca9670e4df3dfdec3defe70fb72e39
       size: 5581
     - path: data/models/xgb_model.pkl
       hash: md5
@@ -511,3 +516,28 @@ stages:
       hash: md5
       md5: 22d3d88eb10aa607ff2892465d7fd198
       size: 10346633
+  compile_c_modules:
+    cmd: poetry run python src/c_lang/compile_c_modules.py build_ext
+    deps:
+    - path: src/c_lang/compile_c_modules.py
+      hash: md5
+      md5: 2dd4bdef6bee13c059de81ac65171b21
+      size: 1154
+    - path: src/c_lang/kmers.c
+      hash: md5
+      md5: c1b720ae045f6b1e4de5c45cba003fe6
+      size: 1454
+    - path: src/c_lang/kmers.pyi
+      hash: md5
+      md5: 5b2776537a2653e72439964ea1dd904f
+      size: 56
+    params:
+      constants.yaml:
+        paths.c_lang_build_folder: src/c_lang/build
+        paths.c_lang_folder: src/c_lang
+    outs:
+    - path: src/c_lang/build
+      hash: md5
+      md5: 8371b7f66ab6c873a2ed66c86b64e03c.dir
+      size: 10752
+      nfiles: 1

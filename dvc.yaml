@@ -1,5 +1,20 @@
 stages:
   # TODO add validate params stage
+
+  compile_c_modules:
+    # Compile C modules for faster execution
+    cmd: poetry run python src/c_lang/compile_c_modules.py build_ext
+    deps:
+      - src/c_lang/compile_c_modules.py
+      - src/c_lang/kmers.c
+      - src/c_lang/kmers.pyi
+    params:
+      - constants.yaml:
+        - paths.c_lang_folder
+        - paths.c_lang_build_folder
+    outs:
+      - src/c_lang/build
+
   download_genomes:
     # Download raw genome and gene data with Entrez
     cmd: poetry run python src/data_loading/entrez_downloader.py
@@ -89,6 +104,7 @@ stages:
     # Vectorize the training, testing, and validation data using CountVectorizer
     cmd: poetry run python src/data_preprocessing/vectorizer.py
     deps:
+      - src/c_lang/build 
       - src/data_preprocessing/vectorizer.py
       - data/processed/training.csv
       - data/processed/testing.csv
