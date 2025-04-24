@@ -7,7 +7,6 @@ stages:
     deps:
       - src/c_lang/compile_c_modules.py
       - src/c_lang/kmers.c
-      - src/c_lang/kmers.pyi
     params:
       - constants.yaml:
         - paths.c_lang_folder

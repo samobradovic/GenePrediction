@@ -1,7 +1,6 @@
 #include "Python.h"
 
 static PyObject * get_kmers(PyObject *self, PyObject *args) {
-    
     const char *sequence;
     int k;
 

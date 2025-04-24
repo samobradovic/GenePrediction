@@ -20,4 +20,4 @@ xgb_params:
   eval_metric: logloss
   early_stopping_rounds: 10
 
-percentage_of_random_non_genes: 0.2
+percentage_of_random_non_genes: 0.5
