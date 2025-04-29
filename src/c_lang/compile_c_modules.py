@@ -12,6 +12,8 @@ if __name__ == "__main__":
         format="%(asctime)s - %(levelname)s - %(message)s",
     )
 
+    logging.info("Compiling C modules...")
+
     # We could iterate over the params["paths"]["c_code_folder"] to find all C files
     # and create extensions for each of them, but for now we will just use kmers.c.
     kmers_extension = Extension(
@@ -32,3 +34,5 @@ if __name__ == "__main__":
         ext_modules=[kmers_extension],
         cmdclass={"build_ext": CustomBuildExtension},
     )
+
+    logging.info("C modules compiled successfully.")

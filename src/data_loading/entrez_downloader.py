@@ -200,7 +200,8 @@ if __name__ == "__main__":
     )
     download_data(
         number_of_datapoints=params["dataset_sizes"][f"{dataset_size}"]["genomes"],
-        search_query="Bacteria[Organism] AND complete genome[Title]",
+        search_query="Bacteria[Organism] AND complete genome[Title]"
+        " AND srcdb_refseq[PROP]",
         folder_path=Path(params["paths"]["genomes_raw_data_folder"]),
         max_size_gb=params["max_sizes_gb"]["genomes"],
         batch_size=params["batch_sizes"]["genomes"],
