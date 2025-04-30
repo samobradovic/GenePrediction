@@ -21,8 +21,6 @@
 
 \title{Prokaryotic Gene Prediction From \\ Whole Genome Sequences} 
 
-% Authors are listed in a comma-separated list with superscript numbers indicating affiliations
-% \thanks{} is used for any text that should be placed in a footnote on the first page, such as the corresponding author's email, journal acceptance dates, a copyright/license notice, keywords, etc
 \author{%
 	Srdan Obradovic\textsuperscript{1}
 }
@@ -33,7 +31,7 @@
 % Full-width abstract
 \renewcommand{\maketitlehookd}{%
     \begin{abstract}
-        \noindent Accurate gene prediction is essential for understanding the functional landscape of prokaryotic genomes. In this work, we present a data processing pipeline and an XGBoost-based model for predicting gene locations directly from whole genome sequences. Our method leverages k-mer features to distinguish coding regions from non-coding regions, enabling precise identification of gene structures. In silico experiments on diverse prokaryotic genomes demonstrate the robustness and high predictive performance of our approach.
+        \noindent Accurate gene prediction is essential for understanding the functional landscape of prokaryotic genomes. In this work, we present a machine learning pipeline for predicting gene locations directly from whole genome sequences. Our method leverages k-mer features to distinguish coding regions from non-coding regions, enabling precise identification of gene structures. In silico experiments on diverse prokaryotic genomes demonstrate the high accuracy predictive performance of our approach.
     \end{abstract}
 }
 
@@ -52,11 +50,13 @@
 
 Gene prediction is a fundamental task in genomics, enabling the identification of genomic regions that encode proteins. Accurate gene prediction is critical for understanding the functional elements of genomes, annotating newly sequenced organisms, and advancing fields such as personalized medicine and evolutionary biology. However, the complexity of genomic data, including the presence of non-coding regions and repetitive sequences, poses significant challenges to accurate prediction.
 
+\textbf{[unsubstantiated]}
 Traditional gene prediction methods often rely on sequence alignment or rule-based approaches, which can be computationally expensive and may fail to generalize across diverse datasets. Recent advances in machine learning have opened new avenues for addressing these challenges by leveraging data-driven models to identify patterns in genomic sequences. Among these, gradient-boosting algorithms like XGBoost have gained popularity due to their robustness, scalability, and ability to handle complex feature interactions.
 
-In this study, we present a comprehensive bioinformatics pipeline for gene prediction that integrates data preprocessing, feature extraction, and machine learning. Our approach utilizes k-mer sequence features, which capture local sequence patterns, to differentiate between coding and non-coding regions. To enhance computational efficiency, we incorporate a custom C extension for k-mer generation, significantly reducing the time required to process large genomic datasets.
+In this study, we present a bioinformatics pipeline for gene prediction that integrates data loading, data preprocessing, feature extraction, model training and evaluation. Our approach utilizes k-mer sequence features, which capture local sequence patterns, to differentiate between coding and non-coding regions. To enhance computational efficiency, we incorporate a custom C extension for k-mer generation, significantly reducing the time required to process large genomic datasets.
 
-We evaluate our pipeline using diverse genomic datasets and demonstrate its effectiveness in accurately predicting gene locations. The results highlight the robustness of our method and its potential for application in large-scale genomic studies. By combining efficient data processing with a powerful machine learning model, our approach provides a scalable solution for gene prediction tasks.
+\textbf{[not done yet]}
+We evaluate our pipeline using diverse genomic datasets and demonstrate its effectiveness in accurately predicting gene locations. The results highlight the robustness of our method and its potential for application in large-scale genomic studies. By combining efficient data processing with a powerful machine learning model, our approach provides a reasonable solution for gene prediction tasks.
 
 
 
@@ -66,7 +66,7 @@ We evaluate our pipeline using diverse genomic datasets and demonstrate its effe
 
 \subsection{Data Collection From NCBI Databases}
 
-To build a dataset for gene prediction, we utilized the \href{https://www.ncbi.nlm.nih.gov/books/NBK25501/}{Entrez Programming Utilities (E-utilities)} provided by the \href{https://www.ncbi.nlm.nih.gov/}{National Center for Biotechnology Information (NCBI)}. Entrez is a powerful tool for accessing and retrieving biological data from various NCBI databases, including nucleotide sequences. Our pipeline automates the process of querying and downloading genomic data.
+To build a dataset for gene prediction, we utilized the \href{https://www.ncbi.nlm.nih.gov/books/NBK25501/}{Entrez Programming Utilities (E-utilities)} provided by the \href{https://www.ncbi.nlm.nih.gov/}{National Center for Biotechnology Information (NCBI)}. Entrez is a powerful tool for accessing and retrieving biological data from various NCBI databases, including the \href{https://www.ncbi.nlm.nih.gov/nucleotide/}{nucleotide sequences database}. Our pipeline automates the process of querying and downloading genomic data.
 
 We used the Entrez esearch utility to query the NCBI nucleotide database. Two primary search queries were employed:
 
@@ -74,7 +74,7 @@ We used the Entrez esearch utility to query the NCBI nucleotide database. Two pr
 	\item \textbf{Gene Sequences:} This query retrieves validated gene sequences for Bacterial genomes.
 	\item \textbf{Complete Genomes:} This query retrieves complete genomic sequences of Bacterial organisms.
 \end{enumerate}
-
+\textbf{[delete this section and describe the new data loading that gets ids, then filters to get variety]}
 The search results were sorted by relevancy prior to downloading, ensuring that only the top (N) most relevant data points were retrieved. The value of (N) was defined as a configurable parameter in the pipeline. This approach prioritized the most pertinent sequences for downstream analysis while maintaining efficiency in data retrieval.
 
 \subsection{Data Preprocessing}
@@ -83,7 +83,9 @@ The raw genomic data retrieved from the NCBI nucleotide database requires extens
 
 \subsubsection{Transforming Raw Data into CSV}
 
-The first step in preprocessing is converting the raw genomic data into a structured CSV format. After file conversion, we want to generate negative cases.
+This is a trivial step that simply converts the sequences located in FASTA files into a structured CSV format. The new CSV file contains two columns: the first column indicates whether the sequence is a gene (1) or not (0), and the second column contains the actual nucleotide sequence.
+
+We initially download FASTA files instead of directly obtaining CSV files to ensure the pipeline remains modular and adaptable for use in other projects.
 
 \subsubsection{Generating Negative Cases}
 
