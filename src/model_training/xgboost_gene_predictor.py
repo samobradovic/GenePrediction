@@ -81,14 +81,14 @@ if __name__ == "__main__":
     train(
         paths={
             "training_vectorized_file": Path(
-                params["paths"]["training_vectorized_file"]
+                params["paths"]["processed"]["training_vectorized"]
             ),
-            "training_csv_file": Path(params["paths"]["training_csv_file"]),
+            "training_csv_file": Path(params["paths"]["processed"]["training_csv"]),
             "validation_vectorized_file": Path(
-                params["paths"]["validation_vectorized_file"]
+                params["paths"]["processed"]["validation_vectorized"]
             ),
-            "validation_csv_file": Path(params["paths"]["validation_csv_file"]),
-            "model_file": Path(params["paths"]["model_file"]),
+            "validation_csv_file": Path(params["paths"]["processed"]["validation_csv"]),
+            "model_file": Path(params["paths"]["models"]["xgb_model"]),
         },
         xgb_params={
             "n_estimators": params["xgb_params"]["n_estimators"],

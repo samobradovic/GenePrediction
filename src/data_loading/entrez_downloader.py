@@ -11,6 +11,14 @@ from src.helpers.filesystem_helper import get_folder_size
 
 
 def get_ids_from_file(file_path: Path) -> List[str]:
+    """Reads a file and returns a list of IDs.
+
+    Args:
+        file_path (Path): Path to the file containing IDs.
+
+    Returns:
+        List[str]: List of IDs read from the file.
+    """
     try:
         with open(
             file_path,
@@ -156,12 +164,12 @@ if __name__ == "__main__":
 
     logging.info(f"Downloading data for dataset size: {dataset_size}.")
 
-    gene_ids = get_ids_from_file(Path(params["paths"]["entrez_gene_ids_raw_data"]))
-    genome_ids = get_ids_from_file(Path(params["paths"]["entrez_genome_ids_raw_data"]))
+    gene_ids = get_ids_from_file(Path(params["paths"]["raw"]["gene_ids_file"]))
+    genome_ids = get_ids_from_file(Path(params["paths"]["raw"]["genome_ids_file"]))
 
     download_data(
         ids=gene_ids,
-        folder_path=Path(params["paths"]["genes_raw_data_folder"]),
+        folder_path=Path(params["paths"]["raw"]["genes_dir"]),
         max_size_gb=params["max_sizes_gb"]["genes"],
         batch_size=params["batch_sizes"]["genes"],
         batch_retry_count=params["retry_entrez_request"]["count"],
@@ -170,7 +178,7 @@ if __name__ == "__main__":
     )
     download_data(
         ids=genome_ids,
-        folder_path=Path(params["paths"]["genomes_raw_data_folder"]),
+        folder_path=Path(params["paths"]["raw"]["genomes_dir"]),
         max_size_gb=params["max_sizes_gb"]["genomes"],
         batch_size=params["batch_sizes"]["genomes"],
         batch_retry_count=params["retry_entrez_request"]["count"],

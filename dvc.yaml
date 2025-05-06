@@ -9,8 +9,8 @@ stages:
       - src/c_lang/kmers.c
     params:
       - constants.yaml:
-        - paths.c_lang_folder
-        - paths.c_lang_build_folder
+        - paths.c_lang.src_dir
+        - paths.c_lang.build_dir
     outs:
       - src/c_lang/build
 
@@ -21,9 +21,10 @@ stages:
       - src/data_loading/fetch_ids.py
     params:
       - dataset_size
+      - entrez_search_queries
       - constants.yaml:
-        - paths.entrez_gene_ids_raw_data
-        - paths.entrez_genome_ids_raw_data
+        - paths.raw.genome_ids_file
+        - paths.raw.gene_ids_file
         - dataset_sizes
         - entrez_email
     outs:
@@ -44,10 +45,10 @@ stages:
         - file_format
         - max_sizes_gb
         - batch_sizes
-        - paths.genomes_raw_data_folder
-        - paths.genes_raw_data_folder
-        - paths.entrez_gene_ids_raw_data
-        - paths.entrez_genome_ids_raw_data
+        - paths.raw.genomes_dir
+        - paths.raw.genes_dir
+        - paths.raw.genome_ids_file
+        - paths.raw.gene_ids_file
         - dataset_sizes
         - entrez_email
     outs:
@@ -66,8 +67,8 @@ stages:
       - src/helpers/csv_helper.py
     params:
       - constants.yaml:
-        - paths.genes_raw_data_folder
-        - paths.genes_csv_file
+        - paths.raw.genes_dir
+        - paths.raw.genes_csv
     outs:
       - data/raw/genes.csv
 
@@ -82,9 +83,9 @@ stages:
     params:
       - percentage_of_random_non_genes
       - constants.yaml:
-        - paths.genes_csv_file
-        - paths.genomes_raw_data_folder
-        - paths.csv_file
+        - paths.raw.genes_csv
+        - paths.raw.genomes_dir
+        - paths.raw.combined_csv
     outs:
       - data/raw/combined.csv
 
@@ -96,8 +97,8 @@ stages:
       - data/raw/combined.csv
     params:
       - constants.yaml:
-        - paths.csv_file
-        - paths.csv_file_clean
+        - paths.raw.combined_csv
+        - paths.raw.combined_csv_clean
       - gene_lengths
     outs:
       - data/raw/combined_clean.csv
@@ -110,10 +111,10 @@ stages:
       - data/raw/combined_clean.csv
     params:
       - constants.yaml:
-        - paths.csv_file_clean
-        - paths.training_csv_file
-        - paths.testing_csv_file
-        - paths.validation_csv_file
+        - paths.raw.combined_csv_clean
+        - paths.processed.training_csv
+        - paths.processed.testing_csv
+        - paths.processed.validation_csv
       - train_test_split
     outs:
       - data/processed/training.csv
@@ -132,13 +133,13 @@ stages:
     params:
       - kmer_size
       - constants.yaml:
-        - paths.training_csv_file
-        - paths.testing_csv_file
-        - paths.validation_csv_file
-        - paths.vectorizer_file
-        - paths.training_vectorized_file
-        - paths.testing_vectorized_file
-        - paths.validation_vectorized_file
+        - paths.processed.training_csv
+        - paths.processed.testing_csv
+        - paths.processed.validation_csv
+        - paths.processed.training_vectorized
+        - paths.processed.testing_vectorized
+        - paths.processed.validation_vectorized
+        - paths.models.vectorizer
     outs:
       - data/models/count_vectorizer.pkl
       - data/processed/training_vectorized.pkl
@@ -157,11 +158,11 @@ stages:
     params:
       - xgb_params
       - constants.yaml:
-        - paths.training_vectorized_file
-        - paths.validation_vectorized_file
-        - paths.training_csv_file
-        - paths.validation_csv_file
-        - paths.model_file
+        - paths.processed.training_vectorized
+        - paths.processed.validation_vectorized
+        - paths.processed.training_csv
+        - paths.processed.validation_csv
+        - paths.models.xgb_model
     outs:
       - data/models/xgb_model.pkl
 
@@ -176,9 +177,9 @@ stages:
       - data/processed/testing.csv
     params:
       - constants.yaml:
-        - paths.model_file
-        - paths.testing_vectorized_file
-        - paths.testing_csv_file
+        - paths.models.xgb_model
+        - paths.processed.testing_vectorized
+        - paths.processed.testing_csv
         - paths.results.classification_report
         - paths.results.confusion_matrix
         - paths.results.roc_curve

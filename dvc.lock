@@ -5,8 +5,8 @@ stages:
     deps:
     - path: src/data_loading/entrez_downloader.py
       hash: md5
-      md5: 204a6c55bcc96030d443aac41588355e
-      size: 6325
+      md5: aa7445d433a5a76f5d3643ff43278049
+      size: 6505
     - path: src/helpers/filesystem_helper.py
       hash: md5
       md5: 08bd53fa76162c220fc120624049ffdf
@@ -33,10 +33,10 @@ stages:
         max_sizes_gb:
           genes: 150
           genomes: 150
-        paths.entrez_gene_ids_raw_data: data/raw/gene_ids/entrez_gene_ids.txt
-        paths.entrez_genome_ids_raw_data: data/raw/genome_ids/entrez_genome_ids.txt
-        paths.genes_raw_data_folder: data/raw/genes
-        paths.genomes_raw_data_folder: data/raw/genomes
+        paths.raw.gene_ids_file: data/raw/gene_ids/entrez_gene_ids.txt
+        paths.raw.genes_dir: data/raw/genes
+        paths.raw.genome_ids_file: data/raw/genome_ids/entrez_genome_ids.txt
+        paths.raw.genomes_dir: data/raw/genomes
         retry_entrez_request:
           count: 15
           delay_seconds: 3
@@ -99,35 +99,35 @@ stages:
     deps:
     - path: data/raw/combined_clean.csv
       hash: md5
-      md5: ab02d87da2f3f4d6262a84ef1caf4cd3
-      size: 14670712
+      md5: 93dbd69d7b73194f811d9346cb94582d
+      size: 10102029
     - path: src/data_preprocessing/train_test_splitter.py
       hash: md5
-      md5: 78ae7d357af7fbc841957dbe12ceb99f
-      size: 4158
+      md5: 9e2d777bba4e576d4026b54095722118
+      size: 4193
     params:
       params.yaml:
         train_test_split:
           test_size: 0.2
           validation_size: 0.2
       constants.yaml:
-        paths.csv_file_clean: data/raw/combined_clean.csv
-        paths.testing_csv_file: data/processed/testing.csv
-        paths.training_csv_file: data/processed/training.csv
-        paths.validation_csv_file: data/processed/validation.csv
+        paths.processed.testing_csv: data/processed/testing.csv
+        paths.processed.training_csv: data/processed/training.csv
+        paths.processed.validation_csv: data/processed/validation.csv
+        paths.raw.combined_csv_clean: data/raw/combined_clean.csv
     outs:
     - path: data/processed/testing.csv
       hash: md5
-      md5: 6b9210543c08fa258b74771644fcb4a7
-      size: 2932109
+      md5: 37764ccabbe31db76cf30aeaa253bceb
+      size: 2021759
     - path: data/processed/training.csv
       hash: md5
-      md5: 9dda2ae8a7c4eeda7d813ebaa34139eb
-      size: 8832267
+      md5: 32fbc1aae2505bbb96274abeb8c20ffe
+      size: 6080942
     - path: data/processed/validation.csv
       hash: md5
-      md5: 13e4df2bc07ceb6329a6b4b1eaef4acf
-      size: 2906370
+      md5: 248831ba7a52bbfc3ac507b6811461c8
+      size: 1999362
   vectorizer:
     cmd: poetry run python src/data_preprocessing/vectorizer.py
     deps:
@@ -291,8 +291,8 @@ stages:
       nfiles: 2
     - path: src/data_preprocessing/fasta_to_csv_converter.py
       hash: md5
-      md5: cf6a96428e48a2b51426f00a0645ea54
-      size: 1407
+      md5: 54b022689b1998168477f3a54a0acdba
+      size: 1404
     - path: src/helpers/csv_helper.py
       hash: md5
       md5: 7558936d6b279e9e6dbb2538f65fd533
@@ -303,8 +303,8 @@ stages:
       size: 667
     params:
       constants.yaml:
-        paths.genes_csv_file: data/raw/genes.csv
-        paths.genes_raw_data_folder: data/raw/genes
+        paths.raw.genes_csv: data/raw/genes.csv
+        paths.raw.genes_dir: data/raw/genes
     outs:
     - path: data/raw/genes.csv
       hash: md5
@@ -329,95 +329,95 @@ stages:
       nfiles: 2
     - path: src/data_preprocessing/non_gene_generator.py
       hash: md5
-      md5: b602f4e1363d704e1a65b4998ba3af7b
-      size: 4098
+      md5: 8614e201bf7733f137539f0277d82846
+      size: 4106
     params:
       params.yaml:
         percentage_of_random_non_genes: 0.5
       constants.yaml:
-        paths.csv_file: data/raw/combined.csv
-        paths.genes_csv_file: data/raw/genes.csv
-        paths.genomes_raw_data_folder: data/raw/genomes
+        paths.raw.combined_csv: data/raw/combined.csv
+        paths.raw.genes_csv: data/raw/genes.csv
+        paths.raw.genomes_dir: data/raw/genomes
     outs:
     - path: data/raw/combined.csv
       hash: md5
-      md5: 20714d5fa09064c93c95dc2b50a89188
-      size: 15896962
+      md5: 20443cae1e399d40480e4874a8b62728
+      size: 11326962
   vectorization:
     cmd: poetry run python src/data_preprocessing/vectorizer.py
     deps:
     - path: data/processed/testing.csv
       hash: md5
-      md5: 6b9210543c08fa258b74771644fcb4a7
-      size: 2932109
+      md5: 37764ccabbe31db76cf30aeaa253bceb
+      size: 2021759
     - path: data/processed/training.csv
       hash: md5
-      md5: 9dda2ae8a7c4eeda7d813ebaa34139eb
-      size: 8832267
+      md5: 32fbc1aae2505bbb96274abeb8c20ffe
+      size: 6080942
     - path: data/processed/validation.csv
       hash: md5
-      md5: 13e4df2bc07ceb6329a6b4b1eaef4acf
-      size: 2906370
+      md5: 248831ba7a52bbfc3ac507b6811461c8
+      size: 1999362
     - path: src/c_lang/build
       hash: md5
-      md5: ab3bba58beaed8e759652afc784a696a.dir
+      md5: 017836b639ea3312af401e7aaf342b83.dir
       size: 10752
       nfiles: 1
     - path: src/data_preprocessing/vectorizer.py
       hash: md5
-      md5: 893a7893946f5094a8c4027632fa4a76
-      size: 5645
+      md5: af20b3c903bf075e0d9ef43ceab78378
+      size: 5770
     params:
       params.yaml:
         kmer_size: 3
       constants.yaml:
-        paths.testing_csv_file: data/processed/testing.csv
-        paths.testing_vectorized_file: data/processed/testing_vectorized.pkl
-        paths.training_csv_file: data/processed/training.csv
-        paths.training_vectorized_file: data/processed/training_vectorized.pkl
-        paths.validation_csv_file: data/processed/validation.csv
-        paths.validation_vectorized_file: data/processed/validation_vectorized.pkl
-        paths.vectorizer_file: data/models/count_vectorizer.pkl
+        paths.models.vectorizer: data/models/count_vectorizer.pkl
+        paths.processed.testing_csv: data/processed/testing.csv
+        paths.processed.testing_vectorized: data/processed/testing_vectorized.pkl
+        paths.processed.training_csv: data/processed/training.csv
+        paths.processed.training_vectorized: data/processed/training_vectorized.pkl
+        paths.processed.validation_csv: data/processed/validation.csv
+        paths.processed.validation_vectorized: data/processed/validation_vectorized.pkl
     outs:
     - path: data/models/count_vectorizer.pkl
       hash: md5
-      md5: c06d587e51f6fb365702cdc073a5f556
-      size: 6481
+      md5: 2490632f59cf6d2735d39e90af0638f2
+      size: 6508
     - path: data/processed/testing_vectorized.pkl
       hash: md5
-      md5: 40cc2fbbe52593f4fb7c5f9cb44808a9
-      size: 2012351
+      md5: 6234ea2f82c7035902a32b265f96b291
+      size: 2010199
     - path: data/processed/training_vectorized.pkl
       hash: md5
-      md5: fa525bad9adadcfdc3daf33785548a68
-      size: 6067407
+      md5: 10063f7d42747292ef5668abc74414b4
+      size: 6053715
     - path: data/processed/validation_vectorized.pkl
       hash: md5
-      md5: c27dc1b7e3aca7eef7b2bd304c82024d
-      size: 2013571
+      md5: 7a19bff6388c5b81c6e0cd5c4b2422f7
+      size: 2009011
   xgb_training:
     cmd: poetry run python src/model_training/xgboost_gene_predictor.py
     deps:
     - path: data/processed/training.csv
       hash: md5
-      md5: 9dda2ae8a7c4eeda7d813ebaa34139eb
-      size: 8832267
+      md5: 32fbc1aae2505bbb96274abeb8c20ffe
+      size: 6080942
     - path: data/processed/training_vectorized.pkl
       hash: md5
-      md5: fa525bad9adadcfdc3daf33785548a68
-      size: 6067407
+      md5: 10063f7d42747292ef5668abc74414b4
+      size: 6053715
     - path: data/processed/validation.csv
       hash: md5
-      md5: 13e4df2bc07ceb6329a6b4b1eaef4acf
-      size: 2906370
+      md5: 248831ba7a52bbfc3ac507b6811461c8
+      size: 1999362
     - path: data/processed/validation_vectorized.pkl
       hash: md5
-      md5: c27dc1b7e3aca7eef7b2bd304c82024d
-      size: 2013571
+      md5: 7a19bff6388c5b81c6e0cd5c4b2422f7
+      size: 2009011
     - path: src/model_training/xgboost_gene_predictor.py
       hash: md5
-      md5: 47d48cdd4fc2d4b98243b878eafbe770
-      size: 3426
+      md5: 6c22f8ef0dc11aeca9ed4bf04fa49ed2
+      size: 3467
     params:
       params.yaml:
         xgb_params:
@@ -430,113 +430,113 @@ stages:
           eval_metric: logloss
           early_stopping_rounds: 10
       constants.yaml:
-        paths.model_file: data/models/xgb_model.pkl
-        paths.training_csv_file: data/processed/training.csv
-        paths.training_vectorized_file: data/processed/training_vectorized.pkl
-        paths.validation_csv_file: data/processed/validation.csv
-        paths.validation_vectorized_file: data/processed/validation_vectorized.pkl
+        paths.models.xgb_model: data/models/xgb_model.pkl
+        paths.processed.training_csv: data/processed/training.csv
+        paths.processed.training_vectorized: data/processed/training_vectorized.pkl
+        paths.processed.validation_csv: data/processed/validation.csv
+        paths.processed.validation_vectorized: data/processed/validation_vectorized.pkl
     outs:
     - path: data/models/xgb_model.pkl
       hash: md5
-      md5: 9d9844d0aef7465a730167896b17cb4f
-      size: 141125
+      md5: 98132e86116384dd56fa912cab501f47
+      size: 534897
   evaluation:
     cmd: poetry run python src/evaluation/evaluation.py
     deps:
     - path: data/models/count_vectorizer.pkl
       hash: md5
-      md5: c06d587e51f6fb365702cdc073a5f556
-      size: 6481
+      md5: 2490632f59cf6d2735d39e90af0638f2
+      size: 6508
     - path: data/models/xgb_model.pkl
       hash: md5
-      md5: 9d9844d0aef7465a730167896b17cb4f
-      size: 141125
+      md5: 98132e86116384dd56fa912cab501f47
+      size: 534897
     - path: data/processed/testing.csv
       hash: md5
-      md5: 6b9210543c08fa258b74771644fcb4a7
-      size: 2932109
+      md5: 37764ccabbe31db76cf30aeaa253bceb
+      size: 2021759
     - path: data/processed/testing_vectorized.pkl
       hash: md5
-      md5: 40cc2fbbe52593f4fb7c5f9cb44808a9
-      size: 2012351
+      md5: 6234ea2f82c7035902a32b265f96b291
+      size: 2010199
     - path: src/evaluation/evaluation.py
       hash: md5
-      md5: 30e9f3a47638517c29c8117615a86609
-      size: 7011
+      md5: e3dfef4e75ed62466434f4d3064e8165
+      size: 7060
     params:
       constants.yaml:
-        paths.model_file: data/models/xgb_model.pkl
+        paths.models.xgb_model: data/models/xgb_model.pkl
+        paths.processed.testing_csv: data/processed/testing.csv
+        paths.processed.testing_vectorized: data/processed/testing_vectorized.pkl
         paths.results.accuracy: data/results/accuracy.txt
         paths.results.classification_report: data/results/classification_report.txt
         paths.results.confusion_matrix: data/results/confusion_matrix.png
         paths.results.precision_recall_curve: data/results/precision_recall_curve.png
         paths.results.roc_curve: data/results/roc_curve.png
-        paths.testing_csv_file: data/processed/testing.csv
-        paths.testing_vectorized_file: data/processed/testing_vectorized.pkl
     outs:
     - path: data/results/accuracy.txt
       hash: md5
-      md5: f56a8791c98c46967701fe70ffab0bbf
+      md5: 6b8640dd64fe6bec170eadf13c237e08
       size: 24
     - path: data/results/classification_report.txt
       hash: md5
-      md5: 62857e4b61c4392139a3bb94cb451539
-      size: 402
+      md5: 61e85cde20d88a20b14857ccb2d1808e
+      size: 404
     - path: data/results/confusion_matrix.png
       hash: md5
-      md5: 52f2b6b848e105ac347f8696ece3bdab
-      size: 20078
+      md5: ec498870bf480c27ba5bd3aa88d80bd0
+      size: 20202
     - path: data/results/precision_recall_curve.png
       hash: md5
-      md5: cae120608ff22a98f81c317f9d191fcb
-      size: 17559
+      md5: 41e79ca7caf683961153701e33677186
+      size: 17257
     - path: data/results/roc_curve.png
       hash: md5
-      md5: 53a0383475c6df9f503c36e25771c224
-      size: 29544
+      md5: 5b17733d1da1932ed58c2aed138387e2
+      size: 29511
   data_cleanup:
     cmd: poetry run python src/data_preprocessing/data_cleanup.py
     deps:
     - path: data/raw/combined.csv
       hash: md5
-      md5: 20714d5fa09064c93c95dc2b50a89188
-      size: 15896962
+      md5: 20443cae1e399d40480e4874a8b62728
+      size: 11326962
     - path: src/data_preprocessing/data_cleanup.py
       hash: md5
-      md5: 13128c330a94bd1676020b26c70ca9ef
-      size: 2680
+      md5: c490c96527c1157f9641d343a71172d2
+      size: 2702
     params:
       params.yaml:
         gene_lengths:
           min: 50
           max: 10000
       constants.yaml:
-        paths.csv_file: data/raw/combined.csv
-        paths.csv_file_clean: data/raw/combined_clean.csv
+        paths.raw.combined_csv: data/raw/combined.csv
+        paths.raw.combined_csv_clean: data/raw/combined_clean.csv
     outs:
     - path: data/raw/combined_clean.csv
       hash: md5
-      md5: ab02d87da2f3f4d6262a84ef1caf4cd3
-      size: 14670712
+      md5: 93dbd69d7b73194f811d9346cb94582d
+      size: 10102029
   compile_c_modules:
     cmd: poetry run python src/c_lang/compile_c_modules.py build_ext
     deps:
     - path: src/c_lang/compile_c_modules.py
       hash: md5
-      md5: 9ee8463cc74b52e97a1e1fe4e565efe9
-      size: 1256
+      md5: 5e9deb4c53a55bd4bd13218c1c0fb4de
+      size: 1260
     - path: src/c_lang/kmers.c
       hash: md5
       md5: 3a6b119e525a60b3f2850f6d11d39cba
       size: 1448
     params:
       constants.yaml:
-        paths.c_lang_build_folder: src/c_lang/build
-        paths.c_lang_folder: src/c_lang
+        paths.c_lang.build_dir: src/c_lang/build
+        paths.c_lang.src_dir: src/c_lang
     outs:
     - path: src/c_lang/build
       hash: md5
-      md5: ab3bba58beaed8e759652afc784a696a.dir
+      md5: 017836b639ea3312af401e7aaf342b83.dir
       size: 10752
       nfiles: 1
   fetch_ids:
@@ -544,11 +544,14 @@ stages:
     deps:
     - path: src/data_loading/fetch_ids.py
       hash: md5
-      md5: 3a872d80db623a65a32f6f87fe7ac486
-      size: 2876
+      md5: 1a1addb57baea980e392b4b390f8b8e5
+      size: 2667
     params:
       params.yaml:
         dataset_size: small
+        entrez_search_queries:
+          genes: Bacteria[Organism] AND gene[Title]
+          genomes: Bacteria[Organism] AND complete genome[Title]
       constants.yaml:
         dataset_sizes:
           small:
@@ -561,8 +564,8 @@ stages:
             genes: 1000000
             genomes: 100000
         entrez_email: Your.Name.Here@example.org
-        paths.entrez_gene_ids_raw_data: data/raw/gene_ids/entrez_gene_ids.txt
-        paths.entrez_genome_ids_raw_data: data/raw/genome_ids/entrez_genome_ids.txt
+        paths.raw.gene_ids_file: data/raw/gene_ids/entrez_gene_ids.txt
+        paths.raw.genome_ids_file: data/raw/genome_ids/entrez_genome_ids.txt
     outs:
     - path: data/raw/gene_ids
       hash: md5

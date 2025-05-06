@@ -4,74 +4,42 @@ entrez_email: "Your.Name.Here@example.org"
 file_format: "fasta"
 
 paths:
-  raw_data_folder: "data/raw"
-  genomes_raw_data_folder: "data/raw/genomes"
-  genes_raw_data_folder: "data/raw/genes"
-  entrez_genome_ids_raw_data: "data/raw/genome_ids/entrez_genome_ids.txt"
-  entrez_gene_ids_raw_data: "data/raw/gene_ids/entrez_gene_ids.txt"
-  genes_csv_file: "data/raw/genes.csv"
-  csv_file: "data/raw/combined.csv"
-  csv_file_clean: "data/raw/combined_clean.csv"
-  processed_data_folder: "data/processed"
-  testing_csv_file: "data/processed/testing.csv"
-  training_csv_file: "data/processed/training.csv"
-  validation_csv_file: "data/processed/validation.csv"
-  testing_vectorized_file: "data/processed/testing_vectorized.pkl"
-  training_vectorized_file: "data/processed/training_vectorized.pkl"
-  validation_vectorized_file: "data/processed/validation_vectorized.pkl"
-  model_folder: "data/models"
-  model_file: "data/models/xgb_model.pkl"
-  vectorizer_file: "data/models/count_vectorizer.pkl"
-  c_lang_folder: "src/c_lang"
-  c_lang_build_folder: "src/c_lang/build"
+  # Raw Data
+  raw:
+    genomes_dir: "data/raw/genomes"
+    genes_dir: "data/raw/genes"
+    genome_ids_file: "data/raw/genome_ids/entrez_genome_ids.txt"
+    gene_ids_file: "data/raw/gene_ids/entrez_gene_ids.txt"
+    genes_csv: "data/raw/genes.csv"
+    combined_csv: "data/raw/combined.csv"
+    combined_csv_clean: "data/raw/combined_clean.csv"
+
+  # Processed Data
+  processed:
+    training_csv: "data/processed/training.csv"
+    validation_csv: "data/processed/validation.csv"
+    testing_csv: "data/processed/testing.csv"
+    training_vectorized: "data/processed/training_vectorized.pkl"
+    validation_vectorized: "data/processed/validation_vectorized.pkl"
+    testing_vectorized: "data/processed/testing_vectorized.pkl"
+
+  # Models
+  models:
+    xgb_model: "data/models/xgb_model.pkl"
+    vectorizer: "data/models/count_vectorizer.pkl"
+
+  # C Code
+  c_lang:
+    src_dir: "src/c_lang"
+    build_dir: "src/c_lang/build"
+
+  # Results
   results:
     classification_report: "data/results/classification_report.txt"
     confusion_matrix: "data/results/confusion_matrix.png"
     roc_curve: "data/results/roc_curve.png"
     precision_recall_curve: "data/results/precision_recall_curve.png"
     accuracy: "data/results/accuracy.txt"
-
-# paths:
-#   # Raw Data
-#   raw_data_dir: "data/raw"
-#   raw:
-#     genomes_dir: "data/raw/genomes"
-#     genes_dir: "data/raw/genes"
-#     genome_ids_file: "data/raw/genomes/ids/entrez_genome_ids.txt"
-#     gene_ids_file: "data/raw/genes/ids/entrez_gene_ids.txt"
-#     genes_csv: "data/raw/genes.csv"
-#     combined_csv: "data/raw/combined.csv"
-#     combined_csv_clean: "data/raw/combined_clean.csv"
-
-#   # Processed Data
-#   processed_data_dir: "data/processed"
-#   processed:
-#     training_csv: "data/processed/training.csv"
-#     validation_csv: "data/processed/validation.csv"
-#     testing_csv: "data/processed/testing.csv"
-#     training_vectorized: "data/processed/training_vectorized.pkl"
-#     validation_vectorized: "data/processed/validation_vectorized.pkl"
-#     testing_vectorized: "data/processed/testing_vectorized.pkl"
-
-#   # Models
-#   models_dir: "data/models"
-#   models:
-#     model: "data/models/xgb_model.pkl"
-#     vectorizer: "data/models/count_vectorizer.pkl"
-
-#   # C Code
-#   c_lang:
-#     src_dir: "src/c_lang"
-#     build_dir: "src/c_lang/build"
-
-#   # Results
-#   results_dir: "data/results"
-#   results:
-#     classification_report: "data/results/classification_report.txt"
-#     confusion_matrix: "data/results/confusion_matrix.png"
-#     roc_curve: "data/results/roc_curve.png"
-#     precision_recall_curve: "data/results/precision_recall_curve.png"
-#     accuracy: "data/results/accuracy.txt"
 
 
 

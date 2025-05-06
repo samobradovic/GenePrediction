@@ -21,3 +21,15 @@ xgb_params:
   early_stopping_rounds: 10
 
 percentage_of_random_non_genes: 0.5
+
+entrez_search_queries:
+  genes: "Bacteria[Organism] AND gene[Title]"
+    # - "Bacteria[Organism] AND gene[Title] AND srcdb_refseq[PROP]"
+    # The query above is used to get genes from RefSeq, which is a 
+    # curated database of genomes and genes.
+    # But it does not have enough genes for the training set.
+  genomes: "Bacteria[Organism] AND complete genome[Title]"
+    # - "Bacteria[Organism] AND complete genome[Title] AND srcdb_refseq[PROP]"
+    # The query above is used to get genes from RefSeq, which is a 
+    # curated database of genomes and genes.
+    # But it does not have enough genes for the training set.

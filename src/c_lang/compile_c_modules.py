@@ -18,13 +18,13 @@ if __name__ == "__main__":
     # and create extensions for each of them, but for now we will just use kmers.c.
     kmers_extension = Extension(
         "kmers",
-        sources=[os.path.join(params["paths"]["c_lang_folder"], "kmers.c")],
+        sources=[os.path.join(params["paths"]["c_lang"]["src_dir"], "kmers.c")],
     )
 
     class CustomBuildExtension(build_ext):
         def finalize_options(self):
             super().finalize_options()
-            self.build_lib = os.path.abspath(params["paths"]["c_lang_build_folder"])
+            self.build_lib = os.path.abspath(params["paths"]["c_lang"]["build_dir"])
 
     setup(
         name="c_extensions",

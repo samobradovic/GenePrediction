@@ -68,14 +68,11 @@ if __name__ == "__main__":
     logging.info(f"Downloading data for dataset size: {dataset_size}.")
     download_ids(
         max_results=params["dataset_sizes"][f"{dataset_size}"]["genes"],
-        # search_query="Bacteria[Organism] AND gene[Title] AND srcdb_refseq[PROP]",
-        # This does not have enough results, so we use a more general query
-        search_query="Bacteria[Organism] AND gene[Title]",
-        file_path=Path(params["paths"]["entrez_gene_ids_raw_data"]),
+        search_query=params["entrez_search_queries"]["genes"],
+        file_path=Path(params["paths"]["raw"]["gene_ids_file"]),
     )
     download_ids(
         max_results=params["dataset_sizes"][f"{dataset_size}"]["genomes"],
-        search_query="Bacteria[Organism] AND complete genome[Title]",
-        # " AND srcdb_refseq[PROP]",
-        file_path=Path(params["paths"]["entrez_genome_ids_raw_data"]),
+        search_query=params["entrez_search_queries"]["genomes"],
+        file_path=Path(params["paths"]["raw"]["genome_ids_file"]),
     )

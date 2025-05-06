@@ -144,12 +144,18 @@ if __name__ == "__main__":
     )
 
     vectorize(
-        training_csv_path=Path(params["paths"]["training_csv_file"]),
-        testing_csv_path=Path(params["paths"]["testing_csv_file"]),
-        validation_csv_path=Path(params["paths"]["validation_csv_file"]),
-        training_vectorized_path=Path(params["paths"]["training_vectorized_file"]),
-        testing_vectorized_path=Path(params["paths"]["testing_vectorized_file"]),
-        validation_vectorized_path=Path(params["paths"]["validation_vectorized_file"]),
-        vectorizer_path=Path(params["paths"]["vectorizer_file"]),
+        training_csv_path=Path(params["paths"]["processed"]["training_csv"]),
+        testing_csv_path=Path(params["paths"]["processed"]["testing_csv"]),
+        validation_csv_path=Path(params["paths"]["processed"]["validation_csv"]),
+        training_vectorized_path=Path(
+            params["paths"]["processed"]["training_vectorized"]
+        ),
+        testing_vectorized_path=Path(
+            params["paths"]["processed"]["testing_vectorized"]
+        ),
+        validation_vectorized_path=Path(
+            params["paths"]["processed"]["validation_vectorized"]
+        ),
+        vectorizer_path=Path(params["paths"]["models"]["vectorizer"]),
         kmer_size=params["kmer_size"],
     )

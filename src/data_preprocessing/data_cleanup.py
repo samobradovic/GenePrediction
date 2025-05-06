@@ -74,8 +74,8 @@ if __name__ == "__main__":
     )
 
     clean_data(
-        source_path=Path(params["paths"]["csv_file"]),
-        destination_path=Path(params["paths"]["csv_file_clean"]),
+        source_path=Path(params["paths"]["raw"]["combined_csv"]),
+        destination_path=Path(params["paths"]["raw"]["combined_csv_clean"]),
         min_length=params["gene_lengths"]["min"],
         max_length=params["gene_lengths"]["max"],
     )

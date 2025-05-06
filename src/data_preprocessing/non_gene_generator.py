@@ -126,7 +126,7 @@ if __name__ == "__main__":
 
     generate_non_genes(
         percentage_of_random_non_genes=params["percentage_of_random_non_genes"],
-        genes_csv_file=Path(params["paths"]["genes_csv_file"]),
-        genomes_raw_data_folder=Path(params["paths"]["genomes_raw_data_folder"]),
-        combined_csv_file=Path(params["paths"]["csv_file"]),
+        genes_csv_file=Path(params["paths"]["raw"]["genes_csv"]),
+        genomes_raw_data_folder=Path(params["paths"]["raw"]["genomes_dir"]),
+        combined_csv_file=Path(params["paths"]["raw"]["combined_csv"]),
     )

@@ -41,6 +41,6 @@ if __name__ == "__main__":
         format="%(asctime)s - %(levelname)s - %(message)s",
     )
     convert_fasta_folder_into_csv(
-        Path(params["paths"]["genes_raw_data_folder"]),
-        Path(params["paths"]["genes_csv_file"]),
+        Path(params["paths"]["raw"]["genes_dir"]),
+        Path(params["paths"]["raw"]["genes_csv"]),
     )

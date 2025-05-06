@@ -102,10 +102,10 @@ if __name__ == "__main__":
         format="%(asctime)s - %(levelname)s - %(message)s",
     )
     train_test_validation_split(
-        csv_file_path=Path(params["paths"]["csv_file_clean"]),
+        csv_file_path=Path(params["paths"]["raw"]["combined_csv_clean"]),
         test_size=params["train_test_split"]["test_size"],
         validation_size=params["train_test_split"]["validation_size"],
-        destination_train_csv=Path(params["paths"]["training_csv_file"]),
-        destination_validation_csv=Path(params["paths"]["validation_csv_file"]),
-        destination_test_csv=Path(params["paths"]["testing_csv_file"]),
+        destination_train_csv=Path(params["paths"]["processed"]["training_csv"]),
+        destination_validation_csv=Path(params["paths"]["processed"]["validation_csv"]),
+        destination_test_csv=Path(params["paths"]["processed"]["testing_csv"]),
     )

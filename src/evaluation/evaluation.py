@@ -179,9 +179,11 @@ if __name__ == "__main__":
     params = dvc.api.params_show(stages="evaluation")
 
     evaluate_xgb_model(
-        model_file_path=Path(params["paths"]["model_file"]),
-        testing_vectorized_file=Path(params["paths"]["testing_vectorized_file"]),
-        testing_csv_file=Path(params["paths"]["testing_csv_file"]),
+        model_file_path=Path(params["paths"]["models"]["xgb_model"]),
+        testing_vectorized_file=Path(
+            params["paths"]["processed"]["testing_vectorized"]
+        ),
+        testing_csv_file=Path(params["paths"]["processed"]["testing_csv"]),
         accuracy_path=Path(params["paths"]["results"]["accuracy"]),
         classification_report_path=Path(
             params["paths"]["results"]["classification_report"]
