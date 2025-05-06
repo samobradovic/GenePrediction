@@ -14,6 +14,23 @@ stages:
     outs:
       - src/c_lang/build
 
+  # ======================== Data Loading ========================
+  fetch_ids:
+    cmd: poetry run python src/data_loading/fetch_ids.py
+    deps:
+      - src/data_loading/fetch_ids.py
+    params:
+      - dataset_size
+      - constants.yaml:
+        - paths.entrez_gene_ids_raw_data
+        - paths.entrez_genome_ids_raw_data
+        - dataset_sizes
+        - entrez_email
+    outs:
+      - data/raw/genome_ids
+      - data/raw/gene_ids
+
+
   download_genomes:
     # Download raw genome and gene data with Entrez
     cmd: poetry run python src/data_loading/entrez_downloader.py
@@ -29,11 +46,15 @@ stages:
         - batch_sizes
         - paths.genomes_raw_data_folder
         - paths.genes_raw_data_folder
+        - paths.entrez_gene_ids_raw_data
+        - paths.entrez_genome_ids_raw_data
         - dataset_sizes
         - entrez_email
     outs:
       - data/raw/genomes
       - data/raw/genes
+
+  # ======================== Data Loading End ========================
 
   csv_conversion:
     # Convert FASTA files to CSV format

@@ -10,46 +10,18 @@ from Bio import Entrez
 from src.helpers.filesystem_helper import get_folder_size
 
 
-def get_ids(max_results: int, search_query: str) -> List[str]:
-    """Fetches a list of nucleotide IDs from Entrez based on a search query.
-
-    Args:
-        max_results (int): Maximum number of results to fetch.
-        search_query (str): Query string to search in the nucleotide database.
-
-    Returns:
-        List[str]: List of nucleotide IDs.
-
-    Raises:
-        ValueError: If no IDs are found or the response format is invalid.
-    """
+def get_ids_from_file(file_path: Path) -> List[str]:
     try:
-        with Entrez.esearch(
-            db="nucleotide", term=search_query, retmax=max_results, sort="relevance"
-        ) as handle:
-            record = Entrez.read(handle)
-
-        if not isinstance(record, dict) or "IdList" not in record:
-            logging.error(f"Unexpected response format: {record}")
-            raise ValueError("Unexpected response format from Entrez API.")
-
-        id_list = record["IdList"]
-
-        if not isinstance(id_list, list) or not all(
-            isinstance(i, str) for i in id_list
-        ):
-            logging.error(f"Invalid IdList format: {id_list}")
-            raise ValueError("Invalid IdList format from Entrez API.")
-
-        if not id_list:
-            logging.warning("No IDs found in the response.")
-            raise ValueError("No IDs found in the response.")
-
-        logging.info(f"Found {len(id_list)} IDs.")
-        return id_list
-
+        with open(
+            file_path,
+            "r",
+        ) as f:
+            return f.read().splitlines()
+    except FileNotFoundError:
+        logging.error(f"File not found: {file_path}.")
+        raise
     except Exception as e:
-        logging.error(f"Error fetching IDs: {e}")
+        logging.error(f"Error reading file {file_path}: {e}.")
         raise
 
 
@@ -127,8 +99,7 @@ def download_batch(
 
 
 def download_data(
-    number_of_datapoints: int,
-    search_query: str,
+    ids: List[str],
     folder_path: Path,
     max_size_gb: int,
     batch_size: int,
@@ -149,10 +120,6 @@ def download_data(
         batch_delay_seconds (int): Delay in seconds between retries.
     """
     logging.info("Starting data download from Entrez...")
-    ids = get_ids(
-        number_of_datapoints,
-        search_query,
-    )
     os.makedirs(folder_path, exist_ok=True)
 
     for i in range(0, len(ids), batch_size):
@@ -188,9 +155,12 @@ if __name__ == "__main__":
     dataset_size = params["dataset_size"].lower()
 
     logging.info(f"Downloading data for dataset size: {dataset_size}.")
+
+    gene_ids = get_ids_from_file(Path(params["paths"]["entrez_gene_ids_raw_data"]))
+    genome_ids = get_ids_from_file(Path(params["paths"]["entrez_genome_ids_raw_data"]))
+
     download_data(
-        number_of_datapoints=params["dataset_sizes"][f"{dataset_size}"]["genes"],
-        search_query="Bacteria[Organism] AND gene[Title]",
+        ids=gene_ids,
         folder_path=Path(params["paths"]["genes_raw_data_folder"]),
         max_size_gb=params["max_sizes_gb"]["genes"],
         batch_size=params["batch_sizes"]["genes"],
@@ -199,9 +169,7 @@ if __name__ == "__main__":
         file_format=params["file_format"],
     )
     download_data(
-        number_of_datapoints=params["dataset_sizes"][f"{dataset_size}"]["genomes"],
-        search_query="Bacteria[Organism] AND complete genome[Title]"
-        " AND srcdb_refseq[PROP]",
+        ids=genome_ids,
         folder_path=Path(params["paths"]["genomes_raw_data_folder"]),
         max_size_gb=params["max_sizes_gb"]["genomes"],
         batch_size=params["batch_sizes"]["genomes"],
