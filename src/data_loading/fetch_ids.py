@@ -91,6 +91,7 @@ def get_tax_ids_for_ids(ids: List[str]) -> List[int]:
         if not tax_ids:
             raise ValueError("No tax IDs found in the response.")
 
+        logging.info(f"Found {len(tax_ids)} tax IDs.")
         return tax_ids
 
     except Exception as e:
@@ -179,9 +180,6 @@ def download_ids(
     offset = 0
 
     while diversity_score <= min_h_value:
-        logging.info(
-            f"Fetching {max_results} IDs with query: {search_query}, offset: {offset}"
-        )
         new_ids = fetch_ids(max_results, search_query, offset)
         new_tax_ids = get_tax_ids_for_ids(new_ids)
         id_tax_pairs.extend(zip(new_ids, new_tax_ids, strict=True))
@@ -196,6 +194,7 @@ def download_ids(
     logging.info(
         f"Found {len(most_diverse_subset)} IDs with diversity score {diversity_score}."
     )
+    logging.info(most_diverse_subset[0:10])
 
     os.makedirs(file_path.parent, exist_ok=True)
     with open(file_path, "w") as f:

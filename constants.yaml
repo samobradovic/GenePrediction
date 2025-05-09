@@ -53,7 +53,7 @@ retry_entrez_request:
 
 dataset_sizes:
   small:
-    genes: 10000
+    genes: 5000
     genomes: 10
   big:
     genes: 500000

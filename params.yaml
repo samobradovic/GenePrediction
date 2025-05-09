@@ -37,10 +37,10 @@ entrez_search_queries:
 taxonomic_diversity:
   genomes:
     enforced: true
-    normalized_h_min: 0.8  
+    normalized_h_min: 0.9  
   genes:
-    enforced: false
-    normalized_h_min: 0.0
+    enforced: true
+    normalized_h_min: 0.9
   # Minimum allowed normalized Shannon diversity index (H') for the set of organisms.
   # Normalized H (H') ranges from 0 to 1, where 1 means maximum diversity (equal representation of all organisms).
   # A value of 0.8 enforces high diversity by requiring that the organism distribution be fairly even and varied.

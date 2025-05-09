@@ -544,18 +544,25 @@ stages:
     deps:
     - path: src/data_loading/fetch_ids.py
       hash: md5
-      md5: 1a1addb57baea980e392b4b390f8b8e5
-      size: 2667
+      md5: 12fa4408205f073dd525d3dc32fb846b
+      size: 8035
     params:
       params.yaml:
         dataset_size: small
         entrez_search_queries:
           genes: Bacteria[Organism] AND gene[Title]
           genomes: Bacteria[Organism] AND complete genome[Title]
+        taxonomic_diversity:
+          genomes:
+            enforced: true
+            normalized_h_min: 0.9
+          genes:
+            enforced: true
+            normalized_h_min: 0.9
       constants.yaml:
         dataset_sizes:
           small:
-            genes: 10000
+            genes: 5000
             genomes: 10
           big:
             genes: 500000
@@ -569,11 +576,11 @@ stages:
     outs:
     - path: data/raw/gene_ids
       hash: md5
-      md5: 156cc53efd85af7fd168184cf4b73403.dir
-      size: 119930
+      md5: 60697d62e86ad975d2b9fc5ab13c21d4.dir
+      size: 59937
       nfiles: 1
     - path: data/raw/genome_ids
       hash: md5
-      md5: 20affdac7f437f8c941db3a20d2ebe7b.dir
+      md5: a3bfd7f3af5baf7d20fc3c74d4bbd2c2.dir
       size: 120
       nfiles: 1
