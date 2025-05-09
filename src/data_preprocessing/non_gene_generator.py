@@ -54,6 +54,14 @@ def generate_random_non_genes(
     logging.info("Generating non-genes...")
 
     non_genes = []
+    if not genomes:
+        raise ValueError("No genomes provided")
+    if percentage_of_genes <= 0 or number_of_genes <= 0:
+        raise ValueError(
+            "Percentage of genes and number of genes must be greater than 0"
+        )
+    if random_length >= len(min(genomes, key=len)):
+        raise ValueError("Random length must be less than the shortest genome length")
 
     for _ in tqdm(
         range(int(number_of_genes * percentage_of_genes)),

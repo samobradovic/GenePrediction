@@ -1,0 +1,38 @@
+# Ignore DVC files
+*.dvc
+.dvc/
+
+# Ignore Python cache files
+__pycache__/
+*.py[cod]
+
+# Ignore Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Ignore virtual environments
+venv/
+.env/
+
+# Ignore logs and temporary files
+*.log
+*.tmp
+*.bak
+
+# Ignore data files
+*.csv
+*.tsv
+*.json
+*.xlsx
+
+# Ignore compiled files
+*.so
+*.dll
+*.exe
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+build/
+.ruff_cache/
+.pytest_cache/

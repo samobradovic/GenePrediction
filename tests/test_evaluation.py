@@ -9,7 +9,7 @@ from src.evaluation import evaluation
 
 
 class TestGenerateROCCurve:
-    class TestCase(NamedTuple):
+    class CaseData(NamedTuple):
         description: str
         y_true: np.ndarray
         y_score: np.ndarray
@@ -20,7 +20,7 @@ class TestGenerateROCCurve:
         path: Path
 
     TEST_CASES = [
-        TestCase(
+        CaseData(
             description="Random values, valid ROC curve",
             y_true=np.random.randint(0, 2, 10),
             y_score=np.random.randint(0, 2, 10),
@@ -45,7 +45,7 @@ class TestGenerateROCCurve:
         mock_savefig: MagicMock,
         mock_roc_curve: MagicMock,
         mock_auc: MagicMock,
-        test_case: TestCase,
+        test_case: CaseData,
     ):
         # Arrange
         mock_roc_curve.return_value = (
@@ -69,7 +69,7 @@ class TestGenerateROCCurve:
 
 
 class TestGeneratePrecisionRecallCurve:
-    class TestCase(NamedTuple):
+    class CaseData(NamedTuple):
         description: str
         y_true: np.ndarray
         y_probs: np.ndarray
@@ -79,7 +79,7 @@ class TestGeneratePrecisionRecallCurve:
         path: Path
 
     TEST_CASES = [
-        TestCase(
+        CaseData(
             description="Random values, valid Precision-Recall curve",
             y_true=np.random.randint(0, 2, 10),
             y_probs=np.random.random(10),
@@ -101,7 +101,7 @@ class TestGeneratePrecisionRecallCurve:
         self,
         mock_savefig: MagicMock,
         mock_precision_recall: MagicMock,
-        test_case: TestCase,
+        test_case: CaseData,
     ):
         # Arrange
         mock_precision_recall.return_value = (
@@ -123,7 +123,7 @@ class TestGeneratePrecisionRecallCurve:
 
 
 class TestGenerateConfusionMatrix:
-    class TestCase(NamedTuple):
+    class CaseData(NamedTuple):
         description: str
         y_true: np.ndarray
         y_score: np.ndarray
@@ -131,7 +131,7 @@ class TestGenerateConfusionMatrix:
         path: Path
 
     TEST_CASES = [
-        TestCase(
+        CaseData(
             description="Random values, valid confusion matrix",
             y_true=np.random.randint(0, 2, 10),
             y_score=np.random.randint(0, 2, 10),
@@ -151,7 +151,7 @@ class TestGenerateConfusionMatrix:
         self,
         mock_savefig: MagicMock,
         confusion_matrix: MagicMock,
-        test_case: TestCase,
+        test_case: CaseData,
     ):
         # Arrange
         confusion_matrix.return_value = test_case.confusion_matrix
@@ -167,7 +167,7 @@ class TestGenerateConfusionMatrix:
 
 
 class TestGenerateClassificationReport:
-    class TestCase(NamedTuple):
+    class CaseData(NamedTuple):
         description: str
         y_true: np.ndarray
         y_score: np.ndarray
@@ -175,7 +175,7 @@ class TestGenerateClassificationReport:
         path: Path
 
     TEST_CASES = [
-        TestCase(
+        CaseData(
             description="Random values, valid classification report",
             y_true=np.random.randint(0, 2, 10),
             y_score=np.random.randint(0, 2, 10),
@@ -200,7 +200,7 @@ class TestGenerateClassificationReport:
         self,
         mock_to_csv: MagicMock,
         mock_classification_report: MagicMock,
-        test_case: TestCase,
+        test_case: CaseData,
     ):
         # Arrange
         mock_classification_report.return_value = test_case.classification_report
@@ -218,7 +218,7 @@ class TestGenerateClassificationReport:
 
 
 class TestSaveAccuracy:
-    class TestCase(NamedTuple):
+    class CaseData(NamedTuple):
         description: str
         y_true: np.ndarray
         y_score: np.ndarray
@@ -226,7 +226,7 @@ class TestSaveAccuracy:
         path: Path
 
     TEST_CASES = [
-        TestCase(
+        CaseData(
             description="Random values, valid accuracy score",
             y_true=np.random.randint(0, 2, 10),
             y_score=np.random.randint(0, 2, 10),
@@ -246,7 +246,7 @@ class TestSaveAccuracy:
         self,
         mock_open: MagicMock,
         mock_accuracy: MagicMock,
-        test_case: TestCase,
+        test_case: CaseData,
     ):
         # Arrange
         mock_accuracy.return_value = test_case.accuracy

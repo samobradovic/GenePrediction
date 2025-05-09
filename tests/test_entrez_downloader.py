@@ -10,7 +10,7 @@ import pytest
 from src.data_loading.entrez_downloader import (
     download_batch,
     download_data,
-    get_ids,
+    get_ids_from_file,
 )
 
 
@@ -56,198 +56,100 @@ def mock_open_file():
         yield mock
 
 
-class TestGetIds:
-    class GetIdsTestCase(NamedTuple):
+class TestGetIdsFromFile:
+    class CaseData(NamedTuple):
         description: str
-        max_results: int
-        search_query: str
-        mock_response: dict
-        expected_ids: List[str]
+        file_content: str | None
+        file_path: Path
+        expected_ids: List[str] | None = None
+        expected_exception: type[Exception] | None = None
+        open_side_effect: Exception | None = None
 
-    class GetIdsInvalidResponseTestCase(NamedTuple):
-        description: str
-        max_results: int
-        search_query: str
-        mock_response: dict | str
-        expected_exception: type[Exception]
-
-    class GetIdsExceptionTestCase(NamedTuple):
-        description: str
-        max_results: int
-        search_query: str
-        side_effect: Exception
-        expected_exception: type[Exception]
-
-    GET_IDS_VALID_CASES: List[GetIdsTestCase] = [
-        GetIdsTestCase(
-            description="Valid response with one ID",
-            max_results=10,
-            search_query="test_query",
-            mock_response={"IdList": ["NM_001301717"]},
-            expected_ids=["NM_001301717"],
+    TEST_CASES = [
+        CaseData(
+            description="File with multiple IDs (normal case)",
+            file_content="id1\nid2\nid3\n",
+            file_path=Path("test_ids.txt"),
+            expected_ids=["id1", "id2", "id3"],
         ),
-        GetIdsTestCase(
-            description="Valid full response with IDs",
-            max_results=10,
-            search_query="test_query",
-            mock_response={
-                "Count": "3",
-                "RetMax": "10",
-                "RetStart": "0",
-                "IdList": ["NM_001301717", "NM_001301718", "NM_001301719"],
-                "TranslationSet": [],
-                "TranslationStack": [
-                    {"Term": "test", "Field": "All Fields", "Count": "3"}
-                ],
-                "QueryTranslation": "test",
-            },
-            expected_ids=["NM_001301717", "NM_001301718", "NM_001301719"],
+        CaseData(
+            description="File with single ID",
+            file_content="id1\n",
+            file_path=Path("test_ids.txt"),
+            expected_ids=["id1"],
         ),
-        GetIdsTestCase(
-            description="Valid response with 50 IDs",
-            max_results=10,
-            search_query="test_query",
-            mock_response={"IdList": [f"test_id_{i}" for i in range(0, 50)]},
-            expected_ids=[f"test_id_{i}" for i in range(0, 50)],
+        CaseData(
+            description="File with empty lines and whitespace",
+            file_content="id1\n\n  \nid2\n\t\nid3\n",
+            file_path=Path("test_ids.txt"),
+            expected_ids=["id1", "", "  ", "id2", "\t", "id3"],
         ),
-        GetIdsTestCase(
-            description="Valid response with 1,000,000 IDs (max for entrez)",
-            max_results=10,
-            search_query="test_query",
-            mock_response={"IdList": [f"test_id_{i}" for i in range(0, 1000000)]},
-            expected_ids=[f"test_id_{i}" for i in range(0, 1000000)],
+        CaseData(
+            description="Empty file",
+            file_content="",
+            file_path=Path("empty.txt"),
+            expected_ids=[],
         ),
     ]
 
-    GET_IDS_INVALID_RESPONSE_CASES: List[GetIdsInvalidResponseTestCase] = [
-        GetIdsInvalidResponseTestCase(
-            description="Invalid response format (missing IdList key)",
-            max_results=10,
-            search_query="test_query",
-            mock_response={},
-            expected_exception=ValueError,
+    ERROR_TEST_CASES = [
+        CaseData(
+            description="File not found",
+            file_content=None,
+            file_path=Path("notfound.txt"),
+            expected_exception=FileNotFoundError,
+            open_side_effect=FileNotFoundError("File not found"),
         ),
-        GetIdsInvalidResponseTestCase(
-            description="Invalid IdList format (non-string elements)",
-            max_results=10,
-            search_query="test_query",
-            mock_response={"IdList": [123, 456]},
-            expected_exception=ValueError,
-        ),
-        GetIdsInvalidResponseTestCase(
-            description="Valid response but empty IdList",
-            max_results=10,
-            search_query="test_query",
-            mock_response={"IdList": []},
-            expected_exception=ValueError,
-        ),
-        GetIdsInvalidResponseTestCase(
-            description="Valid response but missing IdList key",
-            max_results=10,
-            search_query="test_query",
-            mock_response={"Count": "3", "TranslationSet": []},
-            expected_exception=ValueError,
-        ),
-        GetIdsInvalidResponseTestCase(
-            description="Invalid response format (not a dictionary)",
-            max_results=10,
-            search_query="test_query",
-            mock_response="test",
-            expected_exception=ValueError,
-        ),
-    ]
-
-    GET_IDS_EXCEPTION_CASES: List[GetIdsExceptionTestCase] = [
-        GetIdsExceptionTestCase(
-            description="Simulate HTTPError",
-            max_results=10,
-            search_query="test_query",
-            side_effect=HTTPError(
-                "http://test.com", 500, "Internal Server Error", MagicMock, None
-            ),
-            expected_exception=HTTPError,
-        ),
-        GetIdsExceptionTestCase(
-            description="Simulate URLError",
-            max_results=10,
-            search_query="test_query",
-            side_effect=URLError("Network unreachable"),
-            expected_exception=URLError,
-        ),
-        GetIdsExceptionTestCase(
-            description="Simulate Timeout",
-            max_results=10,
-            search_query="test_query",
-            side_effect=timeout(),
-            expected_exception=timeout,
+        CaseData(
+            description="Permission denied error",
+            file_content=None,
+            file_path=Path("forbidden.txt"),
+            expected_exception=PermissionError,
+            open_side_effect=PermissionError("Permission denied"),
         ),
     ]
 
     @pytest.mark.parametrize(
         "test_case",
-        GET_IDS_VALID_CASES,
-        ids=[case.description for case in GET_IDS_VALID_CASES],
+        TEST_CASES,
+        ids=[case.description for case in TEST_CASES],
     )
-    def test_get_ids_valid(
+    def test_get_ids_from_file_success(
         self,
-        mock_entrez_esearch: MagicMock,
-        mock_entrez_read: MagicMock,
-        test_case: GetIdsTestCase,
+        mock_open_file: MagicMock,
+        test_case: CaseData,
     ):
         # Arrange
-        mock_entrez_esearch.return_value = MagicMock()
-        mock_entrez_read.return_value = test_case.mock_response
+        mock_open_file().read.return_value = test_case.file_content
 
         # Act
-        result: List[str] = get_ids(test_case.max_results, test_case.search_query)
+        result = get_ids_from_file(test_case.file_path)
 
         # Assert
         assert result == test_case.expected_ids
 
     @pytest.mark.parametrize(
         "test_case",
-        GET_IDS_INVALID_RESPONSE_CASES,
-        ids=[case.description for case in GET_IDS_INVALID_RESPONSE_CASES],
+        ERROR_TEST_CASES,
+        ids=[case.description for case in ERROR_TEST_CASES],
     )
-    def test_get_ids_with_invalid_responses(
+    def test_get_ids_from_file_errors(
         self,
-        mock_entrez_esearch: MagicMock,
-        mock_entrez_read: MagicMock,
-        test_case: GetIdsInvalidResponseTestCase,
+        mock_open_file: MagicMock,
+        test_case: CaseData,
     ):
         # Arrange
-        mock_entrez_esearch.return_value = MagicMock()
-        mock_entrez_read.return_value = test_case.mock_response
+        mock_open_file.side_effect = test_case.open_side_effect
 
         # Act & Assert
+        assert test_case.expected_exception is not None
         with pytest.raises(test_case.expected_exception):
-            get_ids(test_case.max_results, test_case.search_query)
-
-    @pytest.mark.parametrize(
-        "test_case",
-        GET_IDS_EXCEPTION_CASES,
-        ids=[case.description for case in GET_IDS_EXCEPTION_CASES],
-    )
-    def test_get_ids_with_exceptions(
-        self,
-        mock_entrez_esearch: MagicMock,
-        mock_entrez_read: MagicMock,
-        test_case: GetIdsExceptionTestCase,
-    ):
-        # Arrange
-        mock_entrez_esearch.return_value = MagicMock()
-        mock_entrez_read.side_effect = test_case.side_effect
-
-        # Act & Assert
-        with pytest.raises(test_case.expected_exception):
-            get_ids(test_case.max_results, test_case.search_query)
+            get_ids_from_file(test_case.file_path)
 
 
 class TestDownloadData:
-    class DownloadDataTestCase(NamedTuple):
+    class CaseData(NamedTuple):
         description: str
-        number_of_datapoints: int
-        search_query: str
         folder_path: Path
         max_size_gb: int
         batch_size: int
@@ -258,11 +160,9 @@ class TestDownloadData:
         folder_size_gb: float
         expected_batch_count: int
 
-    DOWNLOAD_DATA_VALID_CASES: List[DownloadDataTestCase] = [
-        DownloadDataTestCase(
+    TEST_CASES: List[CaseData] = [
+        CaseData(
             description="Small dataset, folder size within limit",
-            number_of_datapoints=10,
-            search_query="test_query",
             folder_path=Path("test_folder"),
             max_size_gb=1,
             batch_size=5,
@@ -273,10 +173,8 @@ class TestDownloadData:
             folder_size_gb=0.5,
             expected_batch_count=2,
         ),
-        DownloadDataTestCase(
+        CaseData(
             description="Folder size exceeds limit",
-            number_of_datapoints=10,
-            search_query="test_query",
             folder_path=Path("test_folder"),
             max_size_gb=1,
             batch_size=5,
@@ -287,10 +185,8 @@ class TestDownloadData:
             folder_size_gb=1.5,
             expected_batch_count=0,
         ),
-        DownloadDataTestCase(
+        CaseData(
             description="Empty ID list",
-            number_of_datapoints=10,
-            search_query="test_query",
             folder_path=Path("test_folder"),
             max_size_gb=1,
             batch_size=5,
@@ -301,10 +197,8 @@ class TestDownloadData:
             folder_size_gb=0.5,
             expected_batch_count=0,
         ),
-        DownloadDataTestCase(
+        CaseData(
             description="Batch size larger than ID list",
-            number_of_datapoints=10,
-            search_query="test_query",
             folder_path=Path("test_folder"),
             max_size_gb=1,
             batch_size=20,
@@ -315,10 +209,8 @@ class TestDownloadData:
             folder_size_gb=0.5,
             expected_batch_count=1,
         ),
-        DownloadDataTestCase(
+        CaseData(
             description="Batch size of 1 (should download each ID separately)",
-            number_of_datapoints=10,
-            search_query="test_query",
             folder_path=Path("test_folder"),
             max_size_gb=1,
             batch_size=1,
@@ -329,10 +221,8 @@ class TestDownloadData:
             folder_size_gb=0.5,
             expected_batch_count=3,
         ),
-        DownloadDataTestCase(
+        CaseData(
             description="Batch size not divisible by number of IDs",
-            number_of_datapoints=10,
-            search_query="test_query",
             folder_path=Path("test_folder"),
             max_size_gb=1,
             batch_size=2,
@@ -347,41 +237,34 @@ class TestDownloadData:
 
     @pytest.mark.parametrize(
         "test_case",
-        DOWNLOAD_DATA_VALID_CASES,
-        ids=[case.description for case in DOWNLOAD_DATA_VALID_CASES],
+        TEST_CASES,
+        ids=[case.description for case in TEST_CASES],
     )
-    @patch("src.data_loading.entrez_downloader.get_ids")
     @patch("src.data_loading.entrez_downloader.download_batch")
     @patch("os.makedirs")
     def test_download_data(
         self,
         mock_makedirs: MagicMock,
         mock_download_batch: MagicMock,
-        mock_get_ids: MagicMock,
         mock_get_folder_size: MagicMock,
-        test_case: DownloadDataTestCase,
+        test_case: CaseData,
     ):
         # Arrange
-        mock_get_ids.return_value = test_case.ids
         mock_get_folder_size.return_value = test_case.folder_size_gb
 
         # Act
         download_data(
-            test_case.number_of_datapoints,
-            test_case.search_query,
-            test_case.folder_path,
-            test_case.max_size_gb,
-            test_case.batch_size,
-            test_case.file_format,
+            ids=test_case.ids,
+            folder_path=test_case.folder_path,
+            max_size_gb=test_case.max_size_gb,
+            batch_size=test_case.batch_size,
+            file_format=test_case.file_format,
             batch_retry_count=test_case.batch_retry_count,
             batch_delay_seconds=test_case.batch_delay_seconds,
         )
 
         # Assert
         mock_makedirs.assert_called_once_with(test_case.folder_path, exist_ok=True)
-        mock_get_ids.assert_called_once_with(
-            test_case.number_of_datapoints, test_case.search_query
-        )
         assert mock_download_batch.call_count == test_case.expected_batch_count
 
         if test_case.expected_batch_count > 0:
@@ -411,36 +294,21 @@ class TestDownloadData:
 
 
 class TestDownloadBatch:
-    class DownloadBatchTestCase(NamedTuple):
-        description: str
-        file_exists: bool
-        batch_ids: List[str]
-        retry_count: int
-        delay_seconds: int
-        expected_efetch_calls: int
-        expected_write_calls: int
-
-    class DownloadBatchRetryTestCase(NamedTuple):
+    class CaseData(NamedTuple):
         description: str
         batch_ids: List[str]
         retry_count: int
         delay_seconds: int
-        efetch_side_effect: Exception
-        expected_efetch_calls: int
-        expected_sleep_calls: int
-        expected_exception: type[Exception]
+        file_exists: bool = False
+        expected_efetch_calls: int = 0
+        expected_write_calls: int = 0
+        expected_sleep_calls: int = 0
+        efetch_side_effect: Exception | None = None
+        efetch_side_effects: list | None = None
+        expected_exception: type[Exception] | None = None
 
-    class DownloadBatchRetrySuccessTestCase(NamedTuple):
-        description: str
-        batch_ids: List[str]
-        retry_count: int
-        delay_seconds: int
-        efetch_side_effects: List[Exception]
-        expected_efetch_calls: int
-        expected_sleep_calls: int
-
-    DOWNLOAD_BATCH_TEST_CASES: List[DownloadBatchTestCase] = [
-        DownloadBatchTestCase(
+    TEST_CASES: List[CaseData] = [
+        CaseData(
             description="File already exists, no calls to efetch or write",
             file_exists=True,
             batch_ids=["id1", "id2", "id3"],
@@ -449,7 +317,7 @@ class TestDownloadBatch:
             expected_efetch_calls=0,
             expected_write_calls=0,
         ),
-        DownloadBatchTestCase(
+        CaseData(
             description="Successful download with no retries",
             file_exists=False,
             batch_ids=["id1", "id2", "id3"],
@@ -458,7 +326,7 @@ class TestDownloadBatch:
             expected_efetch_calls=1,
             expected_write_calls=1,
         ),
-        DownloadBatchTestCase(
+        CaseData(
             description="Empty batch IDs, no calls to efetch or write",
             file_exists=False,
             batch_ids=[],
@@ -469,8 +337,8 @@ class TestDownloadBatch:
         ),
     ]
 
-    DOWNLOAD_BATCH_EXCEPTION_TEST_CASES: List[DownloadBatchRetryTestCase] = [
-        DownloadBatchRetryTestCase(
+    ERROR_TEST_CASES: List[CaseData] = [
+        CaseData(
             description="Retry on network error",
             batch_ids=["id1", "id2", "id3"],
             retry_count=10,
@@ -480,7 +348,7 @@ class TestDownloadBatch:
             expected_sleep_calls=9,
             expected_exception=URLError,
         ),
-        DownloadBatchRetryTestCase(
+        CaseData(
             description="Retry on HTTP error",
             batch_ids=["id1", "id2", "id3"],
             retry_count=3,
@@ -492,7 +360,7 @@ class TestDownloadBatch:
             expected_sleep_calls=2,
             expected_exception=HTTPError,
         ),
-        DownloadBatchRetryTestCase(
+        CaseData(
             description="Retry on timeout",
             batch_ids=["id1", "id2", "id3"],
             retry_count=3,
@@ -502,7 +370,7 @@ class TestDownloadBatch:
             expected_sleep_calls=2,
             expected_exception=timeout,
         ),
-        DownloadBatchRetryTestCase(
+        CaseData(
             description="No retries",
             batch_ids=["id1", "id2", "id3"],
             retry_count=1,
@@ -514,8 +382,8 @@ class TestDownloadBatch:
         ),
     ]
 
-    DOWNLOAD_BATCH_RETRY_SUCCESS_TEST_CASES: List[DownloadBatchRetrySuccessTestCase] = [
-        DownloadBatchRetrySuccessTestCase(
+    TEST_CASES_RETRY: List[CaseData] = [
+        CaseData(
             description="Retry on network error 2 times and then succeed",
             batch_ids=["id1", "id2", "id3"],
             retry_count=3,
@@ -528,7 +396,7 @@ class TestDownloadBatch:
             expected_efetch_calls=3,
             expected_sleep_calls=2,
         ),
-        DownloadBatchRetrySuccessTestCase(
+        CaseData(
             description="Retry on HTTP error 3 times and then succeed",
             batch_ids=["id1", "id2", "id3"],
             retry_count=10,
@@ -564,15 +432,15 @@ class TestDownloadBatch:
 
     @pytest.mark.parametrize(
         "test_case",
-        DOWNLOAD_BATCH_TEST_CASES,
-        ids=[case.description for case in DOWNLOAD_BATCH_TEST_CASES],
+        TEST_CASES,
+        ids=[case.description for case in TEST_CASES],
     )
     def test_download_batch_no_retries(
         self,
         mock_file_exists,
         mock_open_file,
         mock_entrez_efetch,
-        test_case: DownloadBatchTestCase,
+        test_case: CaseData,
     ):
         # Arrange
         mock_file_exists.return_value = test_case.file_exists
@@ -610,8 +478,8 @@ class TestDownloadBatch:
 
     @pytest.mark.parametrize(
         "test_case",
-        DOWNLOAD_BATCH_EXCEPTION_TEST_CASES,
-        ids=[case.description for case in DOWNLOAD_BATCH_EXCEPTION_TEST_CASES],
+        ERROR_TEST_CASES,
+        ids=[case.description for case in ERROR_TEST_CASES],
     )
     def test_download_batch_retries_on_exceptions(
         self,
@@ -619,7 +487,7 @@ class TestDownloadBatch:
         mock_sleep,
         mock_open_file,
         mock_entrez_efetch,
-        test_case: DownloadBatchRetryTestCase,
+        test_case: CaseData,
     ):
         # Arrange
         mock_file_exists.return_value = False
@@ -630,6 +498,7 @@ class TestDownloadBatch:
         batch_number = 1
 
         # Act & Assert
+        assert test_case.expected_exception is not None
         with pytest.raises(test_case.expected_exception):
             download_batch(
                 file_path,
@@ -651,7 +520,7 @@ class TestDownloadBatch:
                     rettype=file_format,
                     retmode="text",
                 )
-            ] * (test_case.expected_efetch_calls - 1)
+            ] * (test_case.expected_efetch_calls)
             mock_entrez_efetch.assert_has_calls(expected_efetch_calls, any_order=True)
         if test_case.expected_sleep_calls > 0:
             expected_sleep_calls = [call(test_case.delay_seconds)] * (
@@ -663,8 +532,8 @@ class TestDownloadBatch:
 
     @pytest.mark.parametrize(
         "test_case",
-        DOWNLOAD_BATCH_RETRY_SUCCESS_TEST_CASES,
-        ids=[case.description for case in DOWNLOAD_BATCH_RETRY_SUCCESS_TEST_CASES],
+        TEST_CASES_RETRY,
+        ids=[case.description for case in TEST_CASES_RETRY],
     )
     def test_download_batch_retries_and_succeeds(
         self,
@@ -672,7 +541,7 @@ class TestDownloadBatch:
         mock_file_exists,
         mock_sleep,
         mock_entrez_efetch,
-        test_case: DownloadBatchRetrySuccessTestCase,
+        test_case: CaseData,
     ):
         # Arrange
         mock_file_exists.return_value = False
@@ -703,7 +572,7 @@ class TestDownloadBatch:
                     rettype=file_format,
                     retmode="text",
                 )
-            ] * (test_case.expected_efetch_calls - 1)
+            ] * (test_case.expected_efetch_calls)
             mock_entrez_efetch.assert_has_calls(expected_efetch_calls, any_order=False)
         if test_case.expected_sleep_calls > 0:
             expected_sleep_calls = [call(test_case.delay_seconds)] * (

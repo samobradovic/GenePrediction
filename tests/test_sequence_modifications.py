@@ -6,7 +6,7 @@ from src.data_preprocessing.sequence_modifications import mutate_string_sequence
 
 
 class TestMutateSequence:
-    class TestCase(NamedTuple):
+    class CaseData(NamedTuple):
         description: str
         sequence: str
         mutation_rate: float
@@ -15,55 +15,55 @@ class TestMutateSequence:
         exception_message: str | None = None
 
     TEST_CASES = [
-        TestCase(
+        CaseData(
             description="25 percent of the sequence is mutated",
             sequence="ATCGATCGATCGATCG",
             mutation_rate=0.25,
             number_of_expected_mutations=4,
         ),
-        TestCase(
+        CaseData(
             description="50 percent of the sequence is mutated",
             sequence="ATCGATCGATCGATCG",
             mutation_rate=0.5,
             number_of_expected_mutations=8,
         ),
-        TestCase(
+        CaseData(
             description="75 percent of the sequence is mutated",
             sequence="ATCGATCGATCGATCG",
             mutation_rate=0.75,
             number_of_expected_mutations=12,
         ),
-        TestCase(
+        CaseData(
             description="0 percent of the sequence is mutated",
             sequence="ATCGATCGATCGATCG",
             mutation_rate=0.0,
             number_of_expected_mutations=0,
         ),
-        TestCase(
+        CaseData(
             description="100 percent of the sequence is mutated",
             sequence="ATCGATCGATCGATCG",
             mutation_rate=1.0,
             number_of_expected_mutations=16,
         ),
-        TestCase(
+        CaseData(
             description="Single base sequence, rounded down no change",
             sequence="A",
             mutation_rate=0.5,
             number_of_expected_mutations=0,
         ),
-        TestCase(
+        CaseData(
             description="Single base sequence, rounded down no change",
             sequence="A",
             mutation_rate=0.6,
             number_of_expected_mutations=0,
         ),
-        TestCase(
+        CaseData(
             description="Single base sequence, rounded up change",
             sequence="A",
             mutation_rate=1.0,
             number_of_expected_mutations=1,
         ),
-        TestCase(
+        CaseData(
             description="Uneven sequence, should have 1 mutation",
             sequence="ATG",
             mutation_rate=0.5,
@@ -76,7 +76,7 @@ class TestMutateSequence:
         TEST_CASES,
         ids=[case.description for case in TEST_CASES],
     )
-    def test_mutate_sequence(self, test_case: TestCase):
+    def test_mutate_sequence(self, test_case: CaseData):
         # Arrange
         sequence = test_case.sequence
         mutation_rate = test_case.mutation_rate
@@ -96,7 +96,7 @@ class TestMutateSequence:
         )
 
     EXCEPTION_TEST_CASES = [
-        TestCase(
+        CaseData(
             description="Mutation rate is negative",
             sequence="ATCGATCGATCGATCG",
             mutation_rate=-0.1,
@@ -104,7 +104,7 @@ class TestMutateSequence:
             exception=ValueError,
             exception_message="Mutation rate must be between 0 and 1.",
         ),
-        TestCase(
+        CaseData(
             description="Mutation rate is greater than 1",
             sequence="ATCGATCGATCGATCG",
             mutation_rate=1.1,
@@ -112,7 +112,7 @@ class TestMutateSequence:
             exception=ValueError,
             exception_message="Mutation rate must be between 0 and 1.",
         ),
-        TestCase(
+        CaseData(
             description="Empty sequence",
             sequence="",
             mutation_rate=0.5,
@@ -127,7 +127,7 @@ class TestMutateSequence:
         EXCEPTION_TEST_CASES,
         ids=[case.description for case in EXCEPTION_TEST_CASES],
     )
-    def test_mutate_sequence_exceptions(self, test_case: TestCase):
+    def test_mutate_sequence_exceptions(self, test_case: CaseData):
         # Arrange
         sequence = test_case.sequence
         mutation_rate = test_case.mutation_rate

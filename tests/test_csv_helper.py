@@ -1,6 +1,6 @@
 from pathlib import Path
 from typing import List, NamedTuple
-from unittest.mock import MagicMock, patch
+from unittest.mock import mock_open, patch
 
 import pandas as pd
 import pytest
@@ -13,8 +13,8 @@ from src.helpers.csv_helper import (
 
 
 @pytest.fixture
-def mock_open():
-    with patch("builtins.open", new_callable=MagicMock) as mock:
+def mock_open_file():
+    with patch("builtins.open", mock_open()) as mock:
         yield mock
 
 
@@ -31,7 +31,7 @@ def mock_to_csv():
 
 
 class TestWriteStringSequencesToCsv:
-    class WriteStringSequencesTestCase(NamedTuple):
+    class CaseData(NamedTuple):
         description: str
         sequences: List[str]
         csv_path: Path
@@ -40,7 +40,7 @@ class TestWriteStringSequencesToCsv:
         expected_calls: List[str]
 
     TEST_CASES = [
-        WriteStringSequencesTestCase(
+        CaseData(
             description="Write sequences with header",
             sequences=["ATCG", "GCTA"],
             csv_path=Path("test.csv"),
@@ -48,7 +48,7 @@ class TestWriteStringSequencesToCsv:
             is_real_gene=True,
             expected_calls=["IsGene,Sequence\n", "1,ATCG\n", "1,GCTA\n"],
         ),
-        WriteStringSequencesTestCase(
+        CaseData(
             description="Append sequences without header",
             sequences=["ATCG", "GCTA"],
             csv_path=Path("test.csv"),
@@ -63,7 +63,7 @@ class TestWriteStringSequencesToCsv:
         TEST_CASES,
         ids=[case.description for case in TEST_CASES],
     )
-    def test_write_string_sequences_to_csv(self, mock_open, test_case):
+    def test_write_string_sequences_to_csv(self, mock_open_file, test_case: CaseData):
         # Act
         write_string_sequences_to_csv(
             test_case.sequences,
@@ -74,9 +74,9 @@ class TestWriteStringSequencesToCsv:
 
         # Assert
         mode = "w" if test_case.write_header else "a"
-        mock_open.assert_called_once_with(test_case.csv_path, mode)
+        mock_open_file.assert_called_once_with(test_case.csv_path, mode)
         for call in test_case.expected_calls:
-            mock_open().write.assert_any_call(call)
+            mock_open_file().write.assert_any_call(call)
 
 
 class TestCopyCsvFile:

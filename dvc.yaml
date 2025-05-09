@@ -21,6 +21,7 @@ stages:
       - src/data_loading/fetch_ids.py
     params:
       - dataset_size
+      - taxonomic_diversity
       - entrez_search_queries
       - constants.yaml:
         - paths.raw.genome_ids_file

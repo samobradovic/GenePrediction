@@ -118,11 +118,10 @@ def download_data(
     """Download data from Entrez and save it in batches.
 
     Args:
-        number_of_datapoints (int): Number of data points to download.
-        search_query (str): Search query to get IDs from Entrez.
-        folder_path (Path): Folder where the data will be saved.
-        max_size_gb (int): Maximum size (in GB) the folder can reach before stopping.
-        batch_size (int): Size of each batch for downloading.
+        ids (List[str]): List of IDs to download.
+        folder_path (Path): Path to the folder where files will be saved.
+        max_size_gb (int): Maximum size of the folder in GB.
+        batch_size (int): Number of IDs to download in each batch.
         file_format (str): Format of the file to be downloaded (e.g., "fasta").
         batch_retry_count (int): Number of retries for each batch download.
         batch_delay_seconds (int): Delay in seconds between retries.

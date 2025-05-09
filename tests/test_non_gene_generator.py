@@ -58,7 +58,7 @@ class TestGetRandomGeneFrame:
 
 
 class TestGenerateRandomNonGenes:
-    class GenerateRandomNonGenesTestCase(NamedTuple):
+    class CaseData(NamedTuple):
         description: str
         percentage_of_genes: float
         random_length: int
@@ -70,7 +70,7 @@ class TestGenerateRandomNonGenes:
         expected_message: str | None = None
 
     TEST_CASES = [
-        GenerateRandomNonGenesTestCase(
+        CaseData(
             description="Generate non-genes from multiple genomes",
             percentage_of_genes=0.5,
             random_length=4,
@@ -80,7 +80,7 @@ class TestGenerateRandomNonGenes:
             expected_count=3,
             expected_exception=None,
         ),
-        GenerateRandomNonGenesTestCase(
+        CaseData(
             description="Generate non-genes from a single genome",
             percentage_of_genes=0.5,
             random_length=3,
@@ -90,69 +90,18 @@ class TestGenerateRandomNonGenes:
             expected_count=2,
             expected_exception=None,
         ),
-        GenerateRandomNonGenesTestCase(
-            description="Generate non-genes with empty genome list",
-            percentage_of_genes=0.5,
-            random_length=4,
-            number_of_genes=6,
-            genomes=[],
-            random_gene_frames=[],
-            expected_count=0,
-            expected_exception=ValueError,
-            expected_message="No genomes provided",
-        ),
-        GenerateRandomNonGenesTestCase(
-            description="Generate non-genes with zero percentage",
-            percentage_of_genes=0.0,
-            random_length=4,
-            number_of_genes=6,
-            genomes=["ATCGATCG", "GCTAGCTA"],
-            random_gene_frames=[],
-            expected_count=0,
-            expected_exception=ValueError,
-        ),
-        GenerateRandomNonGenesTestCase(
-            description="Generate non-genes with zero number of genes",
-            percentage_of_genes=0.5,
-            random_length=4,
-            number_of_genes=0,
-            genomes=["ATCGATCG", "GCTAGCTA"],
-            random_gene_frames=[],
-            expected_count=0,
-            expected_exception=ValueError,
-        ),
-        GenerateRandomNonGenesTestCase(
-            description="Generate non-genes with random length greater than genome len",
-            percentage_of_genes=0.5,
-            random_length=20,
-            number_of_genes=6,
-            genomes=["ATCGATCG", "GCTAGCTA"],
-            random_gene_frames=[],
-            expected_count=0,
-            expected_exception=ValueError,
-        ),
-        GenerateRandomNonGenesTestCase(
-            description="Generate non-genes with random length equal to genome length",
-            percentage_of_genes=0.5,
-            random_length=8,
-            number_of_genes=6,
-            genomes=["ATCGATCG", "GCTAGCTA"],
-            random_gene_frames=[],
-            expected_count=0,
-            expected_exception=ValueError,
-        ),
     ]
 
     @pytest.mark.parametrize(
         "test_case",
         TEST_CASES,
-        ids=[case.description for case in TEST_CASES if not case.expected_exception],
+        ids=[case.description for case in TEST_CASES],
     )
     @patch("src.data_preprocessing.non_gene_generator.get_random_gene_frame")
     def test_generate_random_non_genes(
         self,
         mock_get_random_gene_frame: MagicMock,
-        test_case: GenerateRandomNonGenesTestCase,
+        test_case: CaseData,
     ):
         # Arrange
         mock_get_random_gene_frame.side_effect = test_case.random_gene_frames
@@ -175,21 +124,75 @@ class TestGenerateRandomNonGenes:
         assert "genome" in kwargs
         assert kwargs["genome"] in test_case.genomes
 
+    TEST_CASES_EXCEPTIONS = [
+        CaseData(
+            description="Generate non-genes with empty genome list",
+            percentage_of_genes=0.5,
+            random_length=4,
+            number_of_genes=6,
+            genomes=[],
+            random_gene_frames=[],
+            expected_count=0,
+            expected_exception=ValueError,
+            expected_message="No genomes provided",
+        ),
+        CaseData(
+            description="Generate non-genes with zero percentage",
+            percentage_of_genes=0.0,
+            random_length=4,
+            number_of_genes=6,
+            genomes=["ATCGATCG", "GCTAGCTA"],
+            random_gene_frames=[],
+            expected_count=0,
+            expected_exception=ValueError,
+        ),
+        CaseData(
+            description="Generate non-genes with zero number of genes",
+            percentage_of_genes=0.5,
+            random_length=4,
+            number_of_genes=0,
+            genomes=["ATCGATCG", "GCTAGCTA"],
+            random_gene_frames=[],
+            expected_count=0,
+            expected_exception=ValueError,
+        ),
+        CaseData(
+            description="Generate non-genes with random length greater than genome len",
+            percentage_of_genes=0.5,
+            random_length=20,
+            number_of_genes=6,
+            genomes=["ATCGATCG", "GCTAGCTA"],
+            random_gene_frames=[],
+            expected_count=0,
+            expected_exception=ValueError,
+        ),
+        CaseData(
+            description="Generate non-genes with random length equal to genome length",
+            percentage_of_genes=0.5,
+            random_length=8,
+            number_of_genes=6,
+            genomes=["ATCGATCG", "GCTAGCTA"],
+            random_gene_frames=[],
+            expected_count=0,
+            expected_exception=ValueError,
+        ),
+    ]
+
     @pytest.mark.parametrize(
         "test_case",
-        TEST_CASES,
-        ids=[case.description for case in TEST_CASES if case.expected_exception],
+        TEST_CASES_EXCEPTIONS,
+        ids=[case.description for case in TEST_CASES_EXCEPTIONS],
     )
     @patch("src.data_preprocessing.non_gene_generator.get_random_gene_frame")
     def test_generate_random_non_genes_exception(
         self,
         mock_get_random_gene_frame: MagicMock,
-        test_case: GenerateRandomNonGenesTestCase,
+        test_case: CaseData,
     ):
         # Arrange
         mock_get_random_gene_frame.side_effect = test_case.random_gene_frames
 
-        # Act
+        # Act & Assert
         assert test_case.expected_exception
         with pytest.raises(
             test_case.expected_exception, match=test_case.expected_message
