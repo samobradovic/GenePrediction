@@ -1,8 +1,8 @@
-# IntroBioProject
+# GenePrediction
 
 ## Overview
 
-IntroBioProject is a bioinformatics pipeline designed to process genomic data, extract meaningful insights, and train machine learning models for gene prediction. The project leverages tools like DVC for data versioning, Poetry for dependency management, and various Python libraries for data preprocessing, model training, and evaluation. Additionally, the project includes optimized C extensions for performance-critical tasks.
+GenePrediction is a bioinformatics pipeline designed to process genomic data, extract meaningful insights, and train machine learning models for gene prediction. The project leverages tools like DVC for data versioning, Poetry for dependency management, and various Python libraries for data preprocessing, model training, and evaluation. Additionally, the project includes optimized C extensions for performance-critical tasks.
 
 ## Features
 
@@ -22,7 +22,7 @@ IntroBioProject is a bioinformatics pipeline designed to process genomic data, e
 ## Project Structure
 
 ```
-IntroBioProject/
+GenePrediction/
 ├── data/
 │   ├── raw/                # Raw genomic and gene data
 │   ├── processed/          # Processed datasets (training, testing, validation)
@@ -48,7 +48,7 @@ IntroBioProject/
 1. Clone the repository:
    ```bash
    git clone <repository-url>
-   cd IntroBioProject
+   cd GenePrediction
    ```
 2. Install dependencies using Poetry:
    ```bash

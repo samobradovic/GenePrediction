@@ -1,7 +1,7 @@
 [project]
-name = "introproject"
+name = "geneprediction"
 version = "0.1.0"
-description = "A BioPython-based project for genome and protein sequence analysis."
+description = "Gene Prediction and Classification"
 authors = []
 readme = "README.md"
 requires-python = ">=3.13"
@@ -9,7 +9,6 @@ requires-python = ">=3.13"
 dependencies = [
     # Core functionality
     "biopython>=1.81",
-    "argparse",
 
     # Machine learning and transformations
     "torch>=2.6.0,<3.0.0",
