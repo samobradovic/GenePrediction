@@ -145,16 +145,20 @@ class TestGenerateConfusionMatrix:
         TEST_CASES,
         ids=[case.description for case in TEST_CASES],
     )
+    @patch("src.evaluation.evaluation.ConfusionMatrixDisplay")
     @patch("src.evaluation.evaluation.confusion_matrix")
     @patch("src.evaluation.evaluation.plt.savefig")
     def test_generate_confusion_matrix(
         self,
         mock_savefig: MagicMock,
-        confusion_matrix: MagicMock,
+        mock_confusion_matrix: MagicMock,
+        mock_matrix_display: MagicMock,
         test_case: CaseData,
     ):
         # Arrange
-        confusion_matrix.return_value = test_case.confusion_matrix
+        mock_confusion_matrix.return_value = test_case.confusion_matrix
+        mock_disp_instance = MagicMock()
+        mock_matrix_display.return_value = mock_disp_instance
 
         # Act
         evaluation.generate_confusion_matrix(
@@ -162,7 +166,9 @@ class TestGenerateConfusionMatrix:
         )
 
         # Assert
-        confusion_matrix.assert_called_once_with(test_case.y_true, test_case.y_score)
+        mock_confusion_matrix.assert_called_once_with(
+            test_case.y_true, test_case.y_score
+        )
         mock_savefig.assert_called_once_with(test_case.path)
 
 

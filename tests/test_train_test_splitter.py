@@ -30,7 +30,7 @@ def mock_train_test_split():
 
 
 class TestTrainTestValidationSplit:
-    class TrainTestValidationSplitTestCase(NamedTuple):
+    class CaseData(NamedTuple):
         description: str
         csv_file_path: Path
         test_size: float
@@ -64,7 +64,7 @@ class TestTrainTestValidationSplit:
         expected_message: str
 
     TRAIN_TEST_VALIDATION_SPLIT_CASES = [
-        TrainTestValidationSplitTestCase(
+        CaseData(
             description="Valid data splitting",
             csv_file_path=Path("test_input.csv"),
             test_size=0.2,
@@ -105,7 +105,7 @@ class TestTrainTestValidationSplit:
                 (Path("test.csv"), False),
             ],
         ),
-        TrainTestValidationSplitTestCase(
+        CaseData(
             description="Valid data splitting with 5 sequences",
             csv_file_path=Path("test_input.csv"),
             test_size=0.2,
@@ -135,7 +135,7 @@ class TestTrainTestValidationSplit:
                 (Path("test.csv"), False),
             ],
         ),
-        TrainTestValidationSplitTestCase(
+        CaseData(
             description="Valid data splitting with 50 sequences",
             csv_file_path=Path("test_input.csv"),
             test_size=0.1,
@@ -213,7 +213,7 @@ class TestTrainTestValidationSplit:
         mock_save_train_test_validation_csvs: MagicMock,
         mock_read_csv: MagicMock,
         mock_train_test_split: MagicMock,
-        test_case: TrainTestValidationSplitTestCase,
+        test_case: CaseData,
     ):
         # Arrange
         mock_read_csv.return_value = test_case.input_data
