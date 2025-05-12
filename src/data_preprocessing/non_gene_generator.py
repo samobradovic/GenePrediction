@@ -35,7 +35,7 @@ def get_random_gene_frame(genome: str, random_length: int) -> str:
 
 def generate_random_non_genes(
     percentage_of_genes: float,
-    random_length: int,
+    gene_lengths: pd.Series,
     number_of_genes: int,
     genomes: List[str],
 ) -> List[str]:
@@ -44,7 +44,7 @@ def generate_random_non_genes(
 
     Args:
         percentage_of_genes (float): Percentage of genes to generate.
-        random_length (int): Length of the random gene frames.
+        gene_lengths (pd.Series): Series containing lengths of real genes.
         number_of_genes (int): Number of genes to generate.
         genomes (List[str]): List of genome sequences.
 
@@ -60,14 +60,19 @@ def generate_random_non_genes(
         raise ValueError(
             "Percentage of genes and number of genes must be greater than 0"
         )
-    if random_length >= len(min(genomes, key=len)):
-        raise ValueError("Random length must be less than the shortest genome length")
+
+    shortest_genome_length = len(min(genomes, key=len))
 
     for _ in tqdm(
         range(int(number_of_genes * percentage_of_genes)),
         desc="Generating random non-genes",
         unit="gene",
     ):
+        random_length = gene_lengths.sample(1).iloc[0]
+
+        if random_length >= shortest_genome_length:
+            random_length = shortest_genome_length - 1
+
         genome = random.choice(genomes)
         non_gene_candidate = get_random_gene_frame(
             genome=genome, random_length=random_length
@@ -92,13 +97,11 @@ def generate_non_genes(
         genes_csv_file (Path): Path to the CSV file containing gene sequences.
         genomes_raw_data_folder (Path): Path to the folder containing genome sequences.
         combined_csv_file (Path): Path to the CSV file where non-genes will be saved.
-
     """
 
     gene_lengths: pd.Series[int] = get_iterable_series_sequence_lengths_from_csv(
         genes_csv_file,
     )
-    random_length: int = gene_lengths.sample(1).iloc[0]
     number_of_genes: int = len(gene_lengths)
 
     genome_sequences: List[str] = get_string_sequences_from_directory(
@@ -106,7 +109,7 @@ def generate_non_genes(
     )
     random_non_genes: List[str] = generate_random_non_genes(
         percentage_of_genes=percentage_of_random_non_genes,
-        random_length=random_length,
+        gene_lengths=gene_lengths,
         number_of_genes=number_of_genes,
         genomes=genome_sequences,
     )
