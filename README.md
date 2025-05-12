@@ -24,8 +24,7 @@ GenePrediction/
 ├── data/                   # Data at various processing stages
 │   ├── raw/                # Raw genomic and gene data
 │   ├── processed/          # Processed datasets
-│   ├── models/             # Trained models and vectorizers
-│   └── results/            # Evaluation results and plots
+│   └── models/             # Trained models and vectorizers
 ├── src/                    # Source code organized by function
 │   ├── c_lang/             # C extensions for performance optimization
 │   ├── data_loading/       # Data downloading from NCBI
@@ -33,6 +32,7 @@ GenePrediction/
 │   ├── model_training/     # Model training implementations
 │   └── evaluation/         # Model evaluation and visualization
 ├── tests/                  # Unit tests
+├── results/                # Evaluation results and plots
 ├── paper/                  # Academic paper with methodology and results
 ├── dvc.yaml                # Pipeline definition
 └── params.yaml             # Configurable parameters
@@ -83,7 +83,7 @@ Edit `params.yaml` to customize:
 
 ## Results
 
-Our XGBoost model achieves **97.77% accuracy** on the test dataset, with balanced precision (98.56% for genes) and recall (97.06% for genes) metrics. Full evaluation results are available in the `data/results/` directory and detailed in the [academic paper](paper/out/paper.pdf).
+Our XGBoost model achieves **97.77% accuracy** on the test dataset, with balanced precision (98.56% for genes) and recall (97.06% for genes) metrics. Full evaluation results are available in the `results/` directory and detailed in the [academic paper](paper/out/paper.pdf).
 
 ## Testing & Development
 

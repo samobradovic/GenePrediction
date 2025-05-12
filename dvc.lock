@@ -468,29 +468,29 @@ stages:
         paths.models.xgb_model: data/models/xgb_model.pkl
         paths.processed.testing_csv: data/processed/testing.csv
         paths.processed.testing_vectorized: data/processed/testing_vectorized.pkl
-        paths.results.accuracy: data/results/accuracy.txt
-        paths.results.classification_report: data/results/classification_report.txt
-        paths.results.confusion_matrix: data/results/confusion_matrix.png
-        paths.results.precision_recall_curve: data/results/precision_recall_curve.png
-        paths.results.roc_curve: data/results/roc_curve.png
+        paths.results.accuracy: results/accuracy.txt
+        paths.results.classification_report: results/classification_report.txt
+        paths.results.confusion_matrix: results/confusion_matrix.png
+        paths.results.precision_recall_curve: results/precision_recall_curve.png
+        paths.results.roc_curve: results/roc_curve.png
     outs:
-    - path: data/results/accuracy.txt
+    - path: results/accuracy.txt
       hash: md5
       md5: d7d2b6e97065c4f30591a8267b663788
       size: 24
-    - path: data/results/classification_report.txt
+    - path: results/classification_report.txt
       hash: md5
       md5: 676e5fbb83916060f86fe6637772bcaf
       size: 401
-    - path: data/results/confusion_matrix.png
+    - path: results/confusion_matrix.png
       hash: md5
       md5: 315b43b2130c1d6b4977e5fa53416b7f
       size: 18662
-    - path: data/results/precision_recall_curve.png
+    - path: results/precision_recall_curve.png
       hash: md5
       md5: 559ab51f7f7286c54970ae826027ea9a
       size: 15019
-    - path: data/results/roc_curve.png
+    - path: results/roc_curve.png
       hash: md5
       md5: ad308d8198a91563d44ca8d2501a4676
       size: 29622

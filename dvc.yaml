@@ -166,7 +166,6 @@ stages:
         - paths.models.xgb_model
     outs:
       - data/models/xgb_model.pkl
-
   evaluation:
     # Evaluate the trained model using the testing data
     cmd: poetry run python src/evaluation/evaluation.py
@@ -187,8 +186,13 @@ stages:
         - paths.results.precision_recall_curve
         - paths.results.accuracy
     plots:
-      - data/results/roc_curve.png
-      - data/results/confusion_matrix.png
-      - data/results/precision_recall_curve.png
-      - data/results/classification_report.txt
-      - data/results/accuracy.txt
+      - results/roc_curve.png:
+          cache: false
+      - results/confusion_matrix.png:
+          cache: false
+      - results/precision_recall_curve.png:
+          cache: false
+      - results/classification_report.txt:
+          cache: false
+      - results/accuracy.txt:
+          cache: false

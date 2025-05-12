@@ -35,11 +35,11 @@ paths:
 
   # Results
   results:
-    classification_report: "data/results/classification_report.txt"
-    confusion_matrix: "data/results/confusion_matrix.png"
-    roc_curve: "data/results/roc_curve.png"
-    precision_recall_curve: "data/results/precision_recall_curve.png"
-    accuracy: "data/results/accuracy.txt"
+    classification_report: "results/classification_report.txt"
+    confusion_matrix: "results/confusion_matrix.png"
+    roc_curve: "results/roc_curve.png"
+    precision_recall_curve: "results/precision_recall_curve.png"
+    accuracy: "results/accuracy.txt"
 
 
 

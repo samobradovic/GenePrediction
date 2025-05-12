@@ -361,6 +361,3 @@ data/
 
 # Ruff cache
 .ruff_cache/
-
-# Temporary removing results
-results/
