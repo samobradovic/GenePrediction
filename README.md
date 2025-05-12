@@ -85,15 +85,11 @@ Edit `params.yaml` to customize:
 
 Our XGBoost model achieves **97.77% accuracy** on the test dataset, with balanced precision (98.56% for genes) and recall (97.06% for genes) metrics. Full evaluation results are available in the `results/` directory and detailed in the [academic paper](paper/out/paper.pdf).
 
-## Testing & Development
+## Testing
 
 ```bash
 # Run tests
 poetry run pytest
-
-# Compile the paper
-cd paper
-pdflatex paper.tex && bibtex paper && pdflatex paper.tex && pdflatex paper.tex
 ```
 
 ## Key Dependencies
