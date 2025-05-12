@@ -1,180 +1,112 @@
 # GenePrediction
 
+## 📄 Academic Paper
+
+This project is accompanied by a comprehensive [academic paper](paper/out/paper.pdf) documenting our methodology and findings. The paper presents our approach to prokaryotic gene prediction using k-mer features and XGBoost, achieving 97.77% accuracy. We encourage researchers and practitioners to explore the paper for detailed insights into our methodology, experiments, and results.
+
 ## Overview
 
-GenePrediction is a bioinformatics pipeline designed to process prokaryotic genomic data, extract meaningful insights, and train machine learning models for gene prediction. The project leverages tools like DVC for data versioning, Poetry for dependency management, and various Python libraries for data preprocessing, model training, and evaluation. Additionally, the project includes optimized C extensions for performance-critical tasks and integrates transformer-based models like DNABERT for enhanced prediction capabilities.
+GenePrediction is a bioinformatics pipeline designed to process prokaryotic genomic data, extract meaningful insights, and train machine learning models for gene prediction. The project combines efficient data processing with advanced machine learning techniques to provide a high-performance solution for gene prediction tasks.
 
-## Features
+## Key Features
 
-- **Data Downloading**: Fetches raw genomic and gene data using the Entrez API with configurable taxonomic diversity.
-- **Data Preprocessing**:
-  - FASTA-to-CSV conversion.
-  - Data cleaning and filtering based on sequence length.
-  - Splitting datasets into training, testing, and validation sets.
-  - Generating non-gene sequences for balanced datasets.
-  - Sequence modification capabilities for data augmentation.
-- **Vectorization**: Converts DNA sequences into k-mer representations using `CountVectorizer` or a custom C extension for k-mer generation.
-- **Model Training**: 
-  - XGBoost classifier for gene prediction with configurable hyperparameters.
-  - DNABERT integration for transformer-based sequence analysis.
-- **Evaluation**:
-  - Generates performance metrics such as accuracy, precision, recall, and F1-score.
-  - Visualizes results with confusion matrices, ROC curves, and precision-recall curves.
-- **C Extensions**: Includes a custom C module for efficient k-mer generation, significantly improving performance for large datasets (benchmarked up to 100x faster than pure Python implementation).
-- **Scientific Documentation**: Includes LaTeX paper template for documenting research findings.
+- **High-Performance Gene Prediction**: Achieves 97.77% accuracy using XGBoost with k-mer features
+- **Data Pipeline**: Complete workflow from data acquisition to evaluation with taxonomic diversity enforcement
+- **Performance Optimization**: C language extensions for k-mer generation (100x faster than Python)
+- **Advanced ML Integration**: Support for both gradient boosting and transformer-based approaches (DNABERT)
+- **Reproducibility**: Integrated with DVC for experiment tracking and reproducible research
+- **Comprehensive Evaluation**: Detailed performance metrics and visualizations
 
-## Project Structure
+## Project Organization
 
 ```
 GenePrediction/
-├── data/
+├── data/                   # Data at various processing stages
 │   ├── raw/                # Raw genomic and gene data
-│   │   ├── genomes/        # Downloaded genome sequences
-│   │   ├── genes/          # Downloaded gene sequences
-│   │   ├── genome_ids/     # Entrez genome IDs
-│   │   └── gene_ids/       # Entrez gene IDs
-│   ├── processed/          # Processed datasets (training, testing, validation)
-│   │   ├── *_vectorized.pkl # Vectorized datasets
-│   │   └── *.csv           # CSV datasets
+│   ├── processed/          # Processed datasets
 │   ├── models/             # Trained models and vectorizers
 │   └── results/            # Evaluation results and plots
-├── src/                    # Source code
+├── src/                    # Source code organized by function
 │   ├── c_lang/             # C extensions for performance optimization
-│   ├── data_loading/       # Scripts for data downloading
-│   ├── data_preprocessing/ # Scripts for data cleaning and preparation
-│   ├── model_training/     # Scripts for training models (XGBoost, DNABERT)
-│   ├── evaluation/         # Scripts for model evaluation
-│   ├── exploratory_data_analasys/ # Scripts for exploratory data analysis
-│   └── helpers/            # Utility functions
-├── tests/                  # Unit tests for all major components
-├── paper/                  # Scientific documentation (LaTeX)
-├── dvc.yaml                # DVC pipeline stages
-├── params.yaml             # Pipeline parameters
-├── constants.yaml          # Project constants
-└── README.md               # Project documentation
+│   ├── data_loading/       # Data downloading from NCBI
+│   ├── data_preprocessing/ # Data cleaning and preparation
+│   ├── model_training/     # Model training implementations
+│   └── evaluation/         # Model evaluation and visualization
+├── tests/                  # Unit tests
+├── paper/                  # Academic paper with methodology and results
+├── dvc.yaml                # Pipeline definition
+└── params.yaml             # Configurable parameters
 ```
 
-## Installation
+## Quick Start
 
-1. Clone the repository:
-   ```bash
-   git clone <repository-url>
-   cd GenePrediction
-   ```
-2. Install dependencies using Poetry:
-   ```bash
-   poetry install
-   ```
-3. Set up pre-commit hooks:
-   ```bash
-   poetry run pre-commit install
-   ```
+### Installation
 
-## Usage
+```bash
+git clone <repository-url>
+cd GenePrediction
+poetry install
+```
 
 ### Running the Pipeline
 
-The pipeline is managed using DVC. To execute all stages:
-
 ```bash
+# Run the complete pipeline
 dvc repro
-```
 
-## Pipeline Stages
-
-The pipeline is managed via DVC with the following stages:
-
-1. **compile_c_modules**: Builds C extensions for performance optimization
-2. **fetch_ids**: Retrieves Entrez IDs for genomes and genes with taxonomic diversity enforcement
-3. **download_genomes**: Downloads genome and gene sequences from NCBI
-4. **csv_conversion**: Converts FASTA files to CSV format
-5. **non_gene_generation**: Generates non-gene sequences for balanced datasets
-6. **data_cleanup**: Filters and cleans sequences based on length and quality parameters
-7. **train_test_split**: Splits data into training, testing, and validation sets
-8. **vectorization**: Converts sequences to k-mer feature vectors using either Python or C implementation
-9. **xgb_training**: Trains the XGBoost model on vectorized training data
-10. **evaluation**: Evaluates model performance and generates visualizations
-
-To run a specific stage:
-
-```bash
+# Run a specific stage
 dvc repro <stage-name>
 ```
 
-To view the dependency graph:
+### Pipeline Stages
 
-```bash
-dvc dag
-```
+The pipeline consists of 10 stages that transform raw genomic data into trained models and evaluation results:
 
-## Configuration
+1. Build C extensions  
+2. Fetch sequence IDs  
+3. Download sequences  
+4. Convert to CSV  
+5. Generate non-gene sequences  
+6. Clean data  
+7. Split datasets  
+8. Vectorize sequences  
+9. Train XGBoost model  
+10. Evaluate and visualize results
 
-- Modify `params.yaml` to adjust pipeline parameters:
-  - Dataset size (`small`, `big`, `max`)
-  - K-mer size for DNA sequence vectorization
-  - Gene length constraints (min/max)
-  - Train-test split ratios
-  - XGBoost hyperparameters
-  - Taxonomic diversity settings for better biological representation
-- Update `constants.yaml` for:
-  - File paths and directory structure
-  - Entrez API settings
-  - Batch sizes for efficient data fetching
-  - Maximum file sizes
+## Configuration & Customization
 
-## Dependencies
-
-- Python 3.13+
-- Poetry
-- DVC
-- BioPython (>=1.81)
-- PyTorch (>=2.6.0)
-- Transformers (>=4.49.0, for DNABERT)
-- Scikit-learn (>=1.6.1)
-- XGBoost (>=2.1.4)
-- Pandas (>=2.2.3)
-- Matplotlib (>=3.10.1)
-- Einops (>=0.8.1)
-- Tqdm (>=4.67.1)
-- Dill (>=0.3.9)
-- PyYAML (>=6.0.2)
+Edit `params.yaml` to customize:
+- Dataset size and k-mer length
+- Model hyperparameters
+- Taxonomic diversity settings
+- Train-test split ratios
 
 ## Results
 
-Evaluation metrics and visualizations are saved in the `results/` directory, including:
+Our XGBoost model achieves **97.77% accuracy** on the test dataset, with balanced precision (98.56% for genes) and recall (97.06% for genes) metrics. Full evaluation results are available in the `data/results/` directory and detailed in the [academic paper](paper/out/paper.pdf).
 
-- Confusion Matrix
-- Precision-Recall Curve
-- Receiver Operating Characteristic (ROC) Curve
-- Classification Reports
-
-## Testing
-
-Run unit tests using pytest:
+## Testing & Development
 
 ```bash
+# Run tests
 poetry run pytest
-```
 
-## Scientific Documentation
-
-The `paper/` directory contains a LaTeX template for documenting the research methodology and findings. This can be compiled into a PDF using any LaTeX compiler:
-
-```bash
+# Compile the paper
 cd paper
-pdflatex paper.tex
-bibtex paper
-pdflatex paper.tex
-pdflatex paper.tex
+pdflatex paper.tex && bibtex paper && pdflatex paper.tex && pdflatex paper.tex
 ```
 
-## Future Work
+## Key Dependencies
 
-- Enhance DNABERT integration with fine-tuning for prokaryotic gene prediction
-- Implement additional sequence modification techniques for data augmentation
-- Optimize the C extension for multi-threaded execution
-- Add support for protein translation and functional annotation
-- Implement CDS (Coding Sequence) finding capabilities
-- Add support for eukaryotic gene prediction with splicing site detection
-- Develop a web interface for easier interaction with the pipeline
-- Expand taxonomic diversity controls for better model generalization
+Python 3.13+, Poetry, DVC, BioPython, XGBoost, Scikit-learn
+
+## Future Directions
+
+As outlined in our [paper](paper/out/paper.pdf), we plan to extend this work by:
+
+1. Fine-tuning DNABERT models for prokaryotic gene prediction
+2. Adding support for protein translation and functional annotation
+3. Extending to eukaryotic gene prediction with splicing site detection
+4. Optimizing performance through multi-threaded C extensions
+5. Developing a web interface for broader accessibility
+
