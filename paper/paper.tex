@@ -52,7 +52,7 @@ Gene prediction is a fundamental task in genomics, enabling the identification o
 
 Recent advances in machine learning have opened new avenues for addressing these challenges by leveraging data-driven models to identify patterns in genomic sequences \cite{Zou:2019, Alipanahi:2015}. Among these, gradient-boosting algorithms like XGBoost \cite{Chen:2016} have gained popularity due to their robustness, scalability, and ability to handle complex feature interactions.
 
-In this study, we present a bioinformatics pipeline for gene prediction that integrates data loading, data preprocessing, feature extraction, model training and evaluation. Our approach utilizes k-mer sequence features \cite{Marçais:2011, Liao:2022}, which capture local sequence patterns, to differentiate between coding and non-coding regions. To enhance computational efficiency, we incorporate a custom C extension for k-mer generation \cite{Behnel:2011}, significantly reducing the time required to process large genomic datasets.
+In this study, we present a bioinformatics pipeline for gene prediction that integrates data loading, data preprocessing, feature extraction, model training and evaluation. Our approach utilizes k-mer sequence features \cite{Marçais:2011}, which capture local sequence patterns, to differentiate between coding and non-coding regions. To enhance computational efficiency, we incorporate a custom C extension for k-mer generation \cite{Behnel:2011}, significantly reducing the time required to process large genomic datasets.
 
 We evaluate our pipeline using diverse genomic datasets and demonstrate its effectiveness in accurately predicting gene locations. Our approach achieves an exceptional accuracy of 97.77\% on the test dataset, with balanced precision and recall metrics for both gene and non-gene sequences. The results highlight the robustness of our method and its potential for application in large-scale genomic studies. By combining efficient data processing with a powerful machine learning model, our approach provides a high-performance solution for prokaryotic gene prediction tasks.
 
@@ -95,6 +95,8 @@ This is a trivial step that simply converts the sequences located in FASTA files
 
 We initially download FASTA files instead of directly obtaining CSV files to ensure the pipeline remains modular and adaptable for use in other projects.
 
+\textbf{Note:} In this first step, the CSV contains only positive cases (genes, labeled as 1). The generation of negative cases (non-genes, labeled as 0) is performed in the subsequent step.
+
 \subsubsection{Generating Negative Cases}
 
 To train a robust model capable of distinguishing between coding and non-coding regions, it is essential to augment the dataset with negative cases (non-gene sequences). These negative cases are generated from the genomic data by extracting random subsequences. The process involves the following steps:
@@ -120,7 +122,7 @@ To handle the computational demands of processing large genomic datasets, we imp
 
 \subsubsection{Vectorizing K-mers with CountVectorizer}
 
-After extracting k-mers, they are vectorized using the \texttt{CountVectorizer} from the \texttt{scikit-learn} library \cite{Pedregosa:2011}. The \texttt{CountVectorizer} converts the k-mers into a sparse matrix representation, where each row corresponds to a sequence, and each column represents the frequency of a specific k-mer in that sequence \cite{Fiannaca:2017}. 
+After extracting k-mers, they are vectorized using the \texttt{CountVectorizer} from the \texttt{scikit-learn} library \cite{Pedregosa:2011}. The \texttt{CountVectorizer} converts the k-mers into a sparse matrix representation, where each row corresponds to a sequence, and each column represents the frequency of a specific k-mer in that sequence. 
 
 More specifically, the vectorization process first builds a vocabulary of all unique k-mers present in the dataset. Then, for each genomic sequence, it counts how many times 
 each k-mer from the vocabulary appears in that sequence. For example, with \(k=3\), the k-mer "ATG" might appear 5 times in one sequence and 2 times in another, resulting in 
@@ -160,7 +162,7 @@ The hyperparameters for the XGBoost model are defined in a configuration file an
 
 \subsection{Reproducibility}
 
-The training pipeline is integrated with DVC (Data Version Control) \cite{Kuprieiev:2021}, ensuring that all dependencies, parameters, and outputs are tracked. This integration facilitates ease of use, reproducibility \cite{Stodden:2016} and versioning of experiments.
+The training pipeline is integrated with DVC (Data Version Control), ensuring that all dependencies, parameters, and outputs are tracked. This integration facilitates ease of use, reproducibility \cite{Stodden:2016} and versioning of experiments.
 
 \section{Model Evaluation}
 
